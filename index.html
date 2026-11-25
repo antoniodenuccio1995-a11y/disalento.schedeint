@@ -158,6 +158,9 @@ input[type=checkbox]{width:20px;height:20px;min-height:0;padding:0;accent-color:
 .arow b{display:block;font-size:15px}.arow small{color:var(--mute);font-size:12.5px}
 .arow.cur b::after{content:" · aperta ora";font-weight:500;color:var(--accent-text);font-size:12.5px}
 .arow .btn,.arow button{min-height:38px;font-size:13px;padding:0 10px}
+.notice{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:10px 12px;font-size:14px}
+.notice b{color:var(--ink)}
+.notice button{min-height:38px;font-size:13.5px}
 .cl{margin-left:auto;font-size:12px;color:var(--mute)}
 .cl.ok{color:var(--ok)}.cl.err{color:var(--bad)}
 body.viewer .ed,body.viewer .tabs,body.viewer #mDati,body.viewer #bArch,body.viewer #bXls,body.viewer #bZip,body.viewer #bShare,body.viewer .ph-only,body.viewer .over-flag{display:none!important}
@@ -392,6 +395,7 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
 <div class="wrap" id="wrap" data-tab="ed">
   <div class="ed" id="ed">
     <div class="sum" id="sum" aria-live="polite"></div>
+    <div class="notice" id="localHint" hidden><span><b>Bozza in questo browser.</b> Le schede salvate online (quelle condivise) sono in “Le mie schede”.</span><button type="button" id="bArch3">Le mie schede</button></div>
     <div id="status" role="status"></div>
 
     <details class="sec" id="secChecks" open><summary>Da sistemare prima di inviarla <span class="cnt" id="cntChecks"></span></summary><div class="in"><ul class="checks" id="checks"></ul></div></details>
@@ -1496,6 +1500,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('mArch').hidden=tr
 function abilitaModifica(){MODE='edit';document.body.classList.remove('viewer');$('wrap').dataset.tab='ed';$('tEd').setAttribute('aria-selected','true');$('tPv').setAttribute('aria-selected','false');lists();render();status('Questa scheda è nel tuo archivio: puoi modificarla.')}
 
 if(MODE==='view'){document.body.classList.add('viewer');$('wrap').dataset.tab='pv'}
+if(!SID&&online()){$('localHint').hidden=false;$('bArch3').onclick=archivio}
 lists();render();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
 if(SID){status('Carico la scheda…');caricaCloud(true).then(async()=>{status('');if(MODE==='view'&&CODICE&&!SOLO){try{if(await rpc('sc_verifica',{p_id:SID,p_chiave:null,p_codice:CODICE}))abilitaModifica()}catch(e){}}}).catch(err=>status(err.message||'Non riesco a caricare la scheda.'));
