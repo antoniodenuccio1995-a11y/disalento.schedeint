@@ -1441,7 +1441,7 @@ function apriShare(){const base=location.origin+location.pathname,view=`${base}?
   $('waView').href='https://wa.me/?text='+encodeURIComponent(testo);$('mailView').href='mailto:?subject='+encodeURIComponent('Proposta di investimento: '+(S.nome||''))+'&body='+encodeURIComponent(testo);
   $('mShare').hidden=false;$('lnkView').select()}
 $('bShare').onclick=async()=>{
-  if(IN_CLAUDE||location.protocol==='file:'){status('La condivisione funziona dal sito dello strumento: antoniodenuccio1995-a11y.github.io/disalento.schedeint/ — aprila da lì, carica i dati con “Carica dati salvati” e premi Condividi.');return}
+  if(!online()){offline('Condividi');return}
   if(SID&&MODE==='edit'){if(dirty)await salvaCloud();apriShare();return}
   $('bShare').disabled=true;status('Preparo il link…');
   try{const r=await rpc('sc_crea',{p_dati:S,p_codice:CODICE||null});const row=Array.isArray(r)?r[0]:r;SID=row.id;EKEY=row.chiave;VER=1;MODE='edit';ricordaChiave(SID,EKEY);
@@ -1475,8 +1475,8 @@ function conferma(btn,testo,fn){if(btn.dataset.sure||(online()&&CODICE)){delete 
 $('bNuova').addEventListener('click',e=>{e.stopPropagation();conferma($('bNuova'),'Sostituisce la scheda di questo browser: tocca di nuovo',()=>nuova(false))});
 $('bDup').addEventListener('click',e=>{e.stopPropagation();conferma($('bDup'),'Sostituisce la scheda di questo browser: tocca di nuovo',()=>nuova(true))});
 $('bNuova2').onclick=()=>{$('mArch').hidden=true;nuova(false)};
-async function archivio(){$('mArch').hidden=false;const L2=$('archList');$('archCode').hidden=!!CODICE;$('bCodEsci').hidden=!CODICE;
-  if(!online()){L2.innerHTML='<p class="hint">L’archivio funziona dal sito dello strumento: antoniodenuccio1995-a11y.github.io/disalento.schedeint/</p>';$('archCode').hidden=true;return}
+async function archivio(){$('mArch').hidden=false;const L2=$('archList');$('archCode').hidden=!!CODICE;$('bCodEsci').hidden=!CODICE;$('bNuova2').hidden=false;
+  if(!online()){offline('Le mie schede');return}
   if(!CODICE){L2.innerHTML='';$('codice').focus();return}
   L2.innerHTML='<p class="hint">Carico le tue schede…</p>';
   try{const r=await rpc('sc_elenco',{p_codice:CODICE})||[];const fmt=d=>new Date(d).toLocaleString('it-IT',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -1500,7 +1500,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('mArch').hidden=tr
 function abilitaModifica(){MODE='edit';document.body.classList.remove('viewer');$('wrap').dataset.tab='ed';$('tEd').setAttribute('aria-selected','true');$('tPv').setAttribute('aria-selected','false');lists();render();status('Questa scheda è nel tuo archivio: puoi modificarla.')}
 
 if(MODE==='view'){document.body.classList.add('viewer');$('wrap').dataset.tab='pv'}
+const SITO='https://antoniodenuccio1995-a11y.github.io/disalento.schedeint/';
+function offline(cosa){$('mArch').hidden=false;$('archCode').hidden=true;$('bCodEsci').hidden=true;$('bNuova2').hidden=true;
+  $('archList').innerHTML=`<p class="hint">Stai usando una copia che non si collega al database (la versione su claude.ai o un file aperto dal computer): “${esc(cosa)}” funziona solo dal sito dello strumento, dove trovi anche tutte le tue schede.</p><a class="btn main" style="color:#fff;background:var(--accent);border-color:var(--accent)" href="${SITO}" target="_blank" rel="noopener">Apri il sito dello strumento</a>`}
 if(!SID&&online()){$('localHint').hidden=false;$('bArch3').onclick=archivio}
+else if(!online()){$('localHint').hidden=false;$('localHint').querySelector('span').innerHTML='<b>Copia non collegata al database.</b> Condividi e “Le mie schede” funzionano dal sito dello strumento.';$('bArch3').textContent='Apri il sito';$('bArch3').onclick=()=>{window.open(SITO,'_blank','noopener')||(location.href=SITO)}}
 lists();render();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
 if(SID){status('Carico la scheda…');caricaCloud(true).then(async()=>{status('');if(MODE==='view'&&CODICE&&!SOLO){try{if(await rpc('sc_verifica',{p_id:SID,p_chiave:null,p_codice:CODICE}))abilitaModifica()}catch(e){}}}).catch(err=>status(err.message||'Non riesco a caricare la scheda.'));
