@@ -124,6 +124,9 @@ input[type=checkbox]{width:20px;height:20px;min-height:0;padding:0;accent-color:
 .cols{display:grid;grid-template-columns:1fr;gap:6px}
 .colr{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);margin:0}
 .colr input{width:46px;min-height:38px;padding:2px;flex:none}
+.rg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:6px;align-items:center;margin-top:6px}
+.rg input[type=text],.rg input:not([type]){min-height:40px;font-size:15px}
+.rgh{margin:12px 0 2px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
 .chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink);line-height:1.3}
 .slot .pick{position:absolute;inset:0;opacity:0;cursor:pointer;min-height:0;border:0;background:transparent}
 
@@ -176,7 +179,8 @@ body.viewer .page.over{box-shadow:0 1px 3px rgba(0,0,0,.12),0 8px 28px rgba(0,0,
 .ph .brand{display:flex;flex-direction:column;gap:3px}
 .ph .bn{font:400 25px/1 var(--serif);color:var(--p-title,var(--p-ink));letter-spacing:-.005em}
 .ph .bs{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p-mute)}
-.ph img.logo{max-height:46px;max-width:220px;width:auto;height:auto;display:block}
+.pf img.flogo{height:16px;width:auto;vertical-align:-4px;margin-right:7px}
+.ph img.logo{max-height:58px;max-width:240px;width:auto;height:auto;display:block}
 .ph .r{text-align:right;font-size:10px;color:var(--p-mute);line-height:1.45}
 .ph .r .lb{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--p-terra)}
 .ph .r .nm{font:500 14px/1.3 var(--serif);color:var(--p-ink)}
@@ -415,6 +419,8 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       <p class="hint">Tocca un riquadro per scegliere un’immagine, trascinala qui sopra oppure incollala (Ctrl+V). Le immagini vengono ridotte in automatico.</p>
       <div id="slots"></div>
       <label class="chk" style="margin-top:12px"><input type="checkbox" data-o="galGrande"> Galleria con foto grandi (adatta a una pagina dedicata)</label>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" data-o="logoSito"> Usa il logo DiSalento del sito in testata (se non carichi un altro logo qui sopra)</label>
+      <label class="chk" style="margin-top:6px"><input type="checkbox" data-o="logoSoc"> Logo Riquality nel piè di pagina</label>
       <label class="f" for="fotoPos">Inquadratura della copertina</label>
       <select id="fotoPos" data-k="fotoPos"><option value="50% 20%">Parte alta</option><option value="50% 50%">Centro</option><option value="50% 80%">Parte bassa</option></select>
       <label class="f" for="fotoCap">Didascalia della copertina (facoltativa)</label><input id="fotoCap" data-k="fotoCap" placeholder="Es. Render del progetto">
@@ -423,7 +429,8 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
     </div></details>
 
     <details class="sec"><summary>Dati in evidenza</summary><div class="in">
-      <p class="hint">Superficie coperta e totale si aggiungono da sole quando inserisci i m² nella composizione del prezzo.</p>
+      <p class="hint">Scrivi qui solo i dati che non escono dai conti. Superficie coperta e totale si calcolano dai m² del “Prezzo di rivendita”: se le scrivi anche a mano, vale quella scritta a mano e non compare due volte.</p>
+      <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-o="autoSup"> Aggiungi in automatico superficie coperta e totale</label>
       <div id="lDati"></div><button class="add" data-add="dati" type="button">+ Aggiungi un dato</button>
     </div></details>
 
@@ -468,6 +475,10 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optInvNota" data-o="invNota"> Mostra la nota sotto il rendimento dell’investitore (capitale che torna per primo e pareggio)</label>
     </div></details>
 
+    <details class="sec"><summary>Righe dei conti e del riquadro investitore</summary><div class="in">
+      <p class="hint">Spegni le righe che non vuoi e cambia le scritte. Se lasci un campo vuoto resta la scritta originale (quella in grigio). Nelle scritte puoi usare {quota} per la quota % e {mesi} per la durata.</p>
+      <div id="lRighe"></div>
+    </div></details>
     <details class="sec"><summary>Perché questa operazione</summary><div class="in">
       <div id="lWhy"></div><button class="add" data-add="perche" type="button">+ Aggiungi un punto</button>
     </div></details>
@@ -585,7 +596,7 @@ const ESEMPIO={societa:'Riquality',brand:'DiSalento',brandSub:'Case tipiche e di
   stress:{lavori:20,mesi:18},mediaZona:0,fonteZona:'',gap:20,
   verifiche:[{l:'Titolo edilizio (permesso o SCIA)',s:'da fare'},{l:'Conformità urbanistica e catastale',s:'da fare'},{l:'Provenienza e ipoteche',s:'da fare'},{l:'Vincoli paesaggistici',s:'da fare'},{l:'Preventivo dei lavori firmato',s:'da fare'},{l:'Bozza di contratto',s:'da fare'}],documenti:'',
   colori:{terra:'#A0583F',terraDk:'#8E4A34',sage:'#5B6B55',clay:'#CDB49B',grey:'#ABA59D',sand:'#F5F0EA',ink:'#2B2724',title:'#2B2724',mute:'#6A625A'},font:{titoli:'Noto Serif',testo:'Inter'},cmpTitolo:'Prezzi richiesti a Ruggiano',
-  opt:{annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false},layout:LAYOUT3,layoutVer:3};
+  lab:{},off:{},opt:{annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false,autoSup:true,logoSito:true,logoSoc:true},layout:LAYOUT3,layoutVer:3};
 /* testi dell’esempio precedente: se trovati invariati vengono aggiornati ai nuovi */
 const OLD_TXT={sottotitolo:'Proposta di acquisto, lavori e rivendita',claim:'Proposta di investimento · Ruggiano di Salve',
   descr:'Compriamo la casa, demoliamo e ricostruiamo le parti da rifare e la rimettiamo in vendita con il progetto pronto. Le finiture le sceglie chi la compra.',
@@ -624,7 +635,7 @@ function normalize(o){
     for(const k in map)if(o.show[k]===false)s.layout.find(b=>b.id===map[k]).on=false;
     s.opt={annuo:o.show.annuo!==false}}
   delete s.show;
-  s.opt=Object.assign({annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false},s.opt||{});if(!['salvia','terracotta','sabbia','misto'].includes(s.opt.capPal))s.opt.capPal='salvia';
+  s.opt=Object.assign({annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false,autoSup:true,logoSito:true,logoSoc:true},s.opt||{});if(!['salvia','terracotta','sabbia','misto'].includes(s.opt.capPal))s.opt.capPal='salvia';
   s.stress=Object.assign({lavori:20,mesi:18},s.stress||{});
   if(typeof s.destinatario!=='string')s.destinatario='';
   s.contatti=Object.assign({nome:'',ruolo:'',tel:'',email:''},s.contatti||{});
@@ -635,6 +646,8 @@ function normalize(o){
   for(const d of LAYOUT)if(!lay.some(b=>b.id===d.id)){const ci=lay.findIndex(b=>b.id==='composizione');if(d.id==='comparabili'&&ci>=0)lay.splice(ci+1,0,{...clone(d),p:lay[ci].p});else lay.push(clone(d))}
   const HEX=/^#[0-9a-f]{6}$/i,dc=ESEMPIO.colori,uc=s.colori||{};s.colori={};for(const k in dc)s.colori[k]=HEX.test(uc[k]||'')?uc[k]:dc[k];
   if(typeof s.cmpTitolo!=='string')s.cmpTitolo=ESEMPIO.cmpTitolo;
+  {const ok=new Set(['opTitolo','opRivendita','opCapitale','opCosti','opUtile','opRend','opDurata','opPareggio','invTitolo','invRiceve','invInveste','invGuadagno','invGuadagnoNota','invRend']),l0=s.lab||{},o0=s.off||{};s.lab={};s.off={};
+   for(const k in l0)if(ok.has(k)&&typeof l0[k]==='string')s.lab[k]=l0[k].slice(0,120);for(const k in o0)if(ok.has(k)&&o0[k]===true)s.off[k]=true}
   const FN=['Noto Serif','Playfair Display','Cormorant Garamond','Lora','Libre Baskerville','DM Serif Display','Inter','Lato','Montserrat','Source Sans 3','Nunito Sans','Open Sans'],uf=s.font||{};
   s.font={titoli:FN.includes(uf.titoli)?uf.titoli:'Noto Serif',testo:FN.includes(uf.testo)?uf.testo:'Inter'};
   if(o.layoutVer!==3){lay=clone(LAYOUT3);s.opt.galGrande=true;s.layoutVer=3}
@@ -1097,20 +1110,21 @@ function loadFont(n){if(fontLoaded.has(n)||!FONTS[n])return;fontLoaded.add(n);co
 const R={
   foto(){return S.foto?`<div class="cover" style="background-image:url('${imgURL(S.foto)}');background-position:${esc(S.fotoPos)}"></div>${S.fotoCap?`<div class="cap">${esc(S.fotoCap)}</div>`:''}`:{ph:`<div class="cover phbox" data-pick="cover">Tocca qui o trascina la foto di copertina.<br>Senza foto, nel PDF questo spazio resta vuoto.</div>`}},
   hero(){return`<div class="hero">${S.claim?`<div class="eyebrow">${esc(S.claim)}</div>`:''}<h2 class="t1">${esc(S.titolo)}</h2>${S.sottotitolo?`<div class="t2">${esc(S.sottotitolo)}</div>`:''}${S.descr?`<p class="lead">${esc(S.descr)}</p>`:''}</div>`},
-  dati(c){const d=[...(c.mqCop?[{l:'Superficie coperta',v:mq(c.mqCop)}]:[]),...(c.mqTot>c.mqCop?[{l:'Superficie totale',v:mq(c.mqTot)}]:[]),...S.dati.filter(x=>x.l||x.v)].slice(0,8);
+  dati(c){const d=datiEvidenza(c).slice(0,8);
     return d.length?`<dl class="dati" style="--n:${Math.min(4,d.length)}">${d.map(x=>`<div><dt>${esc(x.l)}</dt><dd>${esc(x.v)}</dd></div>`).join('')}</dl>`:''},
-  operazione(c){return`<div class="opbox"><div class="k plain">${esc(L.opTitolo)}</div>
-    <div class="ln top"><span>${esc(L.opRivendita)}</span><b>${eur(c.prezzo)}</b></div>
-    <div class="ln"><span>${esc(L.opCapitale)}</span><span class="m">${eur(-c.cap)}</span></div>
-    <div class="ln"><span>${esc(L.opCosti)}</span><span class="m">${eur(-c.cv)}</span></div>
-    <div class="ln res"><span>${esc(L.opUtile)}</span><b class="${c.utile<0?'neg':''}">${eur(c.utile)}</b></div>
-    <div class="ln sm"><span>${esc(L.opRend)}</span><b class="${c.utile<0?'neg':''}">${pct(c.rend)}</b></div>
-    <div class="ln sm"><span>${esc(L.opDurata)}</span><b>${fmtIn(c.mesi)} mesi</b></div>
-    <div class="ln sm"><span>${esc(L.opPareggio)}</span><b>${c.pareggio?eur(c.pareggio):'—'}</b></div></div>`},
-  investitore(c,v){const neg=c.utile<0;return`<div class="invbox"><div class="k plain">${esc(L.invTitolo)}</div>
-    <div><div class="lbl">${esc(L.invRiceve)}</div><div class="big">${eur(c.rientro)}</div></div>
-    <div class="pair"><div><b>${eur(c.cap)}</b><span>${esc(L.invInveste)}</span></div><div><b class="${neg?'neg':''}">${neg?'':'+ '}${eur(c.qi)}</b><span>${esc(L.invGuadagno)}<br>${fill(L.invGuadagnoNota,v)}</span></div></div>
-    <div class="rr"><b class="${neg?'neg':''}">${pct(c.rendInv)}</b><span>${fill(L.invRend,v)}${S.opt.annuo&&c.mesi!==12?` · ${fill(L.invAnnuo,v)}`:''}</span></div>
+  operazione(c){const r=[
+    ['opRivendita',`<div class="ln top"><span>${esc(T('opRivendita'))}</span><b>${eur(c.prezzo)}</b></div>`],
+    ['opCapitale',`<div class="ln"><span>${esc(T('opCapitale'))}</span><span class="m">${eur(-c.cap)}</span></div>`],
+    ['opCosti',`<div class="ln"><span>${esc(T('opCosti'))}</span><span class="m">${eur(-c.cv)}</span></div>`],
+    ['opUtile',`<div class="ln res"><span>${esc(T('opUtile'))}</span><b class="${c.utile<0?'neg':''}">${eur(c.utile)}</b></div>`],
+    ['opRend',`<div class="ln sm"><span>${esc(T('opRend'))}</span><b class="${c.utile<0?'neg':''}">${pct(c.rend)}</b></div>`],
+    ['opDurata',`<div class="ln sm"><span>${esc(T('opDurata'))}</span><b>${fmtIn(c.mesi)} mesi</b></div>`],
+    ['opPareggio',`<div class="ln sm"><span>${esc(T('opPareggio'))}</span><b>${c.pareggio?eur(c.pareggio):'—'}</b></div>`]].filter(x=>ON(x[0]));
+    return`<div class="opbox"><div class="k plain">${esc(T('opTitolo'))}</div>${r.map(x=>x[1]).join('')}</div>`},
+  investitore(c,v){const neg=c.utile<0,a=ON('invInveste'),g=ON('invGuadagno');return`<div class="invbox"><div class="k plain">${esc(T('invTitolo'))}</div>
+    ${ON('invRiceve')?`<div><div class="lbl">${esc(T('invRiceve'))}</div><div class="big">${eur(c.rientro)}</div></div>`:''}
+    ${a||g?`<div class="pair">${a?`<div><b>${eur(c.cap)}</b><span>${esc(T('invInveste'))}</span></div>`:''}${g?`<div><b class="${neg?'neg':''}">${neg?'':'+ '}${eur(c.qi)}</b><span>${esc(T('invGuadagno'))}${ON('invGuadagnoNota')?`<br>${fill(T('invGuadagnoNota'),v)}`:''}</span></div>`:''}</div>`:''}
+    ${ON('invRend')?`<div class="rr"><b class="${neg?'neg':''}">${pct(c.rendInv)}</b><span>${fill(T('invRend'),v)}${S.opt.annuo&&c.mesi!==12?` · ${fill(L.invAnnuo,v)}`:''}</span></div>`:''}
     ${neg?`<p class="fine">${fill(L.perditaMsg,v)}</p>`:S.opt.invNota?`<p class="fine">${esc(L.invPrimo)} ${fill(L.invPareggio,v)}</p>`:''}</div>`},
   perche(){const p=S.perche.filter(x=>x.l||x.v);return p.length?`<div class="k">${esc(L.percheTitolo)}</div><div class="why">${p.map(w=>`<div><b>${esc(w.l)}</b><span>${esc(w.v)}</span></div>`).join('')}</div>`:''},
   nota(){return S.nota?`<p class="note">${esc(S.nota)}</p>`:''},
@@ -1161,8 +1175,17 @@ function cmpHTML(c,w){
   ${k.map(x=>{const pm=num(x.prezzo)/num(x.mq);return`<tr><td>${esc(x.l)}<small>${eur(num(x.prezzo))} · ${mq(num(x.mq))}</small></td><td class="v">${eur(pm)}/m²${bar(pm)}</td></tr>`}).join('')}
   ${ours?`<tr class="ours"><td>${esc(L.cmpNostra)}<small>${eur(c.base)} · ${mq(c.mqCop)} ${esc(L.cmpCoperti)}</small></td><td class="v">${eur(ours)}/m²${bar(ours)}</td></tr>`:''}
   </table><p class="note" style="margin-top:5px">${esc(L.cmpNota)}</p></div>`}
+/* loghi aziendali pubblicati accanto allo strumento: si usano solo se i file esistono */
+const LOGHI={disalento:'',riquality:''};
+for(const [k,f] of [['disalento','logo-disalento.png'],['riquality','logo-riquality.png']]){if(location.protocol==='file:'||IN_CLAUDE)break;
+  const im=new Image();im.onload=()=>{LOGHI[k]=f;later()};im.src=f}
+const RIGHE=[['Conti dell’operazione',[['opTitolo',0],['opRivendita',1],['opCapitale',1],['opCosti',1],['opUtile',1],['opRend',1],['opDurata',1],['opPareggio',1]]],
+  ['Riquadro dell’investitore',[['invTitolo',0],['invRiceve',1],['invInveste',1],['invGuadagno',1],['invGuadagnoNota',1],['invRend',1]]]];
+const T=k=>(S.lab&&typeof S.lab[k]==='string'&&S.lab[k].trim())?S.lab[k]:L[k];
+const ON=k=>!(S.off&&S.off[k]);
 function head(p){const r=p===1?L.p1Etichetta:p===2?L.p2Etichetta:L.p3Etichetta;
-  return`<div class="ph"><div class="brand">${S.logo?`<img class="logo" src="${imgURL(S.logo)}" alt="${esc(S.brand)}">`:`<div class="bn">${esc(S.brand)}</div>`}${S.brandSub?`<div class="bs">${esc(S.brandSub)}</div>`:''}</div>
+  const lg=S.logo?imgURL(S.logo):(S.opt.logoSito&&LOGHI.disalento?LOGHI.disalento:'');
+  return`<div class="ph"><div class="brand">${lg?`<img class="logo" src="${lg}" alt="${esc(S.brand)}">`:`<div class="bn">${esc(S.brand)}</div>`}${S.brandSub&&!lg?`<div class="bs">${esc(S.brandSub)}</div>`:''}</div>
   <div class="r"><div class="lb">${esc(r)}</div><div class="nm">${esc(S.nome)}</div>${S.destinatario?`<div>${esc(L.destLabel)} <span class="to">${esc(S.destinatario)}</span></div>`:''}${esc(S.data)}</div></div>`}
 
 /* ---------- disegno ---------- */
@@ -1177,7 +1200,7 @@ function render(){
     const FULL=['grafA','grafB'];const items=S.layout.filter(b=>b.on&&b.p===p).map(b=>({b,h:R[b.id](c,v,FULL.includes(b.id)?'full':b.w)})).filter(x=>x.h);
     for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&(x.b.id==='grafC'||x.b.id==='comparabili'))x.h=R[x.b.id](c,v,x.w)}
     const body=items.map(({b,h,w})=>{const ph=typeof h==='object',mt=[0,12,26,44][b.sp||0];return`<section class="blk ${w}${ph?' ph-only':''}" data-b="${b.id}"${mt?` style="margin-top:${mt}px"`:''}>${ph?h.ph:h}</section>`}).join('');
-    return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(L.bozza)}</span></div>`:''}</div>`}).join('');
+    return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${S.opt.logoSoc&&LOGHI.riquality?`<img class="flogo" src="${LOGHI.riquality}" alt="${esc(S.societa)}">`:''}${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(L.bozza)}</span></div>`:''}</div>`}).join('');
   const over=[];
   $('stage').querySelectorAll('.page').forEach((pg,i)=>{const b=pg.querySelector('.pg-body');if(b.scrollHeight>b.clientHeight+2){over.push(i+1);pg.classList.add('over');
     pg.insertAdjacentHTML('beforeend','<div class="over-flag ph-only">Questa pagina è troppo piena e il fondo non si vede. Sposta un modulo nell’altra pagina o accorcia un testo.</div>')}});
@@ -1196,7 +1219,29 @@ function summary(c,over,n){
   $('pgInfo').innerHTML=over.length?`<span class="bad">Pagina ${over.join(' e ')} troppo piena</span>`:`${n} ${n===1?'pagina':'pagine'} A4 · tutto entra`;
 }
 
+/* dati in evidenza: quelli scritti a mano vincono su quelli automatici con lo stesso nome; i valori vuoti non compaiono */
+const chiave=t=>String(t||'').toLowerCase().replace(/[^a-zà-ù0-9]+/g,' ').trim();
+const unita=v=>String(v??'').replace(/(\d)\s*(m2|mq|m\^2)(?![a-z])/gi,'$1 m²');
+function datiEvidenza(c){const man=S.dati.filter(x=>String(x.v??'').trim()).map(x=>({l:x.l,v:unita(x.v)}));const nomi=new Set(man.map(x=>chiave(x.l)));
+  const auto=S.opt.autoSup?[...(c.mqCop?[{l:'Superficie coperta',v:mq(c.mqCop)}]:[]),...(c.mqTot>c.mqCop?[{l:'Superficie totale',v:mq(c.mqTot)}]:[])].filter(x=>!nomi.has(chiave(x.l))):[];
+  const visti=new Set(),out=[];for(const x of [...auto,...man]){const k=chiave(x.l)+'|'+chiave(x.v);if(visti.has(k))continue;visti.add(k);out.push(x)}return out}
+/* controllo dei dati: doppioni, valori vuoti, m² che non tornano con la composizione */
+function controlloDati(c){const X=[],cnt={};
+  for(const x of S.dati){const k=chiave(x.l);if(!k)continue;cnt[k]=(cnt[k]||0)+1}
+  for(const k in cnt)if(cnt[k]>1)X.push(`In “Dati in evidenza” la voce “${S.dati.find(x=>chiave(x.l)===k).l}” compare ${cnt[k]} volte: tienine una.`);
+  for(const x of S.dati)if(x.l&&!String(x.v??'').trim())X.push(`Il dato “${x.l}” è vuoto: compilalo o toglilo (nella scheda non compare).`);
+  const numMq=v=>{const m=/([\d.,]+)\s*(m2|mq|m²|m\^2|metri)/i.exec(String(v||''));return m?num(m[1]):null};
+  for(const x of S.dati){const n=numMq(x.v);if(n==null)continue;const k=chiave(x.l);
+    if(/superficie coperta/.test(k)&&c.mqCop&&Math.abs(n-c.mqCop)>0.5){X.push(`“${x.l}” dice ${fmtIn(n)} m², ma dalla composizione del prezzo la superficie coperta è ${fmtIn(c.mqCop)} m².`);continue}
+    if(/superficie (totale|commerciale)/.test(k)&&c.mqTot&&Math.abs(n-c.mqTot)>0.5){X.push(`“${x.l}” dice ${fmtIn(n)} m², ma la composizione del prezzo somma ${fmtIn(c.mqTot)} m².`);continue}
+    const w=k.split(' ')[0];const r=w&&w.length>3?S.composizione.find(z=>chiave(z.l).split(' ').includes(w)&&num(z.mq)>0):null;
+    if(r&&Math.abs(num(r.mq)-n)>0.5)X.push(`“${x.l}” dice ${fmtIn(n)} m², ma in “Prezzo di rivendita” la voce “${r.l}” ha ${fmtIn(num(r.mq))} m².`)}
+  for(const z of S.composizione){if(num(z.mq)>0&&num(z.corpo)>0)X.push(`In “${z.l}” ci sono sia i m² sia un importo a corpo (${eur(num(z.corpo))}): conta solo m² × €/m² (${eur(num(z.mq)*num(z.pm))}). Togli l’uno o l’altro.`);
+    if(/abitaz|immobile|casa|appartament|villa|locale/i.test(z.l)&&num(z.mq)>0&&!z.cop)X.push(`La voce “${z.l}” non è segnata come “coperta”: la superficie coperta risulta ${fmtIn(c.mqCop)} m². Spunta “coperta” se è la casa.`)}
+  const pc={};for(const x of S.perche){const k=chiave(x.l);if(k)pc[k]=(pc[k]||0)+1}for(const k in pc)if(pc[k]>1)X.push(`In “Perché questa operazione” un punto è ripetuto ${pc[k]} volte.`);
+  return X}
 function checks(c,over){const X=[];
+  X.push(...controlloDati(c));
   for(const p of over)X.push(`La pagina ${p} è troppo piena: in “Moduli e impaginazione” sposta un modulo, spegni un grafico o scegli l’impaginazione a 3 pagine.`);
   if(!S.costiVendita.some(r=>r.on))X.push('Nessun costo di vendita incluso: la provvigione d’agenzia (circa 3% + IVA) riduce l’utile.');
   if(!S.foto)X.push('Manca la foto di copertina: è la prima cosa che l’investitore guarda.');
@@ -1265,6 +1310,7 @@ function lists(){
   for(const el of document.querySelectorAll('[data-o]'))el.checked=!!S.opt[el.dataset.o];
   $('fTit').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.titoli===n?'selected':''}>${n}</option>`).join('');
   $('fTxt').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.testo===n?'selected':''}>${n}</option>`).join('');
+  $('lRighe').innerHTML=RIGHE.map(([t,rs])=>`<h4 class="rgh">${esc(t)}</h4>`+rs.map(([k,tog])=>`<div class="rg">${tog?`<input type="checkbox" aria-label="Mostra" data-off="${k}" ${ON(k)?'checked':''}>`:'<span></span>'}<input aria-label="Scritta" data-lab="${k}" value="${esc((S.lab&&S.lab[k])||'')}" placeholder="${esc(L[k])}"></div>`).join('')).join('');
   $('gapV').textContent=S.gap+' px';
   $('lCol').innerHTML=Object.keys(COLORI_NOMI).map(k=>`<label class="colr"><input type="color" data-k="colori.${k}" value="${esc(S.colori[k])}"><span>${esc(COLORI_NOMI[k])}</span></label>`).join('');
   slots();mods();
@@ -1275,10 +1321,12 @@ const setPath=(p,val)=>{const a=p.split('.');S[a[0]][+a[1]][a[2]]=val};
 const all=()=>{save();lists();render()};
 
 $('ed').addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.lab){const v=t.value;if(v.trim())S.lab[t.dataset.lab]=v;else delete S.lab[t.dataset.lab];save();later();return}
   if(t.dataset.k&&t.tagName!=='SELECT'){setK(t.dataset.k,t.dataset.n?num(t.value):t.value);if(t.id==='gap')$('gapV').textContent=S.gap+' px'}
   else if(t.dataset.l&&t.tagName!=='SELECT')setPath(t.dataset.l,t.dataset.n?num(t.value):t.value);
   else return;save();later();});
 $('ed').addEventListener('change',e=>{const t=e.target;
+  if(t.dataset.off){if(t.checked)delete S.off[t.dataset.off];else S.off[t.dataset.off]=true;save();render();return}
   if(t.dataset.c)setPath(t.dataset.c,t.checked);
   else if(t.dataset.o)S.opt[t.dataset.o]=t.checked;
   else if(t.tagName==='SELECT'&&t.dataset.k){setK(t.dataset.k,t.value);if(t.id==='capPal'){all();return}}
