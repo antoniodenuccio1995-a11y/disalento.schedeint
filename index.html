@@ -280,7 +280,7 @@ table.sc tr.pe td{color:var(--p-mute);font-style:italic}
 .page,.page *{font-variant-numeric:normal!important}
 .phbox{border:1.5px dashed #CDBBAA;border-radius:3px;background:#FAF7F3;display:flex;align-items:center;justify-content:center;color:#857A6F;font-size:12px;line-height:1.5;cursor:pointer;text-align:center;padding:12px}
 .phbox:hover{border-color:var(--p-terra);color:var(--p-terra)}
-.cmpw{margin-top:14px}
+.cmpw{margin-top:0}
 .gr svg{display:block;max-width:none}
 .ver{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 24px;font-size:10.8px}
 .ver>div{display:flex;gap:8px;align-items:baseline}
@@ -441,7 +441,7 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
     </div></details>
 
     <details class="sec"><summary>Comparabili di zona</summary><div class="in">
-      <p class="hint">Case simili in vendita o vendute nella zona. Compaiono sotto la stima del prezzo, con il prezzo al m² a confronto con il nostro.</p>
+      <p class="hint">Case simili in vendita o vendute nella zona, con il prezzo al m² a confronto con il nostro. Il blocco si accende, si sposta e si mette a mezza riga in “Moduli e impaginazione”.</p>
       <div id="lCmp"></div><button class="add" data-add="comparabili" type="button">+ Aggiungi un comparabile</button>
       <label class="f" for="cmpTitolo">Titolo del blocco</label><input id="cmpTitolo" data-k="cmpTitolo">
       <label class="chk" style="margin-top:12px"><input type="checkbox" data-o="cmpGrafico"> Mostra i comparabili come grafico (prezzo al m²)</label>
@@ -465,6 +465,7 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       </div>
       <p class="hint" style="margin-top:6px">Le due prove compaiono sotto gli scenari. Metti 0 per nasconderle.</p>
       <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optAnnuo" data-o="annuo"> Mostra il rendimento su base annua (se la durata non è 12 mesi)</label>
+      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optInvNota" data-o="invNota"> Mostra la nota sotto il rendimento dell’investitore (capitale che torna per primo e pareggio)</label>
     </div></details>
 
     <details class="sec"><summary>Perché questa operazione</summary><div class="in">
@@ -547,18 +548,18 @@ const L={
 
 /* ---------- moduli ---------- */
 const BLOCKS={foto:'Foto di copertina',hero:'Titolo e descrizione',dati:'Dati in evidenza',operazione:'I conti dell’operazione',investitore:'Riquadro dell’investitore',
-  perche:'Perché questa operazione',nota:'Nota sotto i conti',intro:'Titolo e introduzione (pag. 2)',capitale:'Dove va il capitale',composizione:'Come stimiamo il prezzo',
+  perche:'Perché questa operazione',nota:'Nota sotto i conti',intro:'Titolo e introduzione (pag. 2)',capitale:'Dove va il capitale',composizione:'Come stimiamo il prezzo',comparabili:'Comparabili di zona',
   grafA:'Grafico: dal prezzo all’utile',ripartizione:'Come si divide il ricavato',grafB:'Grafico: quanto riceve l’investitore',scenari:'Tabella scenari e prove',grafC:'Grafico: dove va il capitale',galleria:'Altre foto e planimetria',verifiche:'Verifiche e documenti',contatti:'Contatti',nota2:'Nota finale'};
 const LAYOUT=[{id:'foto',p:1,w:'full',on:true},{id:'hero',p:1,w:'half',on:true},{id:'dati',p:1,w:'half',on:true},{id:'operazione',p:1,w:'half',on:true},
   {id:'investitore',p:1,w:'half',on:true},{id:'perche',p:1,w:'full',on:true},{id:'nota',p:1,w:'full',on:true},
-  {id:'intro',p:2,w:'full',on:true},{id:'capitale',p:2,w:'half',on:true},{id:'composizione',p:2,w:'half',on:true},{id:'grafA',p:2,w:'full',on:false},{id:'ripartizione',p:2,w:'full',on:true},
+  {id:'intro',p:2,w:'full',on:true},{id:'capitale',p:2,w:'half',on:true},{id:'composizione',p:2,w:'half',on:true},{id:'comparabili',p:2,w:'full',on:true},{id:'grafA',p:2,w:'full',on:false},{id:'ripartizione',p:2,w:'full',on:true},
   {id:'grafB',p:2,w:'full',on:true},{id:'scenari',p:2,w:'full',on:false},{id:'grafC',p:2,w:'half',on:false},{id:'galleria',p:2,w:'full',on:true},{id:'contatti',p:2,w:'full',on:false},{id:'verifiche',p:2,w:'full',on:false},{id:'nota2',p:2,w:'full',on:true}];
 
 const LAYOUT3=[{id:'foto',p:1,w:'full',on:true},{id:'hero',p:1,w:'half',on:true},{id:'dati',p:1,w:'half',on:true},{id:'operazione',p:1,w:'half',on:true},
   {id:'investitore',p:1,w:'half',on:true},{id:'perche',p:1,w:'full',on:true},{id:'nota',p:1,w:'full',on:true},
-  {id:'intro',p:2,w:'full',on:true},{id:'capitale',p:2,w:'half',on:true},{id:'composizione',p:2,w:'half',on:true},{id:'grafA',p:2,w:'full',on:true},
+  {id:'intro',p:2,w:'full',on:true},{id:'capitale',p:2,w:'half',on:true},{id:'composizione',p:2,w:'half',on:true},{id:'comparabili',p:2,w:'full',on:true},
   {id:'ripartizione',p:2,w:'full',on:true},{id:'grafB',p:2,w:'full',on:true},
-  {id:'galleria',p:3,w:'full',on:true},{id:'scenari',p:3,w:'full',on:true},{id:'grafC',p:3,w:'half',on:false},{id:'verifiche',p:3,w:'half',on:false},
+  {id:'galleria',p:3,w:'full',on:true},{id:'grafA',p:3,w:'full',on:false},{id:'scenari',p:3,w:'full',on:true},{id:'grafC',p:3,w:'half',on:false},{id:'verifiche',p:3,w:'half',on:false},
   {id:'contatti',p:3,w:'full',on:false},{id:'nota2',p:3,w:'full',on:true}];
 
 /* ---------- esempio ---------- */
@@ -584,7 +585,7 @@ const ESEMPIO={societa:'Riquality',brand:'DiSalento',brandSub:'Case tipiche e di
   stress:{lavori:20,mesi:18},mediaZona:0,fonteZona:'',gap:20,
   verifiche:[{l:'Titolo edilizio (permesso o SCIA)',s:'da fare'},{l:'Conformità urbanistica e catastale',s:'da fare'},{l:'Provenienza e ipoteche',s:'da fare'},{l:'Vincoli paesaggistici',s:'da fare'},{l:'Preventivo dei lavori firmato',s:'da fare'},{l:'Bozza di contratto',s:'da fare'}],documenti:'',
   colori:{terra:'#A0583F',terraDk:'#8E4A34',sage:'#5B6B55',clay:'#CDB49B',grey:'#ABA59D',sand:'#F5F0EA',ink:'#2B2724',title:'#2B2724',mute:'#6A625A'},font:{titoli:'Noto Serif',testo:'Inter'},cmpTitolo:'Prezzi richiesti a Ruggiano',
-  opt:{annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true},layout:LAYOUT3,layoutVer:3};
+  opt:{annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false},layout:LAYOUT3,layoutVer:3};
 /* testi dell’esempio precedente: se trovati invariati vengono aggiornati ai nuovi */
 const OLD_TXT={sottotitolo:'Proposta di acquisto, lavori e rivendita',claim:'Proposta di investimento · Ruggiano di Salve',
   descr:'Compriamo la casa, demoliamo e ricostruiamo le parti da rifare e la rimettiamo in vendita con il progetto pronto. Le finiture le sceglie chi la compra.',
@@ -623,7 +624,7 @@ function normalize(o){
     for(const k in map)if(o.show[k]===false)s.layout.find(b=>b.id===map[k]).on=false;
     s.opt={annuo:o.show.annuo!==false}}
   delete s.show;
-  s.opt=Object.assign({annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true},s.opt||{});if(!['salvia','terracotta','sabbia','misto'].includes(s.opt.capPal))s.opt.capPal='salvia';
+  s.opt=Object.assign({annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false},s.opt||{});if(!['salvia','terracotta','sabbia','misto'].includes(s.opt.capPal))s.opt.capPal='salvia';
   s.stress=Object.assign({lavori:20,mesi:18},s.stress||{});
   if(typeof s.destinatario!=='string')s.destinatario='';
   s.contatti=Object.assign({nome:'',ruolo:'',tel:'',email:''},s.contatti||{});
@@ -631,7 +632,7 @@ function normalize(o){
   if(!['50% 20%','50% 50%','50% 80%'].includes(s.fotoPos))s.fotoPos='50% 50%';
   s.foto=okImg(s.foto);s.logo=okImg(s.logo);
   let lay=Array.isArray(s.layout)?s.layout.filter(b=>b&&BLOCKS[b.id]):[];
-  for(const d of LAYOUT)if(!lay.some(b=>b.id===d.id))lay.push(clone(d));
+  for(const d of LAYOUT)if(!lay.some(b=>b.id===d.id)){const ci=lay.findIndex(b=>b.id==='composizione');if(d.id==='comparabili'&&ci>=0)lay.splice(ci+1,0,{...clone(d),p:lay[ci].p});else lay.push(clone(d))}
   const HEX=/^#[0-9a-f]{6}$/i,dc=ESEMPIO.colori,uc=s.colori||{};s.colori={};for(const k in dc)s.colori[k]=HEX.test(uc[k]||'')?uc[k]:dc[k];
   if(typeof s.cmpTitolo!=='string')s.cmpTitolo=ESEMPIO.cmpTitolo;
   const FN=['Noto Serif','Playfair Display','Cormorant Garamond','Lora','Libre Baskerville','DM Serif Display','Inter','Lato','Montserrat','Source Sans 3','Nunito Sans','Open Sans'],uf=s.font||{};
@@ -1110,15 +1111,15 @@ const R={
     <div><div class="lbl">${esc(L.invRiceve)}</div><div class="big">${eur(c.rientro)}</div></div>
     <div class="pair"><div><b>${eur(c.cap)}</b><span>${esc(L.invInveste)}</span></div><div><b class="${neg?'neg':''}">${neg?'':'+ '}${eur(c.qi)}</b><span>${esc(L.invGuadagno)}<br>${fill(L.invGuadagnoNota,v)}</span></div></div>
     <div class="rr"><b class="${neg?'neg':''}">${pct(c.rendInv)}</b><span>${fill(L.invRend,v)}${S.opt.annuo&&c.mesi!==12?` · ${fill(L.invAnnuo,v)}`:''}</span></div>
-    <p class="fine">${neg?fill(L.perditaMsg,v):esc(L.invPrimo)+' '+fill(L.invPareggio,v)}</p></div>`},
+    ${neg?`<p class="fine">${fill(L.perditaMsg,v)}</p>`:S.opt.invNota?`<p class="fine">${esc(L.invPrimo)} ${fill(L.invPareggio,v)}</p>`:''}</div>`},
   perche(){const p=S.perche.filter(x=>x.l||x.v);return p.length?`<div class="k">${esc(L.percheTitolo)}</div><div class="why">${p.map(w=>`<div><b>${esc(w.l)}</b><span>${esc(w.v)}</span></div>`).join('')}</div>`:''},
   nota(){return S.nota?`<p class="note">${esc(S.nota)}</p>`:''},
   intro(){return`<div class="intro"><h2 class="t-p2">${esc(L.p2Titolo)}</h2>${S.intro2?`<p class="lead">${esc(S.intro2)}</p>`:''}</div>`},
   capitale(c,v){const coll=S.capitale.filter(r=>r.coll).reduce((a,r)=>a+num(r.v),0);
     return`<div class="k">${esc(L.capTitolo)}</div><table class="tb cap">${S.capitale.map(r=>`<tr><td>${esc(r.l)}${r.chi||r.coll?`<small>${[r.chi?esc(r.chi):'',r.coll?fill(L.capCollTag,v):''].filter(Boolean).join(' · ')}</small>`:''}</td><td class="v">${eur(num(r.v))}</td></tr>`).join('')}<tr class="tot"><td>${esc(L.capTotale)}</td><td class="v">${eur(c.cap)}</td></tr>${coll?`<tr class="coll"><td>${fill(L.capColl,v)}</td><td class="v">${eur(coll)}</td></tr>`:''}</table>`},
-  composizione(c){const m=c.mqTot>0,one=!m&&S.composizione.length<2;if(one)return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g"><tr class="tot"><td>${esc(L.compTotale)} (${esc(L.compCorpo)})</td><td class="v">${eur(c.prezzo)}</td></tr></table>${cmpHTML(c)}`;return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g">${m?`<tr><th>${esc(L.compVoce)}</th><th class="v">${esc(L.compSup)}</th><th class="v">${esc(L.compPm)}</th><th class="v">${esc(L.compVal)}</th></tr>`:''}
+  composizione(c){const m=c.mqTot>0,one=!m&&S.composizione.length<2;if(one)return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g"><tr class="tot"><td>${esc(L.compTotale)} (${esc(L.compCorpo)})</td><td class="v">${eur(c.prezzo)}</td></tr></table>`;return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g">${m?`<tr><th>${esc(L.compVoce)}</th><th class="v">${esc(L.compSup)}</th><th class="v">${esc(L.compPm)}</th><th class="v">${esc(L.compVal)}</th></tr>`:''}
     ${S.composizione.map(r=>`<tr><td>${esc(r.l)}</td>${m?`<td class="v">${num(r.mq)>0?mq(num(r.mq)):esc(L.compCorpo)}</td><td class="v">${num(r.mq)>0?eur(num(r.pm)):''}</td>`:''}<td class="v">${eur(c.val(r))}</td></tr>`).join('')}
-    <tr class="tot"><td>${esc(L.compTotale)}</td>${m?`<td class="v">${mq(c.mqTot)}</td><td></td>`:''}<td class="v">${eur(c.prezzo)}</td></tr></table>${cmpHTML(c)}`},
+    <tr class="tot"><td>${esc(L.compTotale)}</td>${m?`<td class="v">${mq(c.mqTot)}</td><td></td>`:''}<td class="v">${eur(c.prezzo)}</td></tr></table>`},
   ripartizione(c,v){const neg=c.utile<0,tot=Math.max(c.prezzo,c.cap+c.cv)||1;
     const segs=neg?[[c.cv,COL.costi,esc(L.barCosti)],[Math.max(0,c.prezzo-c.cv),COL.cap,esc(L.barCapitale)]]:[[c.cv,COL.costi,esc(L.barCosti)],[c.cap,COL.cap,esc(L.barCapitale)],[c.qi,COL.inv,esc(L.barInv)],[c.qr,COL.riq,fill(L.barRiq,v)]];
     const cvRows=S.costiVendita.filter(r=>r.on);
@@ -1137,6 +1138,7 @@ const R={
   grafA(c){return`<div class="k">${esc(L.grafATit)}</div><div class="gr">${GR.cascata(Object.assign(gdati(c),{larghezza:W_FULL}))}</div>`},
   grafB(c){return`<div class="k">${esc(L.grafBTit)}</div><div class="gr">${GR.prezzi(Object.assign(gdati(c),{larghezza:W_FULL}))}</div>`},
   grafC(c,v,w){const d=gdati(c);return d.voci.length?`<div class="k">${esc(L.capTitolo)}</div><div class="gr">${GR.capitale(Object.assign(d,{larghezza:w==='half'?W_HALF:W_FULL}))}</div>`:''},
+  comparabili(c,v,w){return cmpHTML(c,w)},
   galleria(){const g=S.galleria.filter(x=>x.src);if(!g.length)return{ph:`<div class="k">${esc(L.galTitolo)}</div><div class="gal" style="--n:3">${S.galleria.map((x,i)=>`<div><div class="gi phbox" data-pick="gal" data-i="${i}">+ ${esc(x.cap||'Foto')}</div></div>`).join('')}</div>`};const big=S.opt.galGrande;return g.length?`<div class="k">${esc(L.galTitolo)}</div><div class="gal${big?' big':''}" style="--n:${g.length===1?2:g.length}">${g.map((x,i)=>`<div class="${big&&i===0&&g.length%2?'wide':''}"><div class="gi${x.fit?' fit':''}" style="background-image:url('${imgURL(x.src)}')"></div>${x.cap?`<div class="cap">${esc(x.cap)}</div>`:''}</div>`).join('')}</div>`:''},
   contatti(){const k=S.contatti;if(!k.nome&&!k.tel&&!k.email)return'';return`<div class="k">${esc(L.contTitolo)}</div><div class="cont">${k.nome?`<div class="who">${esc(k.nome)}${k.ruolo?`<small>${esc(k.ruolo)}</small>`:''}</div>`:''}${k.tel?`<div>Tel. ${esc(k.tel)}</div>`:''}${k.email?`<div>${esc(k.email)}</div>`:''}</div>`},
   verifiche(){const it=S.verifiche.filter(x=>x.l);if(!it.length&&!S.documenti)return'';const lab={fatto:'Fatto','in corso':'In corso','da fare':'Da fare'};
@@ -1150,9 +1152,9 @@ function stressRows(c,v){let h='',first=' sep';
   const ms=num(S.stress.mesi);
   if(ms>0&&ms!==c.mesi){const k=calc(c.base,0,ms);h+=`<tr class="stx${first}"><td>${fill(L.scenRitardo,{mesiR:fmtIn(ms)})}</td><td>${eur(c.base)}</td><td>${eur(k.utile)}</td><td>${eur(k.qi)}</td><td>${pct(k.rendInv)} <small>(${fill(L.scenRitardoRend,{annuoR:pct(k.annuo)})})</small></td></tr>`}
   return h}
-function cmpHTML(c){
+function cmpHTML(c,w){
   const k=S.comparabili.filter(x=>num(x.mq)>0&&num(x.prezzo)>0);if(!k.length)return'';
-  if(S.opt.cmpGrafico)return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||L.cmpTitolo)}</div><div class="gr">${GR.mq(Object.assign(gdati(c),{larghezza:W_HALF}))}</div></div>`;
+  if(S.opt.cmpGrafico)return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||L.cmpTitolo)}</div><div class="gr">${GR.mq(Object.assign(gdati(c),{larghezza:w==='half'?W_HALF:W_FULL}))}</div></div>`;
   const ours=c.mqCop>0?c.base/c.mqCop:0,mx=Math.max(ours,...k.map(x=>num(x.prezzo)/num(x.mq)));
   const bar=v=>`<span class="mb"><i style="width:${Math.round(v/mx*100)}%"></i></span>`;
   return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||L.cmpTitolo)}</div><table class="tb cmp">
@@ -1173,7 +1175,7 @@ function render(){
   const foot=[k.nome?esc(k.nome):'',k.tel?`<span data-href="tel:${esc(tel)}">${esc(k.tel)}</span>`:'',k.email?`<span${mail?` data-href="mailto:${esc(mail)}"`:''}>${esc(k.email)}</span>`:''].filter(Boolean).join(' · ');
   $('stage').innerHTML=pages.map((p,i)=>{
     const FULL=['grafA','grafB'];const items=S.layout.filter(b=>b.on&&b.p===p).map(b=>({b,h:R[b.id](c,v,FULL.includes(b.id)?'full':b.w)})).filter(x=>x.h);
-    for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&x.b.id==='grafC')x.h=R.grafC(c,v,x.w)}
+    for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&(x.b.id==='grafC'||x.b.id==='comparabili'))x.h=R[x.b.id](c,v,x.w)}
     const body=items.map(({b,h,w})=>{const ph=typeof h==='object',mt=[0,12,26,44][b.sp||0];return`<section class="blk ${w}${ph?' ph-only':''}" data-b="${b.id}"${mt?` style="margin-top:${mt}px"`:''}>${ph?h.ph:h}</section>`}).join('');
     return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(L.bozza)}</span></div>`:''}</div>`}).join('');
   const over=[];
