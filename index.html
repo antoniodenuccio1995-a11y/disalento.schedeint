@@ -508,7 +508,7 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       <button class="add" id="bColDef" type="button">Torna a colori e caratteri DiSalento</button>
     </div></details>
     <details class="sec" id="secMod"><summary>Moduli e impaginazione</summary><div class="in">
-      <p class="hint">Accendi o spegni i moduli e cambia l’ordine con le frecce: dal primo modulo di una pagina ↑ lo porta in fondo alla pagina precedente, dall’ultimo ↓ in cima alla successiva. “Spazio sopra” lo stacca da quello prima. Due moduli a mezza riga di seguito stanno affiancati.</p>
+      <p class="hint">Puoi aggiungere pagine (fino a 12) con “+ Aggiungi una pagina”. Accendi o spegni i moduli e cambia l’ordine con le frecce: dal primo modulo di una pagina ↑ lo porta in fondo alla pagina precedente, dall’ultimo ↓ in cima alla successiva. “Spazio sopra” lo stacca da quello prima. Due moduli a mezza riga di seguito stanno affiancati.</p>
       <label class="f" for="gap">Spazio tra i moduli: <b id="gapV"></b></label><input type="range" id="gap" data-k="gap" data-n="1" min="10" max="40" step="2" style="padding:0;min-height:32px;accent-color:var(--accent)">
       <div id="mods"></div>
       <div class="two"><button class="add" id="bLayout3" type="button">3 pagine (consigliata)</button><button class="add" id="bLayout" type="button">2 pagine (più fitta)</button></div>
@@ -596,7 +596,7 @@ const ESEMPIO={societa:'Riquality',brand:'DiSalento',brandSub:'Case tipiche e di
   stress:{lavori:20,mesi:18},mediaZona:0,fonteZona:'',gap:20,
   verifiche:[{l:'Titolo edilizio (permesso o SCIA)',s:'da fare'},{l:'Conformità urbanistica e catastale',s:'da fare'},{l:'Provenienza e ipoteche',s:'da fare'},{l:'Vincoli paesaggistici',s:'da fare'},{l:'Preventivo dei lavori firmato',s:'da fare'},{l:'Bozza di contratto',s:'da fare'}],documenti:'',
   colori:{terra:'#A0583F',terraDk:'#8E4A34',sage:'#5B6B55',clay:'#CDB49B',grey:'#ABA59D',sand:'#F5F0EA',ink:'#2B2724',title:'#2B2724',mute:'#6A625A'},font:{titoli:'Noto Serif',testo:'Inter'},cmpTitolo:'Prezzi richiesti a Ruggiano',
-  lab:{},off:{},opt:{annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false,autoSup:true,logoSito:true,logoSoc:true},layout:LAYOUT3,layoutVer:3};
+  pagine:3,lab:{},off:{},opt:{annuo:true,bozza:false,cmpGrafico:true,capPal:'salvia',galGrande:true,invNota:false,autoSup:true,logoSito:true,logoSoc:true},layout:LAYOUT3,layoutVer:3};
 /* testi dell’esempio precedente: se trovati invariati vengono aggiornati ai nuovi */
 const OLD_TXT={sottotitolo:'Proposta di acquisto, lavori e rivendita',claim:'Proposta di investimento · Ruggiano di Salve',
   descr:'Compriamo la casa, demoliamo e ricostruiamo le parti da rifare e la rimettiamo in vendita con il progetto pronto. Le finiture le sceglie chi la compra.',
@@ -651,8 +651,9 @@ function normalize(o){
   const FN=['Noto Serif','Playfair Display','Cormorant Garamond','Lora','Libre Baskerville','DM Serif Display','Inter','Lato','Montserrat','Source Sans 3','Nunito Sans','Open Sans'],uf=s.font||{};
   s.font={titoli:FN.includes(uf.titoli)?uf.titoli:'Noto Serif',testo:FN.includes(uf.testo)?uf.testo:'Inter'};
   if(o.layoutVer!==3){lay=clone(LAYOUT3);s.opt.galGrande=true;s.layoutVer=3}
-  s.layout=lay.map(b=>({id:b.id,p:Math.min(3,Math.max(1,+b.p||1)),w:b.w==='half'?'half':'full',on:b.on!==false,sp:Math.min(3,Math.max(0,+b.sp||0))}));
+  s.layout=lay.map(b=>({id:b.id,p:Math.min(12,Math.max(1,+b.p||1)),w:b.w==='half'?'half':'full',on:b.on!==false,sp:Math.min(3,Math.max(0,+b.sp||0))}));
   s.gap=Math.min(40,Math.max(10,+s.gap||20));
+  s.pagine=Math.min(12,Math.max(1,+s.pagine||0,...s.layout.map(b=>b.p)));
   if(Array.isArray(s.costiVendita))s.costiVendita.forEach(r=>{if(/^Provvigione agenzia( di vendita)? \(3% \+ IVA\)$/.test(r.l||''))r.l='Provvigione agenzia, IVA inclusa'});
   for(const k of ['dati','capitale','composizione','costiVendita','perche','comparabili','verifiche'])if(!Array.isArray(s[k]))s[k]=clone(ESEMPIO[k]);
   return s;
@@ -1192,17 +1193,20 @@ function head(p){const r=p===1?L.p1Etichetta:p===2?L.p2Etichetta:L.p3Etichetta;
 let lastC;
 function render(){
   const c=calc(),v=vars(c);lastC=c;const pv=applyColors()+`;--gap:${S.gap}px`;
-  const used=[...new Set(S.layout.filter(b=>b.on).map(b=>b.p))].sort();
-  const pages=used.length?used:[1];
+  const FULL=['grafA','grafB'];
+  const pagine=[];for(let p=1;p<=S.pagine;p++){const items=S.layout.filter(b=>b.on&&b.p===p).map(b=>({b,h:R[b.id](c,v,FULL.includes(b.id)?'full':b.w)})).filter(x=>x.h);
+    pagine.push({p,items,vuota:!items.some(x=>typeof x.h!=='object')})}
+  if(pagine.every(x=>x.vuota))pagine[0].vuota=false;
+  const reali=pagine.filter(x=>!x.vuota),pages=reali;
   const k=S.contatti,tel=String(k.tel||'').replace(/[^\d+]/g,''),mail=/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(k.email||'')?k.email:'';
   const foot=[k.nome?esc(k.nome):'',k.tel?`<span data-href="tel:${esc(tel)}">${esc(k.tel)}</span>`:'',k.email?`<span${mail?` data-href="mailto:${esc(mail)}"`:''}>${esc(k.email)}</span>`:''].filter(Boolean).join(' · ');
-  $('stage').innerHTML=pages.map((p,i)=>{
-    const FULL=['grafA','grafB'];const items=S.layout.filter(b=>b.on&&b.p===p).map(b=>({b,h:R[b.id](c,v,FULL.includes(b.id)?'full':b.w)})).filter(x=>x.h);
+  $('stage').innerHTML=pagine.map(({p,items,vuota})=>{const i=Math.max(0,reali.findIndex(x=>x.p===p));
     for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&(x.b.id==='grafC'||x.b.id==='comparabili'))x.h=R[x.b.id](c,v,x.w)}
     const body=items.map(({b,h,w})=>{const ph=typeof h==='object',mt=[0,12,26,44][b.sp||0];return`<section class="blk ${w}${ph?' ph-only':''}" data-b="${b.id}"${mt?` style="margin-top:${mt}px"`:''}>${ph?h.ph:h}</section>`}).join('');
+    if(vuota)return`<div class="page vuota ph-only" data-p="${p}" style="${pv}">${head(p)}<div class="pg-body">${body}<section class="blk full"><div class="phbox" style="height:260px">Pagina ${p} vuota: spostaci un modulo da “Moduli e impaginazione”. Le pagine vuote non vanno nel PDF.</div></section></div></div>`;
     return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${S.opt.logoSoc&&LOGHI.riquality?`<img class="flogo" src="${LOGHI.riquality}" alt="${esc(S.societa)}">`:''}${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(L.bozza)}</span></div>`:''}</div>`}).join('');
   const over=[];
-  $('stage').querySelectorAll('.page').forEach((pg,i)=>{const b=pg.querySelector('.pg-body');if(b.scrollHeight>b.clientHeight+2){over.push(i+1);pg.classList.add('over');
+  $('stage').querySelectorAll('.page').forEach((pg,i)=>{const b=pg.querySelector('.pg-body');if(b.scrollHeight>b.clientHeight+2){over.push(+pg.dataset.p);pg.classList.add('over');
     pg.insertAdjacentHTML('beforeend','<div class="over-flag ph-only">Questa pagina è troppo piena e il fondo non si vede. Sposta un modulo nell’altra pagina o accorcia un testo.</div>')}});
   fit();checks(c,over);summary(c,over,pages.length);
   for(const el of document.querySelectorAll('[data-cmp]')){const r=S.comparabili[+el.dataset.cmp];if(r)el.value=num(r.mq)>0?fmtIn(Math.round(num(r.prezzo)/num(r.mq))):''}
@@ -1278,9 +1282,9 @@ function slots(){
     slotHTML('logo',0,S.logo,'Logo (sostituisce il nome del marchio)');
 }
 function mods(){
-  const pages=[1,2,3],SP=['Normale','+ poco','+ medio','+ molto'];
+  const pages=Array.from({length:S.pagine},(_,i)=>i+1),SP=['Normale','+ poco','+ medio','+ molto'];
   $('mods').innerHTML=pages.map(p=>{const items=S.layout.map((b,i)=>({...b,i})).filter(b=>b.p===p);
-    return`<h4>Pagina ${p}</h4><ul class="mods">${items.length?items.map((b,k)=>{const first=p===1&&k===0,last=p===3&&k===items.length-1;return`<li class="mod ${b.on?'':'off'}">
+    return`<h4>Pagina ${p}</h4><ul class="mods">${items.length?items.map((b,k)=>{const first=p===1&&k===0,last=p===S.pagine&&k===items.length-1&&S.pagine>=12;return`<li class="mod ${b.on?'':'off'}">
       <div class="r1"><input type="checkbox" id="mod-${b.id}" data-mod-on="${b.i}" ${b.on?'checked':''}>
       <label class="nm" for="mod-${b.id}">${esc(BLOCKS[b.id])}</label>
       <button type="button" data-mod-up="${b.i}" aria-label="Sposta su${k===0?' (pagina precedente)':''}" title="${k===0?'Va in fondo alla pagina precedente':'Sposta su'}" ${first?'disabled':''}>↑</button>
@@ -1288,6 +1292,7 @@ function mods(){
       <div class="r2"><select aria-label="Pagina di ${esc(BLOCKS[b.id])}" data-mod-p="${b.i}">${pages.map(q=>`<option value="${q}" ${q===b.p?'selected':''}>Pagina ${q}</option>`).join('')}</select>
       <select aria-label="Larghezza di ${esc(BLOCKS[b.id])}" data-mod-wsel="${b.i}" ${['grafA','grafB'].includes(b.id)?'disabled':''}><option value="full" ${b.w!=='half'?'selected':''}>Riga intera</option><option value="half" ${b.w==='half'?'selected':''}>Mezza riga</option></select>
       <select aria-label="Spazio sopra ${esc(BLOCKS[b.id])}" data-mod-sp="${b.i}">${SP.map((t,q)=>`<option value="${q}" ${(b.sp||0)===q?'selected':''}>Spazio sopra: ${t}</option>`).join('')}</select></div></li>`}).join(''):'<li class="hint">Pagina vuota: sposta qui un modulo con le frecce o con “Pagina”.</li>'}</ul>`}).join('');
+  $('mods').insertAdjacentHTML('beforeend',`<div class="two" style="margin-top:10px">${S.pagine<12?'<button class="add" type="button" id="bAddPg">+ Aggiungi una pagina</button>':''}${S.pagine>1&&!S.layout.some(b=>b.p===S.pagine)?`<button class="add" type="button" id="bDelPg">Togli la pagina ${S.pagine}</button>`:''}</div>`);
 }
 /* sposta un modulo in un'altra pagina: in cima se va avanti, in fondo se torna indietro */
 function moveToPage(i,np){const b=S.layout.splice(i,1)[0],fw=np>b.p;b.p=np;
@@ -1342,15 +1347,16 @@ $('ed').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)re
   else if(d.costo){const n=COSTI[+d.costo];let v=0;if(/imprevisti/i.test(n))v=Math.round(lavori()*.1);S.capitale.push({l:n.replace(' 10%',''),v})}
   else if(d.add){const a=d.add;S[a].push(a==='costiVendita'?{l:'Nuovo costo',t:'eur',v:0,on:true}:a==='comparabili'?{l:'Casa in zona',mq:0,prezzo:0}:a==='verifiche'?{l:'Nuova verifica',s:'da fare'}:a==='dati'||a==='perche'?{l:'Titolo',v:'Testo'}:{l:'Nuova voce',v:0})}
   else if(d.modUp!=null||d.modDn!=null){const i=+(d.modUp??d.modDn),dir=d.modUp!=null?-1:1,p=S.layout[i].p;let j=i+dir;while(j>=0&&j<S.layout.length&&S.layout[j].p!==p)j+=dir;
-    if(j<0||j>=S.layout.length){const np=p+dir;if(np<1||np>3)return;moveToPage(i,np)}else[S.layout[i],S.layout[j]]=[S.layout[j],S.layout[i]]}
+    if(j<0||j>=S.layout.length){const np=p+dir;if(np<1)return;if(np>S.pagine){if(S.pagine>=12)return;S.pagine=np}moveToPage(i,np)}else[S.layout[i],S.layout[j]]=[S.layout[j],S.layout[i]]}
   else if(d.imgPick){pickTarget={kind:d.imgPick,i:+d.i};$('fImg').value='';$('fImg').click();return}
   else if(d.imgDel){setImg(d.imgDel,+d.i,'');return}
   else return;
   all();});
 $('bColDef').onclick=()=>{S.colori=clone(ESEMPIO.colori);S.font=clone(ESEMPIO.font);all();status('Colori e caratteri DiSalento ripristinati.')};
 $('bColReset').onclick=()=>{S.capitale.forEach(r=>delete r.col);all();status('Colori riportati alla sfumatura.')};
-$('bLayout').onclick=()=>{S.layout=clone(LAYOUT);S.opt.galGrande=false;all();status('Impaginazione a 2 pagine.')};
-$('bLayout3').onclick=()=>{S.layout=clone(LAYOUT3);S.opt.galGrande=true;all();status('Impaginazione a 3 pagine: grafici accesi e foto grandi a pagina 3.')};
+$('mods').addEventListener('click',e=>{if(e.target.id==='bAddPg'){S.pagine=Math.min(12,S.pagine+1);all();status(`Pagina ${S.pagine} aggiunta: spostaci i moduli con le frecce o con “Pagina”.`)}else if(e.target.id==='bDelPg'){S.pagine=Math.max(1,S.pagine-1);all();status('Pagina tolta.')}});
+$('bLayout').onclick=()=>{S.pagine=2;S.layout=clone(LAYOUT);S.opt.galGrande=false;all();status('Impaginazione a 2 pagine.')};
+$('bLayout3').onclick=()=>{S.pagine=3;S.layout=clone(LAYOUT3);S.opt.galGrande=true;all();status('Impaginazione a 3 pagine: grafici accesi e foto grandi a pagina 3.')};
 
 /* ---------- immagini ---------- */
 let pickTarget=null;
