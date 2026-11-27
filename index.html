@@ -138,6 +138,28 @@ input[type=checkbox]{width:20px;height:20px;min-height:0;padding:0;accent-color:
 .mod .r2{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.3fr);gap:6px}
 .mod .r2 select{width:100%;font-size:13px}
 .mod .r2 .fm{grid-column:1/-1}
+.rg.f3{grid-template-columns:26px minmax(0,1fr) 124px}
+.rg select.fr{min-height:40px;font-size:13px;padding:4px 6px;width:100%}
+.tg{border-top:1px solid var(--line);padding:2px 0}
+.tg>summary{cursor:pointer;padding:10px 0;font-size:14px;font-weight:600;list-style-position:inside}
+.tg[open]{padding-bottom:10px}
+.pre{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.pre button{min-height:36px;font-size:13px;padding:0 12px}
+.vhint{margin:-4px 0 10px;font-size:12.5px;color:var(--mute)}
+details.sec.flash{box-shadow:0 0 0 3px var(--accent);transition:box-shadow .3s}
+body.viewer .vhint{display:none}
+body:not(.viewer) #stage .blk{cursor:pointer;border-radius:4px;transition:outline-color .15s}
+body:not(.viewer) #stage .blk:hover{outline:1px dashed rgba(160,88,63,.45);outline-offset:4px}
+#stage .blk.sel{outline:2px solid var(--accent)!important;outline-offset:4px}
+.qp{position:fixed;z-index:30;width:min(380px,calc(100vw - 24px));max-height:min(74vh,620px);overflow:auto;overscroll-behavior:contain;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:0 14px 14px}
+.qp .qh{display:flex;justify-content:space-between;align-items:center;gap:8px;position:sticky;top:0;z-index:1;background:var(--panel);padding:12px 0 8px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.qp .qh b{font:500 18px/1.2 var(--serif)}
+.qp .qh button{min-height:40px;min-width:40px;font-size:20px;padding:0}
+.qp .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.qp .acts button{min-height:40px;font-size:13.5px}
+.qp .f{margin-top:8px}
+.qp select{width:100%}
+@media (max-width:760px){.qp{left:0!important;right:0;top:auto!important;bottom:0;width:100%;max-height:72vh;border-radius:16px 16px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}}
 .vis{display:grid;gap:8px;margin:6px 0 4px}
 .vis .chk{min-height:32px;font-size:14px}
 .mod.off{opacity:.55}
@@ -568,8 +590,8 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       <div id="lScen"></div>
     </div></details>
 
-    <details class="sec"><summary>Righe dei conti e del riquadro investitore</summary><div class="in">
-      <p class="hint">Spegni le righe che non vuoi e cambia le scritte. Se lasci un campo vuoto resta la scritta originale (quella in grigio). Nelle scritte puoi usare {quota} per la quota % e {mesi} per la durata.</p>
+    <details class="sec" id="secTesti"><summary>Testi e righe della scheda</summary><div class="in">
+      <p class="hint">Più comodo: tocca un riquadro nell’anteprima e cambi lì le sue scritte. Qui ci sono tutte, riquadro per riquadro. Se lasci un campo vuoto resta la scritta originale (quella in grigio). Le parole tra graffe, come {quota}, {mesi} o {prezzo}, diventano numeri: lasciale se vuoi che il numero resti.</p>
       <div class="two"><div><label class="f" for="fmtOp">Importi dei conti</label><select id="fmtOp" data-fmt="operazione"></select></div><div><label class="f" for="fmtInv">Importi dell’investitore</label><select id="fmtInv" data-fmt="investitore"></select></div></div>
       <div id="lRighe"></div>
     </div></details>
@@ -613,9 +635,11 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
 
   <main class="view" id="view" aria-label="Anteprima della scheda">
     <div class="vtools"><span id="pgInfo"></span><div class="vr"><div class="vmode" role="group" aria-label="Vista"><button type="button" id="vWeb" aria-pressed="false">Vista web</button><button type="button" id="vA4" aria-pressed="true">Pagine A4</button></div><div class="zm" id="bZoom" role="group" aria-label="Zoom delle pagine"><button type="button" id="zMeno" aria-label="Rimpicciolisci" title="Rimpicciolisci">−</button><button type="button" id="zFit" title="Adatta alla larghezza">100%</button><button type="button" id="zPiu" aria-label="Ingrandisci" title="Ingrandisci">+</button></div></div></div>
+    <p class="vhint" id="vHint">Tocca un riquadro della scheda per cambiarne scritte, importi e cosa mostrare.</p>
     <div class="stagebox" id="stagebox"><div class="stage" id="stage"></div></div>
     <div class="web" id="web" hidden></div>
   </main>
+  <div class="qp" id="qp" hidden role="dialog" aria-label="Modifica il riquadro"></div>
 </div>
 
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -651,7 +675,9 @@ const L={
   cmpTitolo:'Prezzi richiesti a Ruggiano',grafATit:'Dal prezzo all’utile',grafBTit:'Quanto riceve l’investitore se il prezzo cambia',cmpNostra:'La nostra stima',cmpCoperti:'coperti',cmpNota:'Prezzi chiesti negli annunci, non prezzi di vendita.',
   scenLavori:'Lavori più cari del {lav}%',scenRitardo:'Vendita dopo {mesiR} mesi',scenRitardoRend:'{annuoR} su base annua',
   destLabel:'Riservata a',bozza:'BOZZA',
-  perditaMsg:'Al prezzo previsto la vendita non copre il capitale: la perdita stimata è di {perdita}.'
+  perditaMsg:'Al prezzo previsto la vendita non copre il capitale: la perdita stimata è di {perdita}.',
+  gbTPar:'Pareggio',gbTSotto:'sotto, l’investitore perde',gbTPru:'Prudente',gbTPrev:'Previsto',gbTFav:'Favorevole',gbTRiceve:'riceve',
+  gbTFascia:'fascia ±{pct}% sul prezzo previsto',gbTLeg1:'Guadagno dell’investitore',gbTLeg2:'Perdita, tutta a suo carico',gbTAsse:'Prezzo di vendita della casa →'
 };
 
 /* ---------- moduli ---------- */
@@ -752,10 +778,11 @@ function normalize(o){
   for(const d of LAYOUT)if(!lay.some(b=>b.id===d.id)){const ci=lay.findIndex(b=>b.id==='composizione');if(d.id==='comparabili'&&ci>=0)lay.splice(ci+1,0,{...clone(d),p:lay[ci].p});else lay.push(clone(d))}
   const HEX=/^#[0-9a-f]{6}$/i,dc=ESEMPIO.colori,uc=s.colori||{};s.colori={};for(const k in dc)s.colori[k]=HEX.test(uc[k]||'')?uc[k]:dc[k];
   if(typeof s.cmpTitolo!=='string')s.cmpTitolo=ESEMPIO.cmpTitolo;
-  {const f0=s.fmt&&typeof s.fmt==='object'?s.fmt:{};s.fmt={};for(const k in f0)if((k==='_'||BLOCKS[k])&&['eur','tondo','k'].includes(f0[k]))s.fmt[k]=f0[k]}
+  {const f0=s.fmt&&typeof s.fmt==='object'?s.fmt:{};s.fmt={};const FR=['opRivendita','opCapitale','opCosti','opUtile','opPareggio','invRiceve','invInveste','invGuadagno'];for(const k in f0)if((k==='_'||BLOCKS[k]||FR.includes(k))&&['eur','tondo','k'].includes(f0[k]))s.fmt[k]=f0[k]}
   {const ok=new Set(['opTitolo','opRivendita','opCapitale','opCosti','opUtile','opRend','opDurata','opPareggio','invTitolo','invRiceve','invInveste','invGuadagno','invGuadagnoNota','invRend',
-    'gbPar','gbPru','gbPrev','gbFav','gbRiceve','gbPct','gbFascia','gbLeg','scPru','scPrev','scFav','scPar','scLav','scRit','scPrezzo','scUtile','scInv','scRend','scNota']),l0=s.lab||{},o0=s.off||{};s.lab={};s.off={};
-   for(const k in l0)if(ok.has(k)&&typeof l0[k]==='string')s.lab[k]=l0[k].slice(0,120);for(const k in o0)if(ok.has(k)&&o0[k]===true)s.off[k]=true}
+    'gbPar','gbPru','gbPrev','gbFav','gbRiceve','gbPct','gbFascia','gbLeg','scPru','scPrev','scFav','scPar','scLav','scRit','scPrezzo','scUtile','scInv','scRend','scNota',
+    'percheTitolo','capTitolo','compTitolo','ripTitolo','grafATit','grafBTit','scenTitolo','galTitolo','verTitolo','contTitolo']),l0=s.lab||{},o0=s.off||{};s.lab={};s.off={};
+   for(const k in l0)if(k in L&&typeof l0[k]==='string')s.lab[k]=l0[k].slice(0,240);for(const k in o0)if(ok.has(k)&&o0[k]===true)s.off[k]=true}
   const FN=['Noto Serif','Playfair Display','Cormorant Garamond','Lora','Libre Baskerville','DM Serif Display','Inter','Lato','Montserrat','Source Sans 3','Nunito Sans','Open Sans'],uf=s.font||{};
   s.font={titoli:FN.includes(uf.titoli)?uf.titoli:'Noto Serif',testo:FN.includes(uf.testo)?uf.testo:'Inter'};
   if(o.layoutVer!==3){lay=clone(LAYOUT3);s.opt.galGrande=true;s.layoutVer=3}
@@ -922,6 +949,7 @@ function apriSvg(w, h, etichetta) {
  * ===================================================================== */
 function graficoPrezzi(d) {
   var vis = d.vis || {}, V = function (k) { return vis[k] !== false; };
+  var tx = d.txt || {}, X = function (k, def) { return tx[k] != null && tx[k] !== '' ? tx[k] : def; };
   var anySc = V('pru') || V('prev') || V('fav'), anyLab = anySc || V('par');
   var tH = !anyLab ? 0 : (anySc && V('riceve')) ? 47 : 34;
   var W = d.larghezza || 682, bg = d.sfondo || '#FFFFFF';
@@ -935,7 +963,7 @@ function graficoPrezzi(d) {
   // scala verticale "pulita" a passi di 10.000 (o 20.000 se serve)
   var lo = Math.min(0, g(pMin)), hi = Math.max(0, g(pMax));
   var nice = function (span, max) { var c = [1000, 2000, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 250000, 500000]; for (var i = 0; i < c.length; i++) if (span / c[i] <= max) return c[i]; return 1000000; };
-  var step = nice(hi - lo, 5);
+  var step = nice(hi - lo, 4);
   var yMin = Math.floor(lo / step) * step, yMax = Math.ceil(hi / step) * step;
   if (yMin === lo && lo < 0) yMin -= step;
   var sx = function (p) { return ml + (p - pMin) / (pMax - pMin) * (W - ml - mr); };
@@ -947,7 +975,7 @@ function graficoPrezzi(d) {
   var pPru = d.prezzo * (1 - d.scarto), pFav = d.prezzo * (1 + d.scarto);
   if (V('fascia')) o.push('<rect x="' + r1(sx(pPru)) + '" y="' + yT + '" width="' + r1(sx(pFav) - sx(pPru)) + '" height="' + (yB - yT) + '" fill="' + COL.sand + '"/>');
   // didascalia della fascia, sotto lo zero dove la curva non passa
-  if (V('fascia') && sy(0) + 14 < yB) o.push(testo(sx(d.prezzo), yB - 6, esc('fascia ±' + pct(d.scarto, 0) + ' sul prezzo previsto'),
+  if (V('fascia') && sy(0) + 14 < yB) o.push(testo(sx(d.prezzo), yB - 6, esc(X('fascia', 'fascia ±' + pct(d.scarto, 0) + ' sul prezzo previsto')),
     { size: 9.5, fill: COL.mute, anchor: 'middle' }));
   // griglia orizzontale e asse y
   for (var v = yMin; v <= yMax + 1; v += step) {
@@ -979,10 +1007,10 @@ function graficoPrezzi(d) {
 
   // etichette in alto, una per punto notevole, centrate sul proprio prezzo
   var et = [
-    { p: pareggio, tipo: 'par', v: 'par', righe: ['Pareggio · ' + euro(pareggio), 'sotto, l’investitore perde'] },
-    { p: pPru, tipo: 'sc', v: 'pru', nome: 'Prudente' },
-    { p: d.prezzo, tipo: 'sc', v: 'prev', nome: 'Previsto', forte: true },
-    { p: pFav, tipo: 'sc', v: 'fav', nome: 'Favorevole' }
+    { p: pareggio, tipo: 'par', v: 'par', righe: [X('par', 'Pareggio') + ' · ' + euro(pareggio), X('sotto', 'sotto, l’investitore perde')] },
+    { p: pPru, tipo: 'sc', v: 'pru', nome: X('pru', 'Prudente') },
+    { p: d.prezzo, tipo: 'sc', v: 'prev', nome: X('prev', 'Previsto'), forte: true },
+    { p: pFav, tipo: 'sc', v: 'fav', nome: X('fav', 'Favorevole') }
   ].filter(function (e) { return V(e.v) && e.p >= pMin && e.p <= pMax; })
    .sort(function (a, b) { return a.p - b.p; });
   et.forEach(function (e) {
@@ -990,10 +1018,10 @@ function graficoPrezzi(d) {
     if (e.tipo === 'sc') {
       e.r1 = e.nome + ' · ' + euro(e.p);
       e.r2a = euro(c.investitore, true); e.r2b = V('pct') ? pct(c.rendimento, 1, true) : '';
-      e.r3 = V('riceve') ? 'riceve ' + euro(c.riceve) : '';
+      e.r3 = V('riceve') ? X('riceve', 'riceve') + ' ' + euro(c.riceve) : '';
       e.w = Math.max(largTesto(e.r1, 10), largTesto(e.r2a, e.forte ? 15 : 13.5, 0.6) + (e.r2b ? 6 + largTesto(e.r2b, 10) : 0), largTesto(e.r3, 10));
     } else {
-      e.w = Math.max(largTesto(e.righe[0], 10), largTesto(e.righe[1], 10));
+      e.w = Math.max(largTesto(e.righe[0], 10), largTesto(e.righe[1] || '', 10));
     }
     e.cx = sx(e.p);
   });
@@ -1032,11 +1060,11 @@ function graficoPrezzi(d) {
   var yK = H - 6;
   if (V('leg')) {
   o.push(linea(ml, yK - 3.5, ml + 16, yK - 3.5, COL.terra, 2));
-  o.push(testo(ml + 22, yK, 'Guadagno dell’investitore', { size: 10, fill: COL.mute }));
-  var xk2 = ml + 22 + largTesto('Guadagno dell’investitore', 10) + 18;
+  o.push(testo(ml + 22, yK, esc(X('leg1', 'Guadagno dell’investitore')), { size: 10, fill: COL.mute }));
+  var xk2 = ml + 22 + largTesto(X('leg1', 'Guadagno dell’investitore'), 10) + 18;
   o.push(linea(xk2, yK - 3.5, xk2 + 16, yK - 3.5, COL.bad, 2));
-  o.push(testo(xk2 + 22, yK, 'Perdita, tutta a suo carico', { size: 10, fill: COL.mute }));
-  o.push(testo(W - mr, yK, 'Prezzo di vendita della casa →', { size: 10, fill: COL.mute, anchor: 'end' }));
+  o.push(testo(xk2 + 22, yK, esc(X('leg2', 'Perdita, tutta a suo carico')), { size: 10, fill: COL.mute }));
+  o.push(testo(W - mr, yK, esc(X('asse', 'Prezzo di vendita della casa →')), { size: 10, fill: COL.mute, anchor: 'end' }));
   }
 
   return apriSvg(W, H, 'Guadagno o perdita dell’investitore per prezzi di vendita da ' + euro(pMin) + ' a ' + euro(pMax) +
@@ -1206,6 +1234,7 @@ const gdati=c=>({calc,prezzo:c.base,soc:S.societa||'Riquality',scarto:num(S.scen
 const W_FULL=682,W_HALF=329;
 const GB_VIS=[['gbPar','par'],['gbPru','pru'],['gbPrev','prev'],['gbFav','fav'],['gbRiceve','riceve'],['gbPct','pct'],['gbFascia','fascia'],['gbLeg','leg']];
 const visB=()=>Object.fromEntries(GB_VIS.map(([k,g])=>[g,ON(k)]));
+const txtB=()=>({par:T('gbTPar'),sotto:T('gbTSotto'),pru:T('gbTPru'),prev:T('gbTPrev'),fav:T('gbTFav'),riceve:T('gbTRiceve'),fascia:T('gbTFascia').replace(/\{pct\}/g,fmtIn(num(S.scenPct))),leg1:T('gbTLeg1'),leg2:T('gbTLeg2'),asse:T('gbTAsse')});
 
 /* ---------- moduli della scheda ---------- */
 const COL={costi:'#ABA59D',cap:'#5B6B55',inv:'#A0583F',riq:'#CDB49B'};
@@ -1230,72 +1259,72 @@ const R={
   dati(c){const d=datiEvidenza(c).slice(0,8);
     return d.length?`<dl class="dati" style="--n:${Math.min(4,d.length)}">${d.map(x=>`<div><dt>${esc(x.l)}</dt><dd>${esc(x.v)}</dd></div>`).join('')}</dl>`:''},
   operazione(c){const r=[
-    ['opRivendita',`<div class="ln top"><span>${esc(T('opRivendita'))}</span><b>${eur(c.prezzo)}</b></div>`],
-    ['opCapitale',`<div class="ln"><span>${esc(T('opCapitale'))}</span><span class="m">${eur(-c.cap)}</span></div>`],
-    ['opCosti',`<div class="ln"><span>${esc(T('opCosti'))}</span><span class="m">${eur(-c.cv)}</span></div>`],
-    ['opUtile',`<div class="ln res"><span>${esc(T('opUtile'))}</span><b class="${c.utile<0?'neg':''}">${eur(c.utile)}</b></div>`],
+    ['opRivendita',`<div class="ln top"><span>${esc(T('opRivendita'))}</span><b>${eurR('opRivendita',c.prezzo)}</b></div>`],
+    ['opCapitale',`<div class="ln"><span>${esc(T('opCapitale'))}</span><span class="m">${eurR('opCapitale',-c.cap)}</span></div>`],
+    ['opCosti',`<div class="ln"><span>${esc(T('opCosti'))}</span><span class="m">${eurR('opCosti',-c.cv)}</span></div>`],
+    ['opUtile',`<div class="ln res"><span>${esc(T('opUtile'))}</span><b class="${c.utile<0?'neg':''}">${eurR('opUtile',c.utile)}</b></div>`],
     ['opRend',`<div class="ln sm"><span>${esc(T('opRend'))}</span><b class="${c.utile<0?'neg':''}">${pct(c.rend)}</b></div>`],
     ['opDurata',`<div class="ln sm"><span>${esc(T('opDurata'))}</span><b>${fmtIn(c.mesi)} mesi</b></div>`],
-    ['opPareggio',`<div class="ln sm"><span>${esc(T('opPareggio'))}</span><b>${c.pareggio?eur(c.pareggio):'—'}</b></div>`]].filter(x=>ON(x[0]));
+    ['opPareggio',`<div class="ln sm"><span>${esc(T('opPareggio'))}</span><b>${c.pareggio?eurR('opPareggio',c.pareggio):'—'}</b></div>`]].filter(x=>ON(x[0]));
     return`<div class="opbox"><div class="k plain">${esc(T('opTitolo'))}</div>${r.map(x=>x[1]).join('')}</div>`},
   investitore(c,v){const neg=c.utile<0,a=ON('invInveste'),g=ON('invGuadagno');return`<div class="invbox"><div class="k plain">${esc(T('invTitolo'))}</div>
-    ${ON('invRiceve')?`<div><div class="lbl">${esc(T('invRiceve'))}</div><div class="big">${eur(c.rientro)}</div></div>`:''}
-    ${a||g?`<div class="pair">${a?`<div><b>${eur(c.cap)}</b><span>${esc(T('invInveste'))}</span></div>`:''}${g?`<div><b class="${neg?'neg':''}">${neg?'':'+ '}${eur(c.qi)}</b><span>${esc(T('invGuadagno'))}${ON('invGuadagnoNota')?`<br>${fill(T('invGuadagnoNota'),v)}`:''}</span></div>`:''}</div>`:''}
-    ${ON('invRend')?`<div class="rr"><b class="${neg?'neg':''}">${pct(c.rendInv)}</b><span>${fill(T('invRend'),v)}${S.opt.annuo&&c.mesi!==12?` · ${fill(L.invAnnuo,v)}`:''}</span></div>`:''}
-    ${neg?`<p class="fine">${fill(L.perditaMsg,v)}</p>`:S.opt.invNota?`<p class="fine">${esc(L.invPrimo)} ${fill(L.invPareggio,v)}</p>`:''}</div>`},
-  perche(){const p=S.perche.filter(x=>x.l||x.v);return p.length?`<div class="k">${esc(L.percheTitolo)}</div><div class="why">${p.map(w=>`<div><b>${esc(w.l)}</b><span>${esc(w.v)}</span></div>`).join('')}</div>`:''},
+    ${ON('invRiceve')?`<div><div class="lbl">${esc(T('invRiceve'))}</div><div class="big">${eurR('invRiceve',c.rientro)}</div></div>`:''}
+    ${a||g?`<div class="pair">${a?`<div><b>${eurR('invInveste',c.cap)}</b><span>${esc(T('invInveste'))}</span></div>`:''}${g?`<div><b class="${neg?'neg':''}">${neg?'':'+ '}${eurR('invGuadagno',c.qi)}</b><span>${esc(T('invGuadagno'))}${ON('invGuadagnoNota')?`<br>${fill(T('invGuadagnoNota'),v)}`:''}</span></div>`:''}</div>`:''}
+    ${ON('invRend')?`<div class="rr"><b class="${neg?'neg':''}">${pct(c.rendInv)}</b><span>${fill(T('invRend'),v)}${S.opt.annuo&&c.mesi!==12?` · ${fill(T('invAnnuo'),v)}`:''}</span></div>`:''}
+    ${neg?`<p class="fine">${fill(T('perditaMsg'),v)}</p>`:S.opt.invNota?`<p class="fine">${esc(T('invPrimo'))} ${fill(T('invPareggio'),v)}</p>`:''}</div>`},
+  perche(){const p=S.perche.filter(x=>x.l||x.v);return p.length?`${K('percheTitolo')}<div class="why">${p.map(w=>`<div><b>${esc(w.l)}</b><span>${esc(w.v)}</span></div>`).join('')}</div>`:''},
   nota(){return S.nota?`<p class="note">${esc(S.nota)}</p>`:''},
-  intro(){return`<div class="intro"><h2 class="t-p2">${esc(L.p2Titolo)}</h2>${S.intro2?`<p class="lead">${esc(S.intro2)}</p>`:''}</div>`},
+  intro(){return`<div class="intro"><h2 class="t-p2">${esc(T('p2Titolo'))}</h2>${S.intro2?`<p class="lead">${esc(S.intro2)}</p>`:''}</div>`},
   capitale(c,v){const coll=S.capitale.filter(r=>r.coll).reduce((a,r)=>a+num(r.v),0);
-    return`<div class="k">${esc(L.capTitolo)}</div><table class="tb cap">${S.capitale.map(r=>`<tr><td>${esc(r.l)}${r.chi||r.coll?`<small>${[r.chi?esc(r.chi):'',r.coll?fill(L.capCollTag,v):''].filter(Boolean).join(' · ')}</small>`:''}</td><td class="v">${eur(num(r.v))}</td></tr>`).join('')}<tr class="tot"><td>${esc(L.capTotale)}</td><td class="v">${eur(c.cap)}</td></tr>${coll?`<tr class="coll"><td>${fill(L.capColl,v)}</td><td class="v">${eur(coll)}</td></tr>`:''}</table>`},
-  composizione(c){const m=c.mqTot>0,one=!m&&S.composizione.length<2;if(one)return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g"><tr class="tot"><td>${esc(L.compTotale)} (${esc(L.compCorpo)})</td><td class="v">${eur(c.prezzo)}</td></tr></table>`;return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g">${m?`<tr><th>${esc(L.compVoce)}</th><th class="v">${esc(L.compSup)}</th><th class="v">${esc(L.compPm)}</th><th class="v">${esc(L.compVal)}</th></tr>`:''}
-    ${S.composizione.map(r=>`<tr><td>${esc(r.l)}</td>${m?`<td class="v">${num(r.mq)>0?mq(num(r.mq)):esc(L.compCorpo)}</td><td class="v">${num(r.mq)>0?eurX(num(r.pm)):''}</td>`:''}<td class="v">${eur(c.val(r))}</td></tr>`).join('')}
-    <tr class="tot"><td>${esc(L.compTotale)}</td>${m?`<td class="v">${mq(c.mqTot)}</td><td></td>`:''}<td class="v">${eur(c.prezzo)}</td></tr></table>`},
+    return`${K('capTitolo')}<table class="tb cap">${S.capitale.map(r=>`<tr><td>${esc(r.l)}${r.chi||r.coll?`<small>${[r.chi?esc(r.chi):'',r.coll?fill(T('capCollTag'),v):''].filter(Boolean).join(' · ')}</small>`:''}</td><td class="v">${eur(num(r.v))}</td></tr>`).join('')}<tr class="tot"><td>${esc(T('capTotale'))}</td><td class="v">${eur(c.cap)}</td></tr>${coll?`<tr class="coll"><td>${fill(T('capColl'),v)}</td><td class="v">${eur(coll)}</td></tr>`:''}</table>`},
+  composizione(c){const m=c.mqTot>0,one=!m&&S.composizione.length<2;if(one)return`${K('compTitolo','g')}<table class="tb g"><tr class="tot"><td>${esc(T('compTotale'))} (${esc(T('compCorpo'))})</td><td class="v">${eur(c.prezzo)}</td></tr></table>`;return`${K('compTitolo','g')}<table class="tb g">${m?`<tr><th>${esc(T('compVoce'))}</th><th class="v">${esc(T('compSup'))}</th><th class="v">${esc(T('compPm'))}</th><th class="v">${esc(T('compVal'))}</th></tr>`:''}
+    ${S.composizione.map(r=>`<tr><td>${esc(r.l)}</td>${m?`<td class="v">${num(r.mq)>0?mq(num(r.mq)):esc(T('compCorpo'))}</td><td class="v">${num(r.mq)>0?eurX(num(r.pm)):''}</td>`:''}<td class="v">${eur(c.val(r))}</td></tr>`).join('')}
+    <tr class="tot"><td>${esc(T('compTotale'))}</td>${m?`<td class="v">${mq(c.mqTot)}</td><td></td>`:''}<td class="v">${eur(c.prezzo)}</td></tr></table>`},
   ripartizione(c,v){const neg=c.utile<0,tot=Math.max(c.prezzo,c.cap+c.cv)||1;
-    const segs=neg?[[c.cv,COL.costi,esc(L.barCosti)],[Math.max(0,c.prezzo-c.cv),COL.cap,esc(L.barCapitale)]]:[[c.cv,COL.costi,esc(L.barCosti)],[c.cap,COL.cap,esc(L.barCapitale)],[c.qi,COL.inv,esc(L.barInv)],[c.qr,COL.riq,fill(L.barRiq,v)]];
+    const segs=neg?[[c.cv,COL.costi,esc(T('barCosti'))],[Math.max(0,c.prezzo-c.cv),COL.cap,esc(T('barCapitale'))]]:[[c.cv,COL.costi,esc(T('barCosti'))],[c.cap,COL.cap,esc(T('barCapitale'))],[c.qi,COL.inv,esc(T('barInv'))],[c.qr,COL.riq,fill(T('barRiq'),v)]];
     const cvRows=S.costiVendita.filter(r=>r.on);
-    return`<div class="k">${fill(L.ripTitolo,v)}</div>
+    return`${K('ripTitolo','',v)}
     <div class="sbar">${segs.filter(s=>s[0]>0).map(s=>{const w=s[0]/tot*100;return`<div style="width:${w}%;background:${s[1]};color:${s[1]===COL.riq?'#3D352D':'#fff'}" title="${s[2]}">${w>11?eur(s[0]):''}</div>`}).join('')}</div>
     <div class="steps">
-      <div class="st"><i style="background:${COL.costi}">1</i><p>${fillB(L.rip1,v)}</p>${cvRows.length>1||(cvRows[0]&&cvRows[0].l)?`<ul>${cvRows.map(r=>`<li>${esc(r.l)}${r.t==='pct'?` · ${fmtIn(num(r.v))}% del prezzo`:''} · ${eur(r.t==='pct'?c.prezzo*num(r.v)/100:num(r.v))}</li>`).join('')}</ul>`:''}</div>
-      <div class="st"><i style="background:${COL.cap}">2</i><p>${fillB(L.rip2,v)}</p></div>
-      <div class="st"><i style="background:${COL.inv}">3</i>${neg?`<p class="neg">${fill(L.perditaMsg,v)}</p>`:`<p>${fillB(L.rip3,v)}</p><div class="split"><span><em style="background:${COL.inv}"></em>${esc(L.barInv)}</span><span><em style="background:${COL.riq}"></em>${fill(L.barRiq,v)}</span></div>`}</div>
+      <div class="st"><i style="background:${COL.costi}">1</i><p>${fillB(T('rip1'),v)}</p>${cvRows.length>1||(cvRows[0]&&cvRows[0].l)?`<ul>${cvRows.map(r=>`<li>${esc(r.l)}${r.t==='pct'?` · ${fmtIn(num(r.v))}% del prezzo`:''} · ${eur(r.t==='pct'?c.prezzo*num(r.v)/100:num(r.v))}</li>`).join('')}</ul>`:''}</div>
+      <div class="st"><i style="background:${COL.cap}">2</i><p>${fillB(T('rip2'),v)}</p></div>
+      <div class="st"><i style="background:${COL.inv}">3</i>${neg?`<p class="neg">${fill(T('perditaMsg'),v)}</p>`:`<p>${fillB(T('rip3'),v)}</p><div class="split"><span><em style="background:${COL.inv}"></em>${esc(T('barInv'))}</span><span><em style="background:${COL.riq}"></em>${fill(T('barRiq'),v)}</span></div>`}</div>
     </div>`},
   scenari(c,v){const sc=num(S.scenPct)/100,cols=SC_COLS.filter(x=>ON(x[0]));
     const riga=(cl,nome,p,k,rendExtra)=>`<tr class="${cl}"><td>${nome}</td>${cols.map(([id])=>id==='scPrezzo'?`<td>${eur(p)}</td>`:id==='scUtile'?`<td class="${k.utile<0?'neg':''}">${eur(k.utile)}</td>`:id==='scInv'?`<td class="${k.qi<0?'neg':''}">${eur(k.qi)}</td>`:`<td class="${k.qi<0?'neg':''}">${cl==='pe'?'0,0%':pct(k.rendInv)}${rendExtra||''}</td>`).join('')}</tr>`;
-    const rows=[['scPru','',c.base*(1-sc),fill(L.scenPrudente,v)],['scPrev','base',c.base,esc(L.scenPrevisto)],['scFav','',c.base*(1+sc),fill(L.scenFavorevole,v)]].filter(x=>ON(x[0]));
+    const rows=[['scPru','',c.base*(1-sc),fill(T('scenPrudente'),v)],['scPrev','base',c.base,esc(T('scenPrevisto'))],['scFav','',c.base*(1+sc),fill(T('scenFavorevole'),v)]].filter(x=>ON(x[0]));
     let h=rows.map(([,cl,p,l])=>riga(cl,l,p,calc(p))).join('');
-    if(ON('scPar')&&c.pareggio)h+=riga('pe',esc(L.scenPareggio),c.pareggio,{utile:0,qi:0,rendInv:0});
+    if(ON('scPar')&&c.pareggio)h+=riga('pe',esc(T('scenPareggio')),c.pareggio,{utile:0,qi:0,rendInv:0});
     h+=stressRows(c,v,riga);if(!h)return'';
-    return`<div class="k">${esc(L.scenTitolo)}</div><table class="sc"><tr><th>${esc(L.scenScenario)}</th>${cols.map(x=>`<th>${esc(L[x[1]])}</th>`).join('')}</tr>${h}</table>
-    ${ON('scNota')?`<p class="scs">${fill(L.scenSotto,v)}</p>`:''}`},
-  grafA(c){return`<div class="k">${esc(L.grafATit)}</div><div class="gr">${GR.cascata(Object.assign(gdati(c),{larghezza:W_FULL}))}</div>`},
-  grafB(c){return`<div class="k">${esc(L.grafBTit)}</div><div class="gr">${GR.prezzi(Object.assign(gdati(c),{larghezza:W_FULL,vis:visB()}))}</div>`},
-  grafC(c,v,w){const d=gdati(c);return d.voci.length?`<div class="k">${esc(L.capTitolo)}</div><div class="gr">${GR.capitale(Object.assign(d,{larghezza:w==='half'?W_HALF:W_FULL}))}</div>`:''},
+    return`${K('scenTitolo')}<table class="sc"><tr><th>${esc(T('scenScenario'))}</th>${cols.map(x=>`<th>${esc(T(x[1]))}</th>`).join('')}</tr>${h}</table>
+    ${ON('scNota')?`<p class="scs">${fill(T('scenSotto'),v)}</p>`:''}`},
+  grafA(c){return`${K('grafATit')}<div class="gr">${GR.cascata(Object.assign(gdati(c),{larghezza:W_FULL}))}</div>`},
+  grafB(c){return`${K('grafBTit')}<div class="gr">${GR.prezzi(Object.assign(gdati(c),{larghezza:W_FULL,vis:visB(),txt:txtB()}))}</div>`},
+  grafC(c,v,w){const d=gdati(c);return d.voci.length?`${K('capTitolo')}<div class="gr">${GR.capitale(Object.assign(d,{larghezza:w==='half'?W_HALF:W_FULL}))}</div>`:''},
   comparabili(c,v,w){return cmpHTML(c,w)},
-  galleria(){const g=S.galleria.filter(x=>x.src);if(!g.length)return{ph:`<div class="k">${esc(L.galTitolo)}</div><div class="gal" style="--n:3">${S.galleria.map((x,i)=>`<div><div class="gi phbox" data-pick="gal" data-i="${i}">+ ${esc(x.cap||'Foto')}</div></div>`).join('')}</div>`};const big=S.opt.galGrande;return g.length?`<div class="k">${esc(L.galTitolo)}</div><div class="gal${big?' big':''}" style="--n:${g.length===1?2:g.length}">${g.map((x,i)=>`<div class="${big&&i===0&&g.length%2?'wide':''}"><div class="gi${x.fit?' fit':''}" style="background-image:url('${imgURL(x.src)}')"></div>${x.cap?`<div class="cap">${esc(x.cap)}</div>`:''}</div>`).join('')}</div>`:''},
-  contatti(){const k=S.contatti;if(!k.nome&&!k.tel&&!k.email)return'';return`<div class="k">${esc(L.contTitolo)}</div><div class="cont">${k.nome?`<div class="who">${esc(k.nome)}${k.ruolo?`<small>${esc(k.ruolo)}</small>`:''}</div>`:''}${k.tel?`<div>Tel. ${esc(k.tel)}</div>`:''}${k.email?`<div>${esc(k.email)}</div>`:''}</div>`},
+  galleria(){const g=S.galleria.filter(x=>x.src);if(!g.length)return{ph:`${K('galTitolo')}<div class="gal" style="--n:3">${S.galleria.map((x,i)=>`<div><div class="gi phbox" data-pick="gal" data-i="${i}">+ ${esc(x.cap||'Foto')}</div></div>`).join('')}</div>`};const big=S.opt.galGrande;return g.length?`${K('galTitolo')}<div class="gal${big?' big':''}" style="--n:${g.length===1?2:g.length}">${g.map((x,i)=>`<div class="${big&&i===0&&g.length%2?'wide':''}"><div class="gi${x.fit?' fit':''}" style="background-image:url('${imgURL(x.src)}')"></div>${x.cap?`<div class="cap">${esc(x.cap)}</div>`:''}</div>`).join('')}</div>`:''},
+  contatti(){const k=S.contatti;if(!k.nome&&!k.tel&&!k.email)return'';return`${K('contTitolo')}<div class="cont">${k.nome?`<div class="who">${esc(k.nome)}${k.ruolo?`<small>${esc(k.ruolo)}</small>`:''}</div>`:''}${k.tel?`<div>Tel. ${esc(k.tel)}</div>`:''}${k.email?`<div>${esc(k.email)}</div>`:''}</div>`},
   verifiche(){const it=S.verifiche.filter(x=>x.l);if(!it.length&&!S.documenti)return'';const lab={fatto:'Fatto','in corso':'In corso','da fare':'Da fare'};
-    return`<div class="k">${esc(L.verTitolo)}</div><div class="ver">${it.map(x=>`<div><span class="pill ${x.s==='fatto'?'ok':x.s==='in corso'?'wip':''}">${lab[x.s]||'Da fare'}</span>${esc(x.l)}</div>`).join('')}</div>${S.documenti?`<p class="note" style="margin-top:8px"><b>${esc(L.verDoc)}:</b> ${esc(S.documenti)}</p>`:''}`},
+    return`${K('verTitolo')}<div class="ver">${it.map(x=>`<div><span class="pill ${x.s==='fatto'?'ok':x.s==='in corso'?'wip':''}">${lab[x.s]||'Da fare'}</span>${esc(x.l)}</div>`).join('')}</div>${S.documenti?`<p class="note" style="margin-top:8px"><b>${esc(T('verDoc'))}:</b> ${esc(S.documenti)}</p>`:''}`},
   nota2(){return S.nota2?`<p class="note">${esc(S.nota2)}</p>`:''}
 };
 
 const SC_COLS=[['scPrezzo','scenPrezzo'],['scUtile','scenUtile'],['scInv','scenInv'],['scRend','scenRend']];
 function stressRows(c,v,riga){let h='',first=' sep';
   const lp=num(S.stress.lavori),lv=lavori();
-  if(ON('scLav')&&lp>0&&lv>0){h+=riga('stx'+first,`${fill(L.scenLavori,{lav:fmtIn(lp)})} (+${eur(lv*lp/100)})`,c.base,calc(c.base,lv*lp/100));first=''}
+  if(ON('scLav')&&lp>0&&lv>0){h+=riga('stx'+first,`${fill(T('scenLavori'),{lav:fmtIn(lp)})} (+${eur(lv*lp/100)})`,c.base,calc(c.base,lv*lp/100));first=''}
   const ms=num(S.stress.mesi);
-  if(ON('scRit')&&ms>0&&ms!==c.mesi){const k=calc(c.base,0,ms);h+=riga('stx'+first,fill(L.scenRitardo,{mesiR:fmtIn(ms)}),c.base,k,` <small>(${fill(L.scenRitardoRend,{annuoR:pct(k.annuo)})})</small>`)}
+  if(ON('scRit')&&ms>0&&ms!==c.mesi){const k=calc(c.base,0,ms);h+=riga('stx'+first,fill(T('scenRitardo'),{mesiR:fmtIn(ms)}),c.base,k,` <small>(${fill(T('scenRitardoRend'),{annuoR:pct(k.annuo)})})</small>`)}
   return h}
 function cmpHTML(c,w){
   const k=S.comparabili.filter(x=>num(x.mq)>0&&num(x.prezzo)>0);if(!k.length)return'';
-  if(S.opt.cmpGrafico)return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||L.cmpTitolo)}</div><div class="gr">${GR.mq(Object.assign(gdati(c),{larghezza:w==='half'?W_HALF:W_FULL}))}</div></div>`;
+  if(S.opt.cmpGrafico)return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||T('cmpTitolo'))}</div><div class="gr">${GR.mq(Object.assign(gdati(c),{larghezza:w==='half'?W_HALF:W_FULL}))}</div></div>`;
   const ours=c.mqCop>0?c.base/c.mqCop:0,mx=Math.max(ours,...k.map(x=>num(x.prezzo)/num(x.mq)));
   const bar=v=>`<span class="mb"><i style="width:${Math.round(v/mx*100)}%"></i></span>`;
-  return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||L.cmpTitolo)}</div><table class="tb cmp">
+  return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||T('cmpTitolo'))}</div><table class="tb cmp">
   ${k.map(x=>{const pm=num(x.prezzo)/num(x.mq);return`<tr><td>${esc(x.l)}<small>${eur(num(x.prezzo))} · ${mq(num(x.mq))}</small></td><td class="v">${eurX(pm)}/m²${bar(pm)}</td></tr>`}).join('')}
-  ${ours?`<tr class="ours"><td>${esc(L.cmpNostra)}<small>${eur(c.base)} · ${mq(c.mqCop)} ${esc(L.cmpCoperti)}</small></td><td class="v">${eurX(ours)}/m²${bar(ours)}</td></tr>`:''}
-  </table><p class="note" style="margin-top:5px">${esc(L.cmpNota)}</p></div>`}
+  ${ours?`<tr class="ours"><td>${esc(T('cmpNostra'))}<small>${eur(c.base)} · ${mq(c.mqCop)} ${esc(T('cmpCoperti'))}</small></td><td class="v">${eurX(ours)}/m²${bar(ours)}</td></tr>`:''}
+  </table><p class="note" style="margin-top:5px">${esc(T('cmpNota'))}</p></div>`}
 /* loghi aziendali pubblicati accanto allo strumento: si usano solo se i file esistono */
 const LOGHI={disalento:'',riquality:''};
 for(const [k,f] of [['disalento','logo-disalento.png'],['riquality','logo-riquality.png']]){if(location.protocol==='file:'||IN_CLAUDE)break;
@@ -1304,20 +1333,41 @@ const SCEN_VIS=[['Nel grafico “Quanto riceve l’investitore”','grafB',[['gb
   ['Nella tabella degli scenari: righe','scenari',[['scPru','Prudente'],['scPrev','Previsto'],['scFav','Favorevole'],['scPar','Pareggio'],['scLav','Prova: lavori più cari'],['scRit','Prova: vendita in ritardo']]],
   ['Nella tabella degli scenari: colonne e nota',null,[['scPrezzo','Prezzo'],['scUtile','Utile'],['scInv','All’investitore'],['scRend','Rendimento'],['scNota','Frase sotto la tabella (sotto il pareggio…)']]]];
 const fmtOpts=(id)=>(id==='_'?'':`<option value="">Come il resto della scheda</option>`)+FMT_OK.map(f=>`<option value="${f}">${id==='_'?'Importi ':''}${FMT_NOMI[f]}</option>`).join('');
-const RIGHE=[['Conti dell’operazione',[['opTitolo',0],['opRivendita',1],['opCapitale',1],['opCosti',1],['opUtile',1],['opRend',1],['opDurata',1],['opPareggio',1]]],
-  ['Riquadro dell’investitore',[['invTitolo',0],['invRiceve',1],['invInveste',1],['invGuadagno',1],['invGuadagnoNota',1],['invRend',1]]]];
+const TESTI=[
+  ['operazione','I conti dell’operazione',[['opTitolo'],['opRivendita',1,1],['opCapitale',1,1],['opCosti',1,1],['opUtile',1,1],['opRend',1],['opDurata',1],['opPareggio',1,1]]],
+  ['investitore','Riquadro dell’investitore',[['invTitolo'],['invRiceve',1,1],['invInveste',1,1],['invGuadagno',1,1],['invGuadagnoNota',1],['invRend',1],['invAnnuo'],['invPrimo'],['invPareggio'],['perditaMsg']]],
+  ['grafB','Grafico: quanto riceve l’investitore',[['grafBTit',1],['gbTPar'],['gbTSotto'],['gbTPru'],['gbTPrev'],['gbTFav'],['gbTRiceve'],['gbTFascia'],['gbTLeg1'],['gbTLeg2'],['gbTAsse']]],
+  ['scenari','Tabella degli scenari',[['scenTitolo',1],['scenScenario'],['scenPrezzo'],['scenUtile'],['scenInv'],['scenRend'],['scenPrudente'],['scenPrevisto'],['scenFavorevole'],['scenPareggio'],['scenLavori'],['scenRitardo'],['scenRitardoRend'],['scenSotto']]],
+  ['ripartizione','Come si divide il ricavato',[['ripTitolo',1],['rip1'],['rip2'],['rip3'],['barCosti'],['barCapitale'],['barInv'],['barRiq']]],
+  ['perche','Perché questa operazione',[['percheTitolo',1]]],
+  ['intro','Titolo di pagina 2',[['p2Titolo']]],
+  ['capitale','Dove va il capitale',[['capTitolo',1],['capTotale'],['capColl'],['capCollTag']]],
+  ['composizione','Come stimiamo il prezzo',[['compTitolo',1],['compVoce'],['compSup'],['compPm'],['compVal'],['compTotale'],['compCorpo']]],
+  ['comparabili','Comparabili di zona',[['cmpNostra'],['cmpCoperti'],['cmpNota']]],
+  ['grafA','Grafico: dal prezzo all’utile',[['grafATit',1]]],
+  ['galleria','Altre foto',[['galTitolo',1]]],
+  ['verifiche','Verifiche e documenti',[['verTitolo',1],['verDoc']]],
+  ['contatti','Contatti',[['contTitolo',1]]],
+  ['pagina','Intestazione delle pagine',[['p1Etichetta'],['p2Etichetta'],['p3Etichetta'],['destLabel'],['bozza']]]];
+/* una riga di scritta: interruttore (se la riga si può togliere), testo, formato dell'importo (se c'è un importo) */
+const rigaTesto=([k,tog,f])=>`<div class="rg${f?' f3':''}">${tog?`<input type="checkbox" aria-label="Mostra: ${esc(L[k])}" data-off="${k}" ${ON(k)?'checked':''}>`:'<span></span>'}<input aria-label="Scritta: ${esc(L[k])}" data-lab="${k}" value="${esc((S.lab&&S.lab[k])||'')}" placeholder="${esc(L[k])}">${f?`<select class="fr" aria-label="Importo: ${esc(L[k])}" data-fmt="${k}"></select>`:''}</div>`;
+const GB_PRESET={essenziale:['Essenziale',{gbPru:0,gbFav:0,gbPct:0,gbRiceve:0,gbFascia:0}],tre:['Tre scenari',{gbPct:0,gbRiceve:0}],completo:['Completo',{}]};
+const presetHTML=()=>`<div class="pre">${Object.entries(GB_PRESET).map(([k,[n]])=>`<button type="button" data-gb-preset="${k}">${n}</button>`).join('')}</div>`;
 const T=k=>(S.lab&&typeof S.lab[k]==='string'&&S.lab[k].trim())?S.lab[k]:L[k];
+const K=(k,cls,v)=>ON(k)?`<div class="k${cls?' '+cls:''}">${v?fill(T(k),v):esc(T(k))}</div>`:'';
 const FMT_MODS=['operazione','investitore','ripartizione','capitale','composizione','comparabili','scenari','grafA','grafB','grafC'];
+const FMT_ROWS=['opRivendita','opCapitale','opCosti','opUtile','opPareggio','invRiceve','invInveste','invGuadagno'];
+const fmtR=k=>FMT_OK.includes(S.fmt[k])?S.fmt[k]:FMT,eurR=(k,n)=>eurIn(n,fmtR(k));
 const fmtDi=id=>{const f=S.fmt||{};return FMT_OK.includes(f[id])?f[id]:FMT_OK.includes(f._)?f._:'eur'};
 function conFmt(id,fn){const pr=FMT;FMT=FMT_MODS.includes(id)?fmtDi(id):'eur';GR.fmt(FMT);try{return fn()}finally{FMT=pr;GR.fmt(pr)}}
 const ON=k=>!(S.off&&S.off[k]);
-function head(p){const r=p===1?L.p1Etichetta:p===2?L.p2Etichetta:L.p3Etichetta;
+function head(p){const r=p===1?T('p1Etichetta'):p===2?T('p2Etichetta'):T('p3Etichetta');
   const lg=S.logo?imgURL(S.logo):(S.opt.logoSito&&LOGHI.disalento?LOGHI.disalento:'');
   return`<div class="ph"><div class="brand">${lg?`<img class="logo" src="${lg}" alt="${esc(S.brand)}">`:`<div class="bn">${esc(S.brand)}</div>`}${S.brandSub&&!lg?`<div class="bs">${esc(S.brandSub)}</div>`:''}</div>
-  <div class="r"><div class="lb">${esc(r)}</div><div class="nm">${esc(S.nome)}</div>${S.destinatario?`<div>${esc(L.destLabel)} <span class="to">${esc(S.destinatario)}</span></div>`:''}${esc(S.data)}</div></div>`}
+  <div class="r"><div class="lb">${esc(r)}</div><div class="nm">${esc(S.nome)}</div>${S.destinatario?`<div>${esc(T('destLabel'))} <span class="to">${esc(S.destinatario)}</span></div>`:''}${esc(S.data)}</div></div>`}
 
 /* ---------- disegno ---------- */
-let lastC;
+let lastC,qpId=null;
 function render(){
   const c=calc(),v=vars(c);lastC=c;const pv=applyColors()+`;--gap:${S.gap}px`;
   const FULL=['grafA','grafB'];
@@ -1331,10 +1381,11 @@ function render(){
     for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&(x.b.id==='grafC'||x.b.id==='comparabili'))x.h=conFmt(x.b.id,()=>R[x.b.id](c,vars(c),x.w))}
     const body=items.map(({b,h,w})=>{const ph=typeof h==='object',mt=[0,12,26,44][b.sp||0];return`<section class="blk ${w}${ph?' ph-only':''}" data-b="${b.id}"${mt?` style="margin-top:${mt}px"`:''}>${ph?h.ph:h}</section>`}).join('');
     if(vuota)return`<div class="page vuota ph-only" data-p="${p}" style="${pv}">${head(p)}<div class="pg-body">${body}<section class="blk full"><div class="phbox" style="height:260px">Pagina ${p} vuota: spostaci un modulo da “Moduli e impaginazione”. Le pagine vuote non vanno nel PDF.</div></section></div></div>`;
-    return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${S.opt.logoSoc&&LOGHI.riquality?`<img class="flogo" src="${LOGHI.riquality}" alt="${esc(S.societa)}">`:''}${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(L.bozza)}</span></div>`:''}</div>`}).join('');
+    return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${S.opt.logoSoc&&LOGHI.riquality?`<img class="flogo" src="${LOGHI.riquality}" alt="${esc(S.societa)}">`:''}${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(T('bozza'))}</span></div>`:''}</div>`}).join('');
   const over=[];
   $('stage').querySelectorAll('.page').forEach((pg,i)=>{const b=pg.querySelector('.pg-body');if(b.scrollHeight>b.clientHeight+2){over.push(+pg.dataset.p);pg.classList.add('over');
     pg.insertAdjacentHTML('beforeend','<div class="over-flag ph-only">Questa pagina è troppo piena e il fondo non si vede. Sposta un modulo nell’altra pagina o accorcia un testo.</div>')}});
+  if(qpId)$('stage').querySelectorAll(`.blk[data-b="${qpId}"]`).forEach(x=>x.classList.add('sel'));
   fit();checks(c,over);summary(c,over,pages.length);if(VISTA==='web')renderWeb(c,v,pv);
   for(const el of document.querySelectorAll('[data-cmp]')){const r=S.comparabili[+el.dataset.cmp];if(r)el.value=num(r.mq)>0?fmtIn(Math.round(num(r.prezzo)/num(r.mq))):''}
   for(const el of document.querySelectorAll('[data-val]')){const r=S.composizione[+el.dataset.val];if(r)el.textContent=eur(c.val(r))}
@@ -1454,14 +1505,16 @@ function lists(){
   for(const el of document.querySelectorAll('[data-o]'))el.checked=!!S.opt[el.dataset.o];
   $('fTit').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.titoli===n?'selected':''}>${n}</option>`).join('');
   $('fTxt').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.testo===n?'selected':''}>${n}</option>`).join('');
-  $('lRighe').innerHTML=RIGHE.map(([t,rs])=>`<h4 class="rgh">${esc(t)}</h4>`+rs.map(([k,tog])=>`<div class="rg">${tog?`<input type="checkbox" aria-label="Mostra" data-off="${k}" ${ON(k)?'checked':''}>`:'<span></span>'}<input aria-label="Scritta" data-lab="${k}" value="${esc((S.lab&&S.lab[k])||'')}" placeholder="${esc(L[k])}"></div>`).join('')).join('');
-  $('lScen').innerHTML=SCEN_VIS.map(([t,id,rs])=>`<h4 class="rgh">${esc(t)}</h4>${id?`<label class="f" for="fmt-${id}" style="margin-top:4px">Importi ${id==='grafB'?'del grafico':'della tabella'}</label><select id="fmt-${id}" data-fmt="${id}"></select>`:''}<div class="vis">${rs.map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`).join('');
+  {const ap=new Set([...document.querySelectorAll('#lRighe details[open]')].map(d=>d.dataset.g));
+   $('lRighe').innerHTML=TESTI.map(([id,t,rs])=>`<details class="tg" data-g="${id}" ${ap.has(id)?'open':''}><summary>${esc(t)}</summary>${rs.map(rigaTesto).join('')}</details>`).join('')}
+  $('lScen').innerHTML=`<h4 class="rgh">Grafico: impostazioni pronte</h4>`+presetHTML()+SCEN_VIS.map(([t,id,rs])=>`<h4 class="rgh">${esc(t)}</h4>${id?`<label class="f" for="fmt-${id}" style="margin-top:4px">Importi ${id==='grafB'?'del grafico':'della tabella'}</label><select id="fmt-${id}" data-fmt="${id}"></select>`:''}<div class="vis">${rs.map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`).join('');
   $('gapV').textContent=S.gap+' px';
   $('lCol').innerHTML=Object.keys(COLORI_NOMI).map(k=>`<label class="colr"><input type="color" data-k="colori.${k}" value="${esc(S.colori[k])}"><span>${esc(COLORI_NOMI[k])}</span></label>`).join('');
   slots();mods();
 }
 /* riempie tutte le tendine del formato degli importi (anche quelle doppie, nei moduli e nelle sezioni) */
 function fmtSel(){for(const el of document.querySelectorAll('select[data-fmt]')){const id=el.dataset.fmt;
+  if(el.classList.contains('fr')){el.innerHTML=`<option value="">come riquadro</option><option value="eur">esatto</option><option value="tondo">arrotondato</option><option value="k">in k</option>`;el.value=FMT_OK.includes(S.fmt[id])?S.fmt[id]:'';continue}
   el.innerHTML=id==='_'?fmtOpts('_'):`<option value="">Importi: come il resto (${esc(FMT_NOMI[fmtDi('_')].split(' (')[0])})</option>`+FMT_OK.map(f=>`<option value="${f}">Importi ${FMT_NOMI[f]}</option>`).join('');
   el.value=id==='_'?fmtDi('_'):(FMT_OK.includes(S.fmt[id])?S.fmt[id]:'')}}
 const getK=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
@@ -1469,15 +1522,15 @@ const setK=(p,val)=>{const a=p.split('.');let o=S;for(let i=0;i<a.length-1;i++)o
 const setPath=(p,val)=>{const a=p.split('.');S[a[0]][+a[1]][a[2]]=val};
 const all=()=>{save();lists();render()};
 
-$('ed').addEventListener('input',e=>{const t=e.target;
+const onEdInput=e=>{const t=e.target;
   if(t.dataset.lab){const v=t.value;if(v.trim())S.lab[t.dataset.lab]=v;else delete S.lab[t.dataset.lab];save();later();return}
   if(t.dataset.k&&t.tagName!=='SELECT'){setK(t.dataset.k,t.dataset.n?num(t.value):t.value);if(t.id==='gap')$('gapV').textContent=S.gap+' px'}
   else if(t.dataset.l&&t.tagName!=='SELECT')setPath(t.dataset.l,t.dataset.n?num(t.value):t.value);
-  else return;save();later();});
-$('ed').addEventListener('change',e=>{const t=e.target;
+  else return;save();later();};
+const onEdChange=e=>{const t=e.target;
   if(t.dataset.off){if(t.checked)delete S.off[t.dataset.off];else S.off[t.dataset.off]=true;save();render();return}
   if(t.dataset.fmt){const id=t.dataset.fmt;if(t.value)S.fmt[id]=t.value;else delete S.fmt[id];save();fmtSel();render();
-    status(id==='_'?`Importi in tutta la scheda: ${FMT_NOMI[fmtDi('_')]}.`:`“${BLOCKS[id]}”: importi ${FMT_NOMI[fmtDi(id)]}.`);return}
+    status(id==='_'?`Importi in tutta la scheda: ${FMT_NOMI[fmtDi('_')]}.`:BLOCKS[id]?`“${BLOCKS[id]}”: importi ${FMT_NOMI[fmtDi(id)]}.`:`“${T(id)}”: importo ${t.value?FMT_NOMI[t.value].split(' (')[0]:'come il riquadro'}.`);return}
   if(t.dataset.c)setPath(t.dataset.c,t.checked);
   else if(t.dataset.o)S.opt[t.dataset.o]=t.checked;
   else if(t.tagName==='SELECT'&&t.dataset.k){setK(t.dataset.k,t.value);if(t.id==='capPal'){all();return}}
@@ -1486,8 +1539,10 @@ $('ed').addEventListener('change',e=>{const t=e.target;
   else if(t.dataset.modWsel!=null){S.layout[+t.dataset.modWsel].w=t.value==='half'?'half':'full';save();mods();render();return}
   else if(t.dataset.modP!=null){moveToPage(+t.dataset.modP,+t.value);save();mods();render();return}
   else if(t.dataset.modSp!=null){S.layout[+t.dataset.modSp].sp=+t.value||0;save();render();return}
-  else return;save();render();});
+  else return;save();render();};
+$('ed').addEventListener('input',onEdInput);$('ed').addEventListener('change',onEdChange);$('qp').addEventListener('input',onEdInput);$('qp').addEventListener('change',onEdChange);
 $('ed').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.gbPreset){applicaPreset(d.gbPreset);return}
   if(d.del){const[a,i]=d.del.split('.');S[a].splice(+i,1)}
   else if(d.tipo){const p=TIPI[+d.tipo];S.composizione.push({l:p.l,mq:0,pm:p.pm,corpo:p.corpo||0,cop:p.cop})}
   else if(d.costo){const n=COSTI[+d.costo];let v=0;if(/imprevisti/i.test(n))v=Math.round(lavori()*.1);S.capitale.push({l:n.replace(' 10%',''),v})}
@@ -1534,6 +1589,37 @@ $('slots').addEventListener('dragover',e=>{const s=e.target.closest('.slot');if(
 $('slots').addEventListener('dragleave',e=>{const s=e.target.closest('.slot');if(s)s.classList.remove('drag')});
 $('slots').addEventListener('drop',e=>{const s=e.target.closest('.slot');if(!s)return;e.preventDefault();s.classList.remove('drag');putFiles(e.dataTransfer.files,{kind:s.dataset.slot,i:+s.dataset.i})});
 $('slots').addEventListener('click',e=>{if(e.target.closest('button,input'))return;const s=e.target.closest('.slot');if(!s)return;pickTarget={kind:s.dataset.slot,i:+s.dataset.i};$('fImg').value='';$('fImg').click()});
+const DATI_SEC={foto:'Foto, planimetria e logo',galleria:'Foto, planimetria e logo',hero:'Immobile e testi principali',dati:'Dati in evidenza',operazione:'Quote e tempi',investitore:'Quote e tempi',
+  perche:'Perché questa operazione',nota:'Note e contatti',intro:'Note e contatti',nota2:'Note e contatti',contatti:'Note e contatti',capitale:'Impiego del capitale',grafC:'Impiego del capitale',
+  composizione:'Prezzo di rivendita',comparabili:'Comparabili di zona',ripartizione:'Costi alla vendita',grafA:'Quote e tempi',grafB:'Scenari: cosa mostrare',scenari:'Scenari: cosa mostrare',verifiche:'Verifiche e documenti',pagina:'Immobile e testi principali'};
+function qpHTML(id){const g=TESTI.find(x=>x[0]===id),vis=i=>`<h4 class="rgh">${esc(SCEN_VIS[i][0].replace('Nella tabella degli scenari: ','Tabella: ').replace('Nel grafico “Quanto riceve l’investitore”','Cosa mostrare'))}</h4><div class="vis">${SCEN_VIS[i][2].map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`;
+  let h=`<div class="qh"><b>${esc(id==='pagina'?'Intestazione delle pagine':BLOCKS[id])}</b><button type="button" data-qp-x aria-label="Chiudi">×</button></div>`;
+  if(FMT_MODS.includes(id))h+=`<label class="f">Importi di questo riquadro</label><select data-fmt="${id}"></select>`;
+  if(id==='grafB')h+=`<h4 class="rgh">Impostazioni pronte</h4>${presetHTML()}`+vis(0);
+  if(id==='scenari')h+=vis(1)+vis(2);
+  if(id==='investitore')h+=`<div class="vis" style="margin-top:10px"><label class="chk"><input type="checkbox" data-o="annuo" ${S.opt.annuo?'checked':''}> Rendimento anche su base annua</label><label class="chk"><input type="checkbox" data-o="invNota" ${S.opt.invNota?'checked':''}> Nota sotto il rendimento (capitale che torna e pareggio)</label></div>`;
+  if(g)h+=`<h4 class="rgh">Scritte</h4><p class="hint" style="margin:0 0 4px">Vuoto = scritta originale (in grigio). Le parole tra graffe diventano numeri.${g[2].some(r=>r[2])?' A destra: importo esatto, arrotondato o in k, riga per riga.':''}</p>${g[2].map(rigaTesto).join('')}`;
+  else if(id!=='pagina')h+=`<p class="hint" style="margin-top:10px">Le scritte di questo riquadro si cambiano in “${esc(DATI_SEC[id]||'Immobile e testi principali')}”.</p>`;
+  h+=`<div class="acts">${DATI_SEC[id]?`<button type="button" data-qp-sez="${esc(DATI_SEC[id])}">Vai a “${esc(DATI_SEC[id])}”</button>`:''}${id!=='pagina'?`<button type="button" data-qp-off="${id}">Togli dalla scheda</button>`:''}</div>`;
+  return h}
+function apriQp(id,ev){const q=$('qp');qpId=id;q.innerHTML=qpHTML(id);fmtSel();q.hidden=false;
+  $('stage').querySelectorAll('.blk.sel').forEach(x=>x.classList.remove('sel'));$('stage').querySelectorAll(`.blk[data-b="${id}"]`).forEach(x=>x.classList.add('sel'));
+  if(innerWidth>760){const w=q.offsetWidth,h=q.offsetHeight,vr=$('view').getBoundingClientRect(),top=$('bar').offsetHeight+12;let x,y;
+    if(vr.left>w+24){x=vr.left-w-12;y=top}else{x=ev.clientX+14;if(x+w>innerWidth-12)x=Math.max(12,ev.clientX-w-14);y=ev.clientY-60}
+    y=Math.max(top,Math.min(y,innerHeight-h-12));q.style.left=x+'px';q.style.top=y+'px'}
+  q.scrollTop=0}
+function chiudiQp(){const q=$('qp');if(q.hidden)return;q.hidden=true;qpId=null;$('stage').querySelectorAll('.blk.sel').forEach(x=>x.classList.remove('sel'));lists()}
+function apriSez(nome){const d=[...document.querySelectorAll('#ed details.sec')].find(x=>x.querySelector('summary').textContent===nome);chiudiQp();if(!d)return;
+  if($('wrap').dataset.tab==='pv')tab('ed');d.open=true;requestAnimationFrame(()=>{d.scrollIntoView({behavior:'smooth',block:'start'});d.classList.add('flash');setTimeout(()=>d.classList.remove('flash'),1600)})}
+function applicaPreset(k){const p=GB_PRESET[k];if(!p)return;for(const [key] of GB_VIS){if(p[1][key]===0)S.off[key]=true;else delete S.off[key]}save();render();
+  for(const el of document.querySelectorAll('[data-off^="gb"]'))el.checked=ON(el.dataset.off);status(`Grafico: impostazione “${p[0]}”.`)}
+$('qp').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.qpX!=null)chiudiQp();else if(d.qpSez)apriSez(d.qpSez);else if(d.gbPreset)applicaPreset(d.gbPreset);
+  else if(d.qpOff){S.layout.forEach(b=>{if(b.id===d.qpOff)b.on=false});chiudiQp();save();all();status(`“${BLOCKS[d.qpOff]}” tolto dalla scheda: lo riaccendi in “Moduli e impaginazione”.`)}});
+$('stage').addEventListener('click',e=>{if(MODE==='view'||e.target.closest('[data-pick]'))return;const b=e.target.closest('.blk[data-b]'),hd=e.target.closest('.ph');
+  const id=b?b.dataset.b:hd?'pagina':null;if(id)apriQp(id,e)});
+document.addEventListener('click',e=>{const q=$('qp');if(q.hidden||q.contains(e.target)||e.target.closest('#stage .blk,#stage .ph'))return;chiudiQp()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')chiudiQp()});
 $('stage').addEventListener('click',e=>{const t=e.target.closest('[data-pick]');if(!t)return;pickTarget={kind:t.dataset.pick,i:+(t.dataset.i||0)};$('fImg').value='';$('fImg').click()});
 const view=$('view');
 view.addEventListener('dragover',e=>{if([...e.dataTransfer.types].includes('Files')){e.preventDefault();view.classList.add('drag')}});
@@ -1547,14 +1633,14 @@ $('tEd').onclick=()=>tab('ed');$('tPv').onclick=()=>tab('pv');
 /* ---------- vista web: per chi apre il link sul telefono o al computer; il PDF resta quello delle pagine A4 ---------- */
 let VISTA='a4',webOss=null,webFatto=false;
 function setVista(x){VISTA=x;$('vWeb').setAttribute('aria-pressed',x==='web');$('vA4').setAttribute('aria-pressed',x==='a4');
-  $('stagebox').hidden=x==='web';$('web').hidden=x!=='web';$('bZoom').hidden=x==='web';render()}
+  $('stagebox').hidden=x==='web';$('web').hidden=x!=='web';$('bZoom').hidden=x==='web';$('vHint').hidden=x==='web';if(x==='web')chiudiQp();render()}
 $('vWeb').onclick=()=>setVista('web');$('vA4').onclick=()=>setVista('a4');
 function renderWeb(c,v,pv){const w=$('web');w.setAttribute('style',pv);
   const W=Math.max(300,Math.min(980,(w.clientWidth||$('view').clientWidth||900)-2*Math.max(20,innerWidth*.04)));
   const lg=S.logo?imgURL(S.logo):(S.opt.logoSito&&LOGHI.disalento?LOGHI.disalento:'');
   const foto=S.foto?imgURL(S.foto):'';const neg=c.utile<0;
-  const fI=fmtDi('investitore'),stats=conFmt('investitore',()=>[ON('invRiceve')&&['main',eur(c.rientro),c.rientro,T('invRiceve')],ON('invInveste')&&['',eur(c.cap),c.cap,T('invInveste')],
-    ON('invGuadagno')&&['acc',(neg?'':'+ ')+eur(c.qi),c.qi,T('invGuadagno')],ON('invRend')&&['acc',pct(c.rendInv),null,fill(T('invRend'),vars(c))]].filter(Boolean));
+  const fI=fmtDi('investitore'),stats=conFmt('investitore',()=>[ON('invRiceve')&&['main',eurR('invRiceve',c.rientro),c.rientro,T('invRiceve'),fmtR('invRiceve')],ON('invInveste')&&['',eurR('invInveste',c.cap),c.cap,T('invInveste'),fmtR('invInveste')],
+    ON('invGuadagno')&&['acc',(neg?'':'+ ')+eurR('invGuadagno',c.qi),c.qi,T('invGuadagno'),fmtR('invGuadagno')],ON('invRend')&&['acc',pct(c.rendInv),null,fill(T('invRend'),vars(c))]].filter(Boolean));
   const gal=[...(S.foto?[{src:S.foto,cap:S.fotoCap}]:[]),...S.galleria.filter(g=>g.src)];
   const dati=datiEvidenza(c);
   const sez=[];
@@ -1562,17 +1648,17 @@ function renderWeb(c,v,pv){const w=$('web');w.setAttribute('style',pv);
     ${dati.length?`<div class="w-chips">${dati.map(d=>`<div class="w-chip"><small>${esc(d.l)}</small>${esc(d.v)}</div>`).join('')}</div>`:''}
     ${gal.length?`<div class="w-gal">${gal.map(g=>`<figure><div class="im${g.fit?' fit':''}" style="background-image:url('${imgURL(g.src)}')"></div>${g.cap?`<figcaption>${esc(g.cap)}</figcaption>`:''}</figure>`).join('')}</div>`:''}</section>`);
   sez.push(`<section class="w-sec rv"><h2>${esc(T('opTitolo'))}</h2><div class="w-card" style="max-width:560px">${conFmt('operazione',()=>R.operazione(c)).replace(/^<div class="opbox"><div class="k plain">[^<]*<\/div>/,'<div>')}</div>
-    <div class="w-chart" style="margin-top:28px"><div class="k">${esc(L.grafBTit)}</div>${conFmt('grafB',()=>GR.prezzi(Object.assign(gdati(c),{larghezza:Math.max(640,Math.round(W)),vis:visB()})))}</div></section>`);
-  if(S.perche.some(x=>x.l||x.v))sez.push(`<section class="w-sec rv"><h2>${esc(L.percheTitolo)}</h2><div class="w-why">${S.perche.filter(x=>x.l||x.v).map(x=>`<div><b>${esc(x.l)}</b><span>${esc(x.v)}</span></div>`).join('')}</div></section>`);
+    <div class="w-chart" style="margin-top:28px">${K('grafBTit')}${conFmt('grafB',()=>GR.prezzi(Object.assign(gdati(c),{larghezza:Math.max(640,Math.round(W)),vis:visB(),txt:txtB()})))}</div></section>`);
+  if(S.perche.some(x=>x.l||x.v))sez.push(`<section class="w-sec rv"><h2>${esc(T('percheTitolo'))}</h2><div class="w-why">${S.perche.filter(x=>x.l||x.v).map(x=>`<div><b>${esc(x.l)}</b><span>${esc(x.v)}</span></div>`).join('')}</div></section>`);
   sez.push(`<section class="w-sec rv">${conFmt('ripartizione',()=>R.ripartizione(c,vars(c)))}</section>`);
-  const det=[[L.capTitolo,conFmt('capitale',()=>R.capitale(c,vars(c)))],[L.compTitolo,conFmt('composizione',()=>R.composizione(c))],[S.cmpTitolo||L.cmpTitolo,conFmt('comparabili',()=>cmpHTML(c,'full'))],[L.scenTitolo,conFmt('scenari',()=>R.scenari(c,vars(c)))]].filter(x=>x[1]);
-  sez.push(`<section class="w-sec w-det rv"><h2>${esc(L.p2Titolo)}</h2>${S.intro2?`<p class="w-lead">${esc(S.intro2)}</p>`:''}${det.map(([t,h])=>`<details><summary>${esc(t)}</summary><div class="in">${h}</div></details>`).join('')}</section>`);
+  const det=[[T('capTitolo'),conFmt('capitale',()=>R.capitale(c,vars(c)))],[T('compTitolo'),conFmt('composizione',()=>R.composizione(c))],[S.cmpTitolo||T('cmpTitolo'),conFmt('comparabili',()=>cmpHTML(c,'full'))],[T('scenTitolo'),conFmt('scenari',()=>R.scenari(c,vars(c)))]].filter(x=>x[1]);
+  sez.push(`<section class="w-sec w-det rv"><h2>${esc(T('p2Titolo'))}</h2>${S.intro2?`<p class="w-lead">${esc(S.intro2)}</p>`:''}${det.map(([t,h])=>`<details><summary>${esc(t)}</summary><div class="in">${h}</div></details>`).join('')}</section>`);
   const k=S.contatti;
   sez.push(`<section class="w-sec w-cta rv"><div><h2>Ti interessa?</h2><div class="ct">${[k.nome,k.tel,k.email].filter(Boolean).map(esc).join(' · ')||esc(S.footer)}</div></div><button type="button" class="btn" id="wPdf">Scarica la scheda in PDF</button></section>`);
   w.innerHTML=`<header class="w-hero${foto?'':' noimg'}">${foto?`<div class="bg" style="background-image:url('${foto}');background-position:${esc(S.fotoPos)}"></div>`:''}
-    <div class="w-top">${lg?`<img src="${lg}" alt="${esc(S.brand)}">`:`<div class="bn">${esc(S.brand)}</div>`}<span class="tag">${esc(L.p1Etichetta)}</span></div>
-    <div class="w-hc"><div class="eb">${esc(S.claim)}</div><h1>${esc(S.nome||S.titolo)}</h1>${S.sottotitolo?`<div class="w-st">${esc(S.sottotitolo)}</div>`:''}${S.destinatario?`<div class="to">${esc(L.destLabel)} ${esc(S.destinatario)}</div>`:''}</div></header>
-    ${stats.length?`<div class="w-stats rv">${stats.map(([cl,txt,n,l])=>`<div class="w-stat ${cl}"><b ${n!=null&&n>0?`data-n="${Math.round(n)}" data-f="${fI}"`:''}>${txt}</b><span>${esc(l)}</span></div>`).join('')}</div>`:''}
+    <div class="w-top">${lg?`<img src="${lg}" alt="${esc(S.brand)}">`:`<div class="bn">${esc(S.brand)}</div>`}<span class="tag">${esc(T('p1Etichetta'))}</span></div>
+    <div class="w-hc"><div class="eb">${esc(S.claim)}</div><h1>${esc(S.nome||S.titolo)}</h1>${S.sottotitolo?`<div class="w-st">${esc(S.sottotitolo)}</div>`:''}${S.destinatario?`<div class="to">${esc(T('destLabel'))} ${esc(S.destinatario)}</div>`:''}</div></header>
+    ${stats.length?`<div class="w-stats rv">${stats.map(([cl,txt,n,l,f])=>`<div class="w-stat ${cl}"><b ${n!=null&&n>0?`data-n="${Math.round(n)}" data-f="${f||fI}"`:''}>${txt}</b><span>${esc(l)}</span></div>`).join('')}</div>`:''}
     ${sez.join('')}
     <div class="w-foot">${S.opt.logoSoc&&LOGHI.riquality?`<img src="${LOGHI.riquality}" alt="">`:''}${esc(S.nota)} ${esc(S.nota2)}</div>`;
   $('wPdf').onclick=doPdf;
@@ -1608,7 +1694,7 @@ const need=(...g)=>g.every(n=>window[n]);
 
 async function snap(only){
   const box=document.createElement('div');box.style.cssText='position:fixed;left:-10000px;top:0;width:794px';
-  box.innerHTML=$('stage').innerHTML;box.querySelectorAll('.ph-only').forEach(x=>x.remove());document.body.appendChild(box);
+  box.innerHTML=$('stage').innerHTML;box.querySelectorAll('.ph-only').forEach(x=>x.remove());box.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));document.body.appendChild(box);
   try{
     await document.fonts.ready;
     await Promise.all([...box.querySelectorAll('img')].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));

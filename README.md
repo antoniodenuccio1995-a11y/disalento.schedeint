@@ -21,7 +21,9 @@ Strumento interno di Riquality S.r.l.s. (marchio DiSalento) per preparare e cond
   - dove va il capitale;
   - prezzo al m² rispetto alla zona.
 - **Aspetto:** colori e caratteri modificabili; copertina, galleria di 3 foto (anche planimetria) e logo.
-- **Importi:** esatti, arrotondati o in k (185k €), per tutta la scheda o modulo per modulo.
+- **Pannello rapido:** tocchi un riquadro nell'anteprima e cambi lì le sue scritte, gli importi e cosa mostrare.
+- **Scritte:** tutte modificabili, anche quelle dei grafici e delle tabelle.
+- **Importi:** esatti, arrotondati o in k (185k €), per tutta la scheda, per riquadro o, nei conti e nel riquadro dell'investitore, riga per riga.
 - **Scenari:** nel grafico e nella tabella si sceglie cosa mostrare.
 - **Pagine:** da 1 a 12, con zoom dell'anteprima; chi apre il link vede una vista web e può scaricare il PDF.
 - **Download:** PDF, Excel con formule, dati (.json), ZIP completo e pagina 1 in JPG per WhatsApp.

@@ -36,7 +36,8 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
 - **`S`:** la scheda intera. Si salva in `localStorage` (`scheda-investimento-v2`) se è una bozza locale, su Supabase se è una scheda online.
 - **`normalize(o)`:** ogni dato caricato passa di qui. Fa le migrazioni dalle versioni vecchie e accetta solo chiavi note (`lab`, `off`, `fmt`, `layout`, colori, caratteri).
 - **`L`:** i testi della scheda.
-- **`T(k)`:** restituisce la scritta personalizzata in `S.lab`, altrimenti quella di `L`.
+- **`T(k)`:** restituisce la scritta personalizzata in `S.lab`, altrimenti quella di `L`. Tutte le scritte della scheda passano da `T()`, quindi si possono cambiare tutte; `TESTI` le elenca riquadro per riquadro.
+- **`K(k)`:** disegna il titoletto di un blocco, se non è spento.
 - **`ON(k)`:** dice se una voce è accesa. `S.off[k] = true` la spegne, così le voci nuove partono accese.
 
 **Moduli e impaginazione**
@@ -54,10 +55,15 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
   - `capitale`: C.
   - `mq`: prezzo al m².
 
+**Pannello rapido**
+- Toccando un riquadro dell'anteprima (solo in modifica) si apre `#qp`, scritto da `qpHTML(id)`: importi del riquadro, voci da mostrare, scritte e un tasto per la sezione dei dati.
+- Sul computer sta sopra la colonna di sinistra, sul telefono sale dal basso.
+- Usa gli stessi gestori dell'editor (`onEdInput`, `onEdChange`); quando si chiude, `lists()` riallinea l'editor.
+
 **Formati e viste**
 - **Formato degli importi:**
   - `fmtAbs(n, modo)` con i modi `eur` (esatti), `tondo` (arrotondati) e `k` (185k €).
-  - `S.fmt[idModulo]`, oppure `S.fmt._` per tutta la scheda.
+  - `S.fmt[idModulo]`, oppure `S.fmt._` per tutta la scheda; le righe dei due riquadri principali (`FMT_ROWS`) possono avere un formato loro.
   - `conFmt(id, fn)` imposta il formato mentre si disegna un modulo, grafici compresi.
   - I prezzi al m² restano sempre esatti (`eurX`). L'Excel è sempre esatto.
 - **Vista web:** `renderWeb()` mostra cosa vede chi apre il link: foto grande, cifre animate e sezioni che compaiono scorrendo. Il PDF resta quello delle pagine A4.
@@ -95,7 +101,7 @@ node test.js ../index.html out/base --photos --exports --mobile
 ```
 
 ```bash
-for t in fmt cloud righe pag web logo; do node $t.js ../index.html out/$t; done
+for t in fmt cloud righe pag web logo qp; do node $t.js ../index.html out/$t; done
 ```
 
 `harness.js` serve le librerie e i caratteri da `node_modules` e blocca la rete; `cloud.js` e `web.js` simulano Supabase. Playwright e Chromium sono già installati nelle sessioni cloud.
@@ -108,7 +114,8 @@ Le prove controllano:
 - pagine aggiunte e tolte;
 - vista web su computer e telefono;
 - formati degli importi, voci degli scenari e zoom;
-- loghi in testata, nel piè di pagina e nella vista web.
+- loghi in testata, nel piè di pagina e nella vista web;
+- pannello rapido su computer e telefono.
 
 ## Regole di lavoro
 
