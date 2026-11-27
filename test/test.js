@@ -1,5 +1,5 @@
 // Usage: node test.js <html> <outdir> [--photos] [--exports] [--mobile]
-const {chromium}=require('playwright');const fs=require('fs');const path=require('path');const {open}=require('./harness');
+const {chromium}=require('playwright');const fs=require('fs');const path=require('path');const {open,apriTutto}=require('./harness');
 const [,,file,out,...flags]=process.argv;fs.mkdirSync(out,{recursive:true});
 const has=f=>flags.includes(f);
 async function makeImages(page){
@@ -21,12 +21,13 @@ async function makeImages(page){
   page.on('console',m=>{if(m.type()==='error'||m.type()==='warning')console.log('CONSOLE',m.type(),m.text())});
   page.on('pageerror',e=>console.log('PAGEERR',e.message));
   await open(page,file);
+  await apriTutto(page);
   if(has('--photos')){
     const imgs=await makeImages(page);
     const pick=async(sel,files)=>{const [fc]=await Promise.all([page.waitForEvent('filechooser'),page.click(sel)]);await fc.setFiles(files)};
     await pick('[data-slot="cover"] [data-img-pick]',[imgs[0]]);await page.waitForTimeout(400);
     for(let i=0;i<3;i++){await pick(`[data-slot="gal"][data-i="${i}"] [data-img-pick]`,[imgs[i+1]]);await page.waitForTimeout(300)}
-    await page.evaluate(()=>document.querySelectorAll('details.sec').forEach(d=>d.open=true));await page.fill('#cNome','Antonio');await page.fill('#cRuolo','Amministrazione');await page.fill('#cTel','000 000 0000');
+    await apriTutto(page);await page.fill('#cNome','Antonio');await page.fill('#cRuolo','Amministrazione');await page.fill('#cTel','000 000 0000');
     await page.waitForTimeout(500);
   }
   await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(300);
@@ -36,7 +37,8 @@ async function makeImages(page){
   await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(out,'desktop.png')});
   console.log('info',JSON.stringify(await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,status:document.getElementById('status').textContent,pg:document.getElementById('pgInfo').textContent,checks:[...document.querySelectorAll('#checks li')].map(l=>l.textContent)}))));
   if(has('--exports')){
-    for(const [id,name] of [['#bPdf','out.pdf'],['#bXls','out.xlsx'],['#bZip','out.zip']]){
+    for(const [id,name] of [['#bPdf','out.pdf'],['#bXls2','out.xlsx'],['#bZip2','out.zip']]){
+      if(id!=='#bPdf'){await page.click('#mDati summary');await page.waitForTimeout(150)}
       const [d]=await Promise.all([page.waitForEvent('download',{timeout:60000}),page.click(id)]);await d.saveAs(path.join(out,name));console.log('download',name,d.suggestedFilename());
       await page.waitForFunction(()=>!document.getElementById('bPdf').disabled);}
   }

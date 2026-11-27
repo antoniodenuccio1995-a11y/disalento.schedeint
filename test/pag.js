@@ -1,6 +1,6 @@
 const {chromium}=require('playwright');const {open}=require('./harness');const fs=require('fs');
 (async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:1440,height:950},acceptDownloads:true});const p=await ctx.newPage();p.on('pageerror',e=>console.log('PAGEERR',e.message));
-await open(p,process.argv[2]);await p.evaluate(()=>document.getElementById('secMod').open=true);
+await open(p,process.argv[2]);await p.click('#cats [data-cat="aspetto"]');await p.evaluate(()=>document.getElementById('secMod').open=true);
 const st=()=>p.evaluate(()=>({anteprima:[...document.querySelectorAll('.page')].map(x=>x.dataset.p+(x.classList.contains('vuota')?'(vuota)':'')).join(' '),piede:[...document.querySelectorAll('.page:not(.vuota) .pf span:last-child')].map(x=>x.textContent).join(' / '),info:document.getElementById('pgInfo').textContent}));
 await p.click('#bAddPg');await p.waitForTimeout(300);console.log('dopo aggiungi:',JSON.stringify(await st()));
 const sc=await p.evaluate(()=>document.querySelector('#mod-scenari').dataset.modOn);await p.selectOption(`select[data-mod-p="${sc}"]`,'4');await p.waitForTimeout(300);

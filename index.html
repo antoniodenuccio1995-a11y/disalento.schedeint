@@ -65,6 +65,8 @@ button:disabled{opacity:.55;cursor:progress}
 .pop button,.pop .btn{border:0;justify-content:flex-start;font-weight:500;background:transparent;width:100%}
 .pop button:hover,.pop .btn:hover{background:var(--chip)}
 .pop hr{border:0;border-top:1px solid var(--line);margin:4px 6px}
+.pop .mh{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);padding:10px 12px 3px}
+.pop .mh:first-child{padding-top:4px}
 .tabs{display:none}
 .m-only{display:none}
 
@@ -73,6 +75,21 @@ button:disabled{opacity:.55;cursor:progress}
 
 /* editor */
 .ed{display:flex;flex-direction:column;gap:10px;min-width:0}
+.edtop{position:sticky;top:var(--hdr,64px);z-index:4;display:flex;flex-direction:column;gap:8px;background:var(--bg);padding:10px 0 4px;margin-top:-10px}
+.cats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:var(--chip);border:1px solid var(--line);border-radius:13px;padding:3px}
+.cats button{min-height:52px;flex-direction:column;gap:3px;border:0;background:transparent;color:var(--mute);font-size:12.5px;font-weight:600;padding:5px 2px;border-radius:10px;transition:background .15s,color .15s}
+.cats button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.cats button:hover{color:var(--ink)}
+.cats button[aria-pressed="true"]{background:var(--panel);color:var(--accent-text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cat-intro{font-size:12.5px;color:var(--mute);margin:-4px 4px 0}
+#ed details.sec[data-cat]{display:none}
+#ed[data-cat="casa"] details.sec[data-cat="casa"],#ed[data-cat="conti"] details.sec[data-cat="conti"],#ed[data-cat="scenari"] details.sec[data-cat="scenari"],#ed[data-cat="testi"] details.sec[data-cat="testi"],#ed[data-cat="aspetto"] details.sec[data-cat="aspetto"]{display:block}
+.fmts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fmts .fr2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:8px;align-items:center;font-size:14px}
+.fmts select{min-height:40px;font-size:13.5px;padding:4px 8px}
+.checks li[data-sez]{cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.checks li[data-sez]::after{content:"Vai ›";flex:none;font-size:12.5px;font-weight:600;opacity:.8;padding-top:1px}
+.checks li[data-sez]:hover{filter:brightness(.97)}
 .sum{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--mute)}
 .sum b{font:600 15px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
 .sum .neg{color:var(--bad)}
@@ -434,7 +451,9 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
   .bar>div:first-child{flex:1;min-width:0}
   .bar h1{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tabs{order:3}
-  .sum{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdr,110px));z-index:4;margin-top:-12px;border-top:0;border-radius:0 0 12px 12px;padding:6px 14px;font-size:12px;gap:2px 10px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+  .edtop{top:calc(env(safe-area-inset-top,0px) + var(--hdr,110px));margin-top:-12px;padding-top:0;gap:6px}
+  .sum{border-top:0;border-radius:0 0 12px 12px;padding:6px 14px;font-size:12px;gap:2px 10px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+  .cats button{min-height:48px;font-size:12px}
   .sum b{font-size:14px}
   .page{margin-bottom:14px}
 }
@@ -455,21 +474,19 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
     <button class="main" id="bPdf" type="button"><span class="d-only">Scarica</span>PDF</button>
     <button id="bShare" type="button">Condividi</button>
     <button id="bArch" class="d-only" type="button">Le mie schede</button>
-    <button id="bXls" class="d-only" type="button">Excel</button>
-    <button id="bZip" class="d-only" type="button">Tutto (.zip)</button>
-    <details class="menu" id="mDati"><summary class="btn" aria-label="Altri comandi">Dati</summary>
+    <details class="menu" id="mDati"><summary class="btn" aria-label="Altri comandi">Altro</summary>
       <div class="pop">
+        <div class="mh">Scheda</div>
         <button id="bNuova" type="button">Nuova scheda</button>
         <button id="bDup" type="button">Duplica questa scheda</button>
         <button id="bArch2" class="m-only" type="button">Le mie schede</button>
-        <hr>
-        <button id="bXls2" class="m-only" type="button">Scarica Excel</button>
-        <button id="bZip2" class="m-only" type="button">Scarica tutto (.zip)</button>
+        <div class="mh">Scarica</div>
+        <button id="bXls2" type="button">Excel con le formule</button>
+        <button id="bZip2" type="button">Tutto in un file (.zip)</button>
         <button id="bJpg" type="button">Pagina 1 come immagine (per WhatsApp)</button>
-        <hr>
-        <button id="bSave" type="button">Salva i dati (.json)</button>
+        <button id="bSave" type="button">Dati della scheda (.json)</button>
+        <div class="mh">Altro</div>
         <label class="btn" for="fLoad">Carica dati salvati…</label>
-        <hr>
         <button id="bReset" type="button">Ripristina l’esempio</button>
       </div>
     </details>
@@ -508,14 +525,18 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
 <input type="file" id="fImgs" accept="image/*" multiple hidden>
 
 <div class="wrap" id="wrap" data-tab="ed">
-  <div class="ed" id="ed">
-    <div class="sum" id="sum" aria-live="polite"></div>
+  <div class="ed" id="ed" data-cat="casa">
+    <div class="edtop">
+      <div class="sum" id="sum" aria-live="polite"></div>
+      <nav class="cats" id="cats" aria-label="Parti del pannello"><button type="button" data-cat="casa" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/></svg>Casa</button><button type="button" data-cat="conti" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 6.6A7 7 0 1 0 17.5 17.4"/><path d="M4 10.2h9.5M4 13.8h9.5"/></svg>Conti</button><button type="button" data-cat="scenari" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20h17"/><path d="M4.5 16.5 9.5 11l4 3 6.5-8"/></svg>Scenari</button><button type="button" data-cat="testi" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5V5h14v2.5"/><path d="M12 5v14"/><path d="M9 19h6"/></svg>Testi</button><button type="button" data-cat="aspetto" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.6"/><rect x="13" y="3.5" width="7.5" height="5" rx="1.6"/><rect x="13" y="10.5" width="7.5" height="10" rx="1.6"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.6"/></svg>Aspetto</button></nav>
+    </div>
+    <p class="cat-intro" id="catIntro"></p>
     <div class="notice" id="localHint" hidden><span><b>Bozza in questo browser.</b> Le schede salvate online (quelle condivise) sono in “Le mie schede”.</span><button type="button" id="bArch3">Le mie schede</button></div>
     <div id="status" role="status"></div>
 
-    <details class="sec" id="secChecks" open><summary>Da sistemare prima di inviarla <span class="cnt" id="cntChecks"></span></summary><div class="in"><ul class="checks" id="checks"></ul></div></details>
+    <details class="sec" id="secChecks"><summary>Da sistemare prima di inviarla <span class="cnt" id="cntChecks"></span></summary><div class="in"><ul class="checks" id="checks"></ul></div></details>
 
-    <details class="sec" open><summary>Immobile e testi principali</summary><div class="in">
+    <details class="sec" data-cat="casa" open><summary>Immobile e testi principali</summary><div class="in">
       <label class="f" for="nome">Nome dell’immobile</label><input id="nome" data-k="nome">
       <label class="f" for="claim">Occhiello sopra il titolo</label><input id="claim" data-k="claim">
       <label class="f" for="titolo">Titolo</label><input id="titolo" data-k="titolo">
@@ -525,8 +546,7 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       <label class="f" for="destinatario">Proposta riservata a (facoltativo)</label><input id="destinatario" data-k="destinatario" placeholder="Nome dell’investitore">
       <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optBozza" data-o="bozza"> Segna come BOZZA (filigrana su tutte le pagine)</label>
     </div></details>
-
-    <details class="sec" id="secFoto" open><summary>Foto, planimetria e logo</summary><div class="in">
+    <details class="sec" id="secFoto" data-cat="casa"><summary>Foto, planimetria e logo</summary><div class="in">
       <p class="hint">Tocca un riquadro per scegliere un’immagine, trascinala qui sopra oppure incollala (Ctrl+V). Le immagini vengono ridotte in automatico.</p>
       <div id="slots"></div>
       <label class="chk" style="margin-top:12px"><input type="checkbox" data-o="galGrande"> Galleria con foto grandi (adatta a una pagina dedicata)</label>
@@ -536,75 +556,21 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
       <select id="fotoPos" data-k="fotoPos"><option value="50% 20%">Parte alta</option><option value="50% 50%">Centro</option><option value="50% 80%">Parte bassa</option></select>
       <label class="f" for="fotoCap">Didascalia della copertina (facoltativa)</label><input id="fotoCap" data-k="fotoCap" placeholder="Es. Render del progetto">
       <div class="two"><div><label class="f" for="brand">Marchio (se manca il logo)</label><input id="brand" data-k="brand"></div><div><label class="f" for="brandSub">Sotto il marchio</label><input id="brandSub" data-k="brandSub"></div></div>
-      <label class="f" for="societa">Società che divide l’utile con l’investitore</label><input id="societa" data-k="societa">
     </div></details>
-
-    <details class="sec"><summary>Dati in evidenza</summary><div class="in">
+    <details class="sec" data-cat="casa"><summary>Dati in evidenza</summary><div class="in">
       <p class="hint">Scrivi qui solo i dati che non escono dai conti. Superficie coperta e totale si calcolano dai m² del “Prezzo di rivendita”: se le scrivi anche a mano, vale quella scritta a mano e non compare due volte.</p>
       <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-o="autoSup"> Aggiungi in automatico superficie coperta e totale</label>
       <div id="lDati"></div><button class="add" data-add="dati" type="button">+ Aggiungi un dato</button>
     </div></details>
-
-    <details class="sec"><summary>Impiego del capitale</summary><div class="in">
-      <div id="lCap"></div><button class="add" data-add="capitale" type="button">+ Aggiungi una voce</button>
-      <div class="chips" id="chipsK"></div><p class="tot" id="totK"></p>
-      <label class="f" for="capPal">Colori del grafico “dove va il capitale”</label>
-      <select id="capPal" data-k="opt.capPal"><option value="salvia">Sfumatura salvia</option><option value="terracotta">Sfumatura terracotta</option><option value="sabbia">Sfumatura sabbia</option><option value="misto">Colori diversi</option></select>
-      <p class="hint" style="margin-top:6px">Puoi anche scegliere il colore di ogni voce con il quadratino colorato. <button type="button" id="bColReset" style="min-height:32px;font-size:12.5px;padding:0 10px">Torna alla sfumatura</button></p>
-    </div></details>
-
-    <details class="sec"><summary>Prezzo di rivendita</summary><div class="in">
-      <p class="hint">Ogni voce vale m² × €/m². Se lasci vuoti i m², conta l’importo a corpo. “Coperta” serve per la superficie coperta.</p>
-      <div id="lVen"></div><div class="chips" id="chipsC"></div><p class="tot" id="totC"></p>
-    </div></details>
-
-    <details class="sec"><summary>Comparabili di zona</summary><div class="in">
-      <p class="hint">Case simili in vendita o vendute nella zona, con il prezzo al m² a confronto con il nostro. Il blocco si accende, si sposta e si mette a mezza riga in “Moduli e impaginazione”.</p>
-      <div id="lCmp"></div><button class="add" data-add="comparabili" type="button">+ Aggiungi un comparabile</button>
-      <label class="f" for="cmpTitolo">Titolo del blocco</label><input id="cmpTitolo" data-k="cmpTitolo">
-      <label class="chk" style="margin-top:12px"><input type="checkbox" data-o="cmpGrafico"> Mostra i comparabili come grafico (prezzo al m²)</label>
-      <div class="two"><div><label class="f" for="mediaZona">Media della zona (€/m², facoltativa)</label><input id="mediaZona" data-k="mediaZona" data-n="1" class="num" inputmode="decimal"></div>
-      <div><label class="f" for="fonteZona">Fonte della media</label><input id="fonteZona" data-k="fonteZona" placeholder="Es. annunci, nov. 2026"></div></div>
-    </div></details>
-    <details class="sec"><summary>Costi alla vendita</summary><div class="in">
-      <p class="hint">Si pagano prima di dividere l’utile. Spunta per includerli; scegli importo fisso (€) o percentuale del prezzo (%). Nella scheda la percentuale e l’importo si aggiornano da soli: non serve scriverli nel nome.</p>
-      <div id="lCv"></div><button class="add" data-add="costiVendita" type="button">+ Aggiungi un costo</button>
-    </div></details>
-
-    <details class="sec"><summary>Quote e tempi</summary><div class="in">
-      <div class="two">
-        <div><label class="f" for="quota">Quota investitore (%)</label><input id="quota" data-k="quotaInv" data-n="1" class="num" inputmode="decimal"></div>
-        <div><label class="f" for="mesi">Durata (mesi)</label><input id="mesi" data-k="mesi" data-n="1" class="num" inputmode="decimal"></div>
-      </div>
-      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optAnnuo" data-o="annuo"> Mostra il rendimento su base annua (se la durata non è 12 mesi)</label>
-      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optInvNota" data-o="invNota"> Mostra la nota sotto il rendimento dell’investitore (capitale che torna per primo e pareggio)</label>
-    </div></details>
-
-    <details class="sec" id="secScen"><summary>Scenari: cosa mostrare</summary><div class="in">
-      <p class="hint">Qui scegli cosa compare nel grafico “Quanto riceve l’investitore” e nella tabella degli scenari. Meno voci accese, grafico più pulito.</p>
-      <label class="f" for="scen">Scenari: variazione del prezzo ± (%)</label><input id="scen" data-k="scenPct" data-n="1" class="num" inputmode="decimal">
-      <div class="two">
-        <div><label class="f" for="stLav">Prova: lavori più cari del (%)</label><input id="stLav" data-k="stress.lavori" data-n="1" class="num" inputmode="decimal"></div>
-        <div><label class="f" for="stMesi">Prova: vendita dopo (mesi)</label><input id="stMesi" data-k="stress.mesi" data-n="1" class="num" inputmode="decimal"></div>
-      </div>
-      <div id="lScen"></div>
-    </div></details>
-
-    <details class="sec" id="secTesti"><summary>Testi e righe della scheda</summary><div class="in">
-      <p class="hint">Più comodo: tocca un riquadro nell’anteprima e cambi lì le sue scritte. Qui ci sono tutte, riquadro per riquadro. Se lasci un campo vuoto resta la scritta originale (quella in grigio). Le parole tra graffe, come {quota}, {mesi} o {prezzo}, diventano numeri: lasciale se vuoi che il numero resti.</p>
-      <div class="two"><div><label class="f" for="fmtOp">Importi dei conti</label><select id="fmtOp" data-fmt="operazione"></select></div><div><label class="f" for="fmtInv">Importi dell’investitore</label><select id="fmtInv" data-fmt="investitore"></select></div></div>
-      <div id="lRighe"></div>
-    </div></details>
-    <details class="sec"><summary>Perché questa operazione</summary><div class="in">
+    <details class="sec" data-cat="casa"><summary>Perché questa operazione</summary><div class="in">
       <div id="lWhy"></div><button class="add" data-add="perche" type="button">+ Aggiungi un punto</button>
     </div></details>
-
-    <details class="sec"><summary>Verifiche e documenti</summary><div class="in">
+    <details class="sec" data-cat="casa"><summary>Verifiche e documenti</summary><div class="in">
       <p class="hint">Lo stato delle verifiche sulla casa, da mostrare all’investitore. Il modulo è spento: accendilo in “Moduli e impaginazione” quando gli stati sono aggiornati.</p>
       <div id="lVer"></div><button class="add" data-add="verifiche" type="button">+ Aggiungi una verifica</button>
       <label class="f" for="documenti">Documenti disponibili su richiesta</label><textarea id="documenti" data-k="documenti" placeholder="Es. visura e planimetria catastale, relazione tecnica, preventivo dei lavori, bozza di contratto"></textarea>
     </div></details>
-    <details class="sec"><summary>Note e contatti</summary><div class="in">
+    <details class="sec" data-cat="casa"><summary>Note e contatti</summary><div class="in">
       <label class="f" for="nota">Nota sotto i conti (pagina 1)</label><textarea id="nota" data-k="nota"></textarea>
       <label class="f" for="intro2">Introduzione di pagina 2</label><textarea id="intro2" data-k="intro2"></textarea>
       <label class="f" for="nota2">Nota finale</label><textarea id="nota2" data-k="nota2"></textarea>
@@ -615,21 +581,69 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
         <div><label class="f" for="cMail">Email</label><input id="cMail" data-k="contatti.email" inputmode="email"></div>
       </div>
     </div></details>
-
-    <details class="sec"><summary>Colori e caratteri</summary><div class="in">
+    <details class="sec" data-cat="conti" open><summary>Impiego del capitale</summary><div class="in">
+      <div id="lCap"></div><button class="add" data-add="capitale" type="button">+ Aggiungi una voce</button>
+      <div class="chips" id="chipsK"></div><p class="tot" id="totK"></p>
+      <label class="f" for="capPal">Colori del grafico “dove va il capitale”</label>
+      <select id="capPal" data-k="opt.capPal"><option value="salvia">Sfumatura salvia</option><option value="terracotta">Sfumatura terracotta</option><option value="sabbia">Sfumatura sabbia</option><option value="misto">Colori diversi</option></select>
+      <p class="hint" style="margin-top:6px">Puoi anche scegliere il colore di ogni voce con il quadratino colorato. <button type="button" id="bColReset" style="min-height:32px;font-size:12.5px;padding:0 10px">Torna alla sfumatura</button></p>
+    </div></details>
+    <details class="sec" data-cat="conti"><summary>Prezzo di rivendita</summary><div class="in">
+      <p class="hint">Ogni voce vale m² × €/m². Se lasci vuoti i m², conta l’importo a corpo. “Coperta” serve per la superficie coperta.</p>
+      <div id="lVen"></div><div class="chips" id="chipsC"></div><p class="tot" id="totC"></p>
+    </div></details>
+    <details class="sec" data-cat="conti"><summary>Costi alla vendita</summary><div class="in">
+      <p class="hint">Si pagano prima di dividere l’utile. Spunta per includerli; scegli importo fisso (€) o percentuale del prezzo (%). Nella scheda la percentuale e l’importo si aggiornano da soli: non serve scriverli nel nome.</p>
+      <div id="lCv"></div><button class="add" data-add="costiVendita" type="button">+ Aggiungi un costo</button>
+    </div></details>
+    <details class="sec" data-cat="conti"><summary>Quote e tempi</summary><div class="in">
+      <div class="two">
+        <div><label class="f" for="quota">Quota investitore (%)</label><input id="quota" data-k="quotaInv" data-n="1" class="num" inputmode="decimal"></div>
+        <div><label class="f" for="mesi">Durata (mesi)</label><input id="mesi" data-k="mesi" data-n="1" class="num" inputmode="decimal"></div>
+      </div>
+      <label class="f" for="societa">Società che divide l’utile con l’investitore</label><input id="societa" data-k="societa">
+      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optAnnuo" data-o="annuo"> Mostra il rendimento su base annua (se la durata non è 12 mesi)</label>
+      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optInvNota" data-o="invNota"> Mostra la nota sotto il rendimento dell’investitore (capitale che torna per primo e pareggio)</label>
+    </div></details>
+    <details class="sec" data-cat="conti"><summary>Comparabili di zona</summary><div class="in">
+      <p class="hint">Case simili in vendita o vendute nella zona, con il prezzo al m² a confronto con il nostro. Il blocco si accende, si sposta e si mette a mezza riga in “Moduli e impaginazione”.</p>
+      <div id="lCmp"></div><button class="add" data-add="comparabili" type="button">+ Aggiungi un comparabile</button>
+      <label class="f" for="cmpTitolo">Titolo del blocco</label><input id="cmpTitolo" data-k="cmpTitolo">
+      <label class="chk" style="margin-top:12px"><input type="checkbox" data-o="cmpGrafico"> Mostra i comparabili come grafico (prezzo al m²)</label>
+      <div class="two"><div><label class="f" for="mediaZona">Media della zona (€/m², facoltativa)</label><input id="mediaZona" data-k="mediaZona" data-n="1" class="num" inputmode="decimal"></div>
+      <div><label class="f" for="fonteZona">Fonte della media</label><input id="fonteZona" data-k="fonteZona" placeholder="Es. annunci, nov. 2026"></div></div>
+    </div></details>
+    <details class="sec" id="secScen" data-cat="scenari" open><summary>Scenari e prove</summary><div class="in">
+      <p class="hint">Quanto cambia il prezzo negli scenari, le due prove e cosa compare nel grafico e nella tabella. Meno voci accese, grafico più pulito. Gli importi in k si scelgono in Testi → Importi.</p>
+      <label class="f" for="scen">Scenari: variazione del prezzo ± (%)</label><input id="scen" data-k="scenPct" data-n="1" class="num" inputmode="decimal">
+      <div class="two">
+        <div><label class="f" for="stLav">Prova: lavori più cari del (%)</label><input id="stLav" data-k="stress.lavori" data-n="1" class="num" inputmode="decimal"></div>
+        <div><label class="f" for="stMesi">Prova: vendita dopo (mesi)</label><input id="stMesi" data-k="stress.mesi" data-n="1" class="num" inputmode="decimal"></div>
+      </div>
+      <div id="lScen"></div>
+    </div></details>
+    <details class="sec" id="secFmt" data-cat="testi" open><summary>Importi: esatti, arrotondati o in k</summary><div class="in">
+      <p class="hint">Scegli il formato per tutta la scheda e, se vuoi, uno diverso per i singoli riquadri. Nei conti e nel riquadro dell’investitore puoi sceglierlo anche riga per riga: tocca il riquadro nell’anteprima.</p>
+      <label class="f" for="fmtAll">Tutta la scheda</label><select id="fmtAll" data-fmt="_"></select>
+      <div id="lFmt" class="fmts"></div>
+      <p class="hint" style="margin-top:10px">Con gli importi arrotondati o in k una somma può non tornare di qualche centinaio di euro. I prezzi al m² e il file Excel restano sempre esatti.</p>
+    </div></details>
+    <details class="sec" id="secTesti" data-cat="testi"><summary>Testi e righe della scheda</summary><div class="in">
+      <p class="hint">Più comodo: tocca un riquadro nell’anteprima e cambi lì le sue scritte. Qui ci sono tutte, riquadro per riquadro. Se lasci un campo vuoto resta la scritta originale (quella in grigio). Le parole tra graffe, come {quota}, {mesi} o {prezzo}, diventano numeri: lasciale se vuoi che il numero resti.</p>
+      <div id="lRighe"></div>
+    </div></details>
+    <details class="sec" id="secMod" data-cat="aspetto" open><summary>Moduli e impaginazione</summary><div class="in">
+      <p class="hint">Accendi, spegni e sposta i moduli con le frecce, anche da una pagina all’altra. “Spazio sopra” stacca un modulo da quello prima; due mezze righe di seguito stanno affiancate. Le pagine si aggiungono in fondo, fino a 12.</p>
+      <label class="f" for="gap">Spazio tra i moduli: <b id="gapV"></b></label><input type="range" id="gap" data-k="gap" data-n="1" min="10" max="40" step="2" style="padding:0;min-height:32px;accent-color:var(--accent)">
+      <div id="mods"></div>
+      <div class="two"><button class="add" id="bLayout3" type="button">3 pagine (consigliata)</button><button class="add" id="bLayout" type="button">2 pagine (più fitta)</button></div>
+    </div></details>
+    <details class="sec" data-cat="aspetto"><summary>Colori e caratteri</summary><div class="in">
       <div class="two"><div><label class="f" for="fTit">Carattere dei titoli e dei numeri</label><select id="fTit" data-k="font.titoli"></select></div>
       <div><label class="f" for="fTxt">Carattere del testo</label><select id="fTxt" data-k="font.testo"></select></div></div>
       <p class="hint" style="margin-top:10px">I colori valgono per testi, riquadri, barre e grafici. I colori delle voci del capitale si scelgono in “Impiego del capitale”.</p>
       <div class="cols" id="lCol"></div>
       <button class="add" id="bColDef" type="button">Torna a colori e caratteri DiSalento</button>
-    </div></details>
-    <details class="sec" id="secMod"><summary>Moduli e impaginazione</summary><div class="in">
-      <p class="hint">Puoi aggiungere pagine (fino a 12) con “+ Aggiungi una pagina”. Accendi o spegni i moduli e cambia l’ordine con le frecce: dal primo modulo di una pagina ↑ lo porta in fondo alla pagina precedente, dall’ultimo ↓ in cima alla successiva. “Spazio sopra” lo stacca da quello prima. Due moduli a mezza riga di seguito stanno affiancati.</p>
-      <label class="f" for="fmtAll">Importi in tutta la scheda</label><select id="fmtAll" data-fmt="_"></select>
-      <p class="hint" style="margin-top:6px">Ogni modulo con importi può avere il suo formato (“Importi” qui sotto). Con gli importi arrotondati o in k i totali possono non tornare al centesimo: nel file Excel restano sempre esatti.</p>
-      <label class="f" for="gap">Spazio tra i moduli: <b id="gapV"></b></label><input type="range" id="gap" data-k="gap" data-n="1" min="10" max="40" step="2" style="padding:0;min-height:32px;accent-color:var(--accent)">
-      <div id="mods"></div>
-      <div class="two"><button class="add" id="bLayout3" type="button">3 pagine (consigliata)</button><button class="add" id="bLayout" type="button">2 pagine (più fitta)</button></div>
     </div></details>
   </div>
 
@@ -1332,7 +1346,8 @@ for(const [k,f] of [['disalento','logo-disalento.png'],['riquality','logo-riqual
 const SCEN_VIS=[['Nel grafico “Quanto riceve l’investitore”','grafB',[['gbPar','Pareggio'],['gbPru','Scenario prudente'],['gbPrev','Scenario previsto'],['gbFav','Scenario favorevole'],['gbPct','Rendimento % accanto al guadagno'],['gbRiceve','Quanto riceve in tutto (riga sotto ogni scenario)'],['gbFascia','Fascia colorata tra prudente e favorevole'],['gbLeg','Legenda sotto il grafico']]],
   ['Nella tabella degli scenari: righe','scenari',[['scPru','Prudente'],['scPrev','Previsto'],['scFav','Favorevole'],['scPar','Pareggio'],['scLav','Prova: lavori più cari'],['scRit','Prova: vendita in ritardo']]],
   ['Nella tabella degli scenari: colonne e nota',null,[['scPrezzo','Prezzo'],['scUtile','Utile'],['scInv','All’investitore'],['scRend','Rendimento'],['scNota','Frase sotto la tabella (sotto il pareggio…)']]]];
-const fmtOpts=(id)=>(id==='_'?'':`<option value="">Come il resto della scheda</option>`)+FMT_OK.map(f=>`<option value="${f}">${id==='_'?'Importi ':''}${FMT_NOMI[f]}</option>`).join('');
+const maiusc=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const fmtOpts=(id)=>(id==='_'?'':`<option value="">Come la scheda (${FMT_NOMI[fmtDi('_')].split(' (')[0]})</option>`)+FMT_OK.map(f=>`<option value="${f}">${maiusc(FMT_NOMI[f])}</option>`).join('');
 const TESTI=[
   ['operazione','I conti dell’operazione',[['opTitolo'],['opRivendita',1,1],['opCapitale',1,1],['opCosti',1,1],['opUtile',1,1],['opRend',1],['opDurata',1],['opPareggio',1,1]]],
   ['investitore','Riquadro dell’investitore',[['invTitolo'],['invRiceve',1,1],['invInveste',1,1],['invGuadagno',1,1],['invGuadagnoNota',1],['invRend',1],['invAnnuo'],['invPrimo'],['invPareggio'],['perditaMsg']]],
@@ -1437,7 +1452,10 @@ function checks(c,over){const X=[];
   if(!ck.length)X.push('Aggiungi almeno due comparabili di zona: mostrano che il prezzo di rivendita è realistico.');
   else if(c.mqCop>0){const o=c.base/c.mqCop,hi=Math.max(...ck.map(x=>num(x.prezzo)/num(x.mq)));if(o>hi)X.push(`La stima di ${eur(o)}/m² è più alta di tutti i comparabili: l’investitore lo noterà, spiega perché.`)}
   if(!S.contatti.nome&&!S.contatti.tel&&!S.contatti.email)X.push('Aggiungi un referente con telefono o email in “Note e contatti”: chi legge deve sapere chi chiamare.');
-  $('checks').innerHTML=X.length?X.map(t=>`<li>${esc(t)}</li>`).join(''):'<li class="ok">Tutto a posto: la scheda è pronta.</li>';
+  const nomi=new Set([...document.querySelectorAll('#ed details.sec')].map(nomeSez)),PAROLE=[[/costo di vendita|costi di vendita/i,'Costi alla vendita'],[/foto di copertina/i,'Foto, planimetria e logo'],[/parentesi quadre/i,'Dati in evidenza'],
+    [/imprevist|Intermediazione|capitale/i,'Impiego del capitale'],[/comparabil/i,'Comparabili di zona'],[/perdita|pareggio|stima di/i,'Prezzo di rivendita'],[/referente/i,'Note e contatti']];
+  const dove=t=>{const q=[...t.matchAll(/“([^”]+)”/g)].map(m=>m[1]).find(n=>nomi.has(n));if(q)return q;const k=PAROLE.find(([r])=>r.test(t));return k?k[1]:''};
+  $('checks').innerHTML=X.length?X.map(t=>{const d=dove(t);return`<li${d?` data-sez="${esc(d)}" title="Vai a “${esc(d)}”"`:''}>${esc(t)}</li>`}).join(''):'<li class="ok">Tutto a posto: la scheda è pronta.</li>';
   const n=$('cntChecks');n.textContent=X.length?X.length:'✓';n.className='cnt'+(X.length?'':' ok');
 }
 
@@ -1480,7 +1498,7 @@ function mods(){
       <div class="r2"><select aria-label="Pagina di ${esc(BLOCKS[b.id])}" data-mod-p="${b.i}">${pages.map(q=>`<option value="${q}" ${q===b.p?'selected':''}>Pagina ${q}</option>`).join('')}</select>
       <select aria-label="Larghezza di ${esc(BLOCKS[b.id])}" data-mod-wsel="${b.i}" ${['grafA','grafB'].includes(b.id)?'disabled':''}><option value="full" ${b.w!=='half'?'selected':''}>Riga intera</option><option value="half" ${b.w==='half'?'selected':''}>Mezza riga</option></select>
       <select aria-label="Spazio sopra ${esc(BLOCKS[b.id])}" data-mod-sp="${b.i}">${SP.map((t,q)=>`<option value="${q}" ${(b.sp||0)===q?'selected':''}>Spazio sopra: ${t}</option>`).join('')}</select>
-      ${FMT_MODS.includes(b.id)?`<select class="fm" aria-label="Importi di ${esc(BLOCKS[b.id])}" data-fmt="${b.id}"></select>`:''}</div></li>`}).join(''):'<li class="hint">Pagina vuota: sposta qui un modulo con le frecce o con “Pagina”.</li>'}</ul>`}).join('');
+</div></li>`}).join(''):'<li class="hint">Pagina vuota: sposta qui un modulo con le frecce o con “Pagina”.</li>'}</ul>`}).join('');
   $('mods').insertAdjacentHTML('beforeend',`<div class="two" style="margin-top:10px">${S.pagine<12?'<button class="add" type="button" id="bAddPg">+ Aggiungi una pagina</button>':''}${S.pagine>1&&!S.layout.some(b=>b.p===S.pagine)?`<button class="add" type="button" id="bDelPg">Togli la pagina ${S.pagine}</button>`:''}</div>`);
   fmtSel();
 }
@@ -1507,7 +1525,8 @@ function lists(){
   $('fTxt').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.testo===n?'selected':''}>${n}</option>`).join('');
   {const ap=new Set([...document.querySelectorAll('#lRighe details[open]')].map(d=>d.dataset.g));
    $('lRighe').innerHTML=TESTI.map(([id,t,rs])=>`<details class="tg" data-g="${id}" ${ap.has(id)?'open':''}><summary>${esc(t)}</summary>${rs.map(rigaTesto).join('')}</details>`).join('')}
-  $('lScen').innerHTML=`<h4 class="rgh">Grafico: impostazioni pronte</h4>`+presetHTML()+SCEN_VIS.map(([t,id,rs])=>`<h4 class="rgh">${esc(t)}</h4>${id?`<label class="f" for="fmt-${id}" style="margin-top:4px">Importi ${id==='grafB'?'del grafico':'della tabella'}</label><select id="fmt-${id}" data-fmt="${id}"></select>`:''}<div class="vis">${rs.map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`).join('');
+  $('lScen').innerHTML=`<h4 class="rgh">Grafico: impostazioni pronte</h4>`+presetHTML()+SCEN_VIS.map(([t,id,rs])=>`<h4 class="rgh">${esc(t)}</h4><div class="vis">${rs.map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`).join('');
+  $('lFmt').innerHTML=FMT_MODS.map(id=>`<label class="fr2"><span>${esc(BLOCKS[id])}</span><select data-fmt="${id}" aria-label="Importi: ${esc(BLOCKS[id])}"></select></label>`).join('');
   $('gapV').textContent=S.gap+' px';
   $('lCol').innerHTML=Object.keys(COLORI_NOMI).map(k=>`<label class="colr"><input type="color" data-k="colori.${k}" value="${esc(S.colori[k])}"><span>${esc(COLORI_NOMI[k])}</span></label>`).join('');
   slots();mods();
@@ -1515,7 +1534,7 @@ function lists(){
 /* riempie tutte le tendine del formato degli importi (anche quelle doppie, nei moduli e nelle sezioni) */
 function fmtSel(){for(const el of document.querySelectorAll('select[data-fmt]')){const id=el.dataset.fmt;
   if(el.classList.contains('fr')){el.innerHTML=`<option value="">come riquadro</option><option value="eur">esatto</option><option value="tondo">arrotondato</option><option value="k">in k</option>`;el.value=FMT_OK.includes(S.fmt[id])?S.fmt[id]:'';continue}
-  el.innerHTML=id==='_'?fmtOpts('_'):`<option value="">Importi: come il resto (${esc(FMT_NOMI[fmtDi('_')].split(' (')[0])})</option>`+FMT_OK.map(f=>`<option value="${f}">Importi ${FMT_NOMI[f]}</option>`).join('');
+  el.innerHTML=fmtOpts(id);
   el.value=id==='_'?fmtDi('_'):(FMT_OK.includes(S.fmt[id])?S.fmt[id]:'')}}
 const getK=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
 const setK=(p,val)=>{const a=p.split('.');let o=S;for(let i=0;i<a.length-1;i++)o=o[a[i]];o[a[a.length-1]]=val};
@@ -1591,7 +1610,7 @@ $('slots').addEventListener('drop',e=>{const s=e.target.closest('.slot');if(!s)r
 $('slots').addEventListener('click',e=>{if(e.target.closest('button,input'))return;const s=e.target.closest('.slot');if(!s)return;pickTarget={kind:s.dataset.slot,i:+s.dataset.i};$('fImg').value='';$('fImg').click()});
 const DATI_SEC={foto:'Foto, planimetria e logo',galleria:'Foto, planimetria e logo',hero:'Immobile e testi principali',dati:'Dati in evidenza',operazione:'Quote e tempi',investitore:'Quote e tempi',
   perche:'Perché questa operazione',nota:'Note e contatti',intro:'Note e contatti',nota2:'Note e contatti',contatti:'Note e contatti',capitale:'Impiego del capitale',grafC:'Impiego del capitale',
-  composizione:'Prezzo di rivendita',comparabili:'Comparabili di zona',ripartizione:'Costi alla vendita',grafA:'Quote e tempi',grafB:'Scenari: cosa mostrare',scenari:'Scenari: cosa mostrare',verifiche:'Verifiche e documenti',pagina:'Immobile e testi principali'};
+  composizione:'Prezzo di rivendita',comparabili:'Comparabili di zona',ripartizione:'Costi alla vendita',grafA:'Quote e tempi',grafB:'Scenari e prove',scenari:'Scenari e prove',verifiche:'Verifiche e documenti',pagina:'Immobile e testi principali'};
 function qpHTML(id){const g=TESTI.find(x=>x[0]===id),vis=i=>`<h4 class="rgh">${esc(SCEN_VIS[i][0].replace('Nella tabella degli scenari: ','Tabella: ').replace('Nel grafico “Quanto riceve l’investitore”','Cosa mostrare'))}</h4><div class="vis">${SCEN_VIS[i][2].map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`;
   let h=`<div class="qh"><b>${esc(id==='pagina'?'Intestazione delle pagine':BLOCKS[id])}</b><button type="button" data-qp-x aria-label="Chiudi">×</button></div>`;
   if(FMT_MODS.includes(id))h+=`<label class="f">Importi di questo riquadro</label><select data-fmt="${id}"></select>`;
@@ -1609,10 +1628,20 @@ function apriQp(id,ev){const q=$('qp');qpId=id;q.innerHTML=qpHTML(id);fmtSel();q
     y=Math.max(top,Math.min(y,innerHeight-h-12));q.style.left=x+'px';q.style.top=y+'px'}
   q.scrollTop=0}
 function chiudiQp(){const q=$('qp');if(q.hidden)return;q.hidden=true;qpId=null;$('stage').querySelectorAll('.blk.sel').forEach(x=>x.classList.remove('sel'));lists()}
-function apriSez(nome){const d=[...document.querySelectorAll('#ed details.sec')].find(x=>x.querySelector('summary').textContent===nome);chiudiQp();if(!d)return;
+const CAT_INTRO={casa:'La casa: testi, foto, dati, punti di forza, verifiche e contatti.',conti:'I numeri: capitale, prezzo di rivendita, costi, quote, tempi e comparabili.',
+  scenari:'Scenari e prove: cosa succede se il prezzo cambia, e cosa mostrare nel grafico e nella tabella.',testi:'Importi esatti o in k e tutte le scritte della scheda, riquadro per riquadro.',
+  aspetto:'Pagine, ordine dei moduli, spazi, colori e caratteri.'};
+function setCat(c,scroll){if(!CAT_INTRO[c])c='casa';$('ed').dataset.cat=c;for(const b of document.querySelectorAll('#cats button'))b.setAttribute('aria-pressed',b.dataset.cat===c);
+  $('catIntro').textContent=CAT_INTRO[c];try{localStorage.setItem('sc-cat',c)}catch(e){}
+  if(scroll){const top=$('ed').getBoundingClientRect().top+scrollY-($('bar').offsetHeight||0)-8;if(scrollY>top)window.scrollTo({top})}}
+$('cats').addEventListener('click',e=>{const b=e.target.closest('button[data-cat]');if(b)setCat(b.dataset.cat,true)});
+try{setCat(localStorage.getItem('sc-cat')||'casa')}catch(e){setCat('casa')}
+const nomeSez=d=>d.querySelector('summary').firstChild.textContent.trim();
+function apriSez(nome){const d=[...document.querySelectorAll('#ed details.sec')].find(x=>nomeSez(x)===nome);chiudiQp();if(!d)return;if(d.dataset.cat)setCat(d.dataset.cat);
   if($('wrap').dataset.tab==='pv')tab('ed');d.open=true;requestAnimationFrame(()=>{d.scrollIntoView({behavior:'smooth',block:'start'});d.classList.add('flash');setTimeout(()=>d.classList.remove('flash'),1600)})}
 function applicaPreset(k){const p=GB_PRESET[k];if(!p)return;for(const [key] of GB_VIS){if(p[1][key]===0)S.off[key]=true;else delete S.off[key]}save();render();
   for(const el of document.querySelectorAll('[data-off^="gb"]'))el.checked=ON(el.dataset.off);status(`Grafico: impostazione “${p[0]}”.`)}
+$('checks').addEventListener('click',e=>{const li=e.target.closest('li[data-sez]');if(li)apriSez(li.dataset.sez)});
 $('qp').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
   if(d.qpX!=null)chiudiQp();else if(d.qpSez)apriSez(d.qpSez);else if(d.gbPreset)applicaPreset(d.gbPreset);
   else if(d.qpOff){S.layout.forEach(b=>{if(b.id===d.qpOff)b.on=false});chiudiQp();save();all();status(`“${BLOCKS[d.qpOff]}” tolto dalla scheda: lo riaccendi in “Moduli e impaginazione”.`)}});
@@ -1689,7 +1718,7 @@ async function offer(filename,data){
   const blob=data instanceof Blob?data:new Blob([data]);const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);status('File scaricato: '+filename);return true;
 }
-function busy(on){for(const id of ['bPdf','bXls','bZip','bXls2','bZip2','bJpg'])$(id).disabled=on}
+function busy(on){for(const id of ['bPdf','bXls2','bZip2','bJpg'])$(id).disabled=on}
 const need=(...g)=>g.every(n=>window[n]);
 
 async function snap(only){
@@ -1758,7 +1787,7 @@ const doZip=()=>run('Preparo PDF, Excel, dati e foto…',async()=>{if(!need('htm
   await offer(`${b} - scheda completa.zip`,await z.generateAsync({type:'blob',compression:'DEFLATE'}))});
 const doJpg=()=>run('Preparo l’immagine della pagina 1…',async()=>{if(!need('html2canvas'))throw new Error('libreria per le immagini non ancora caricata');await offer(base()+' - pagina 1.jpg',await jpg((await snap(1))[0]))});
 $('bJpg').onclick=doJpg;
-$('bPdf').onclick=doPdf;$('bXls').onclick=doXls;$('bXls2').onclick=doXls;$('bZip').onclick=doZip;$('bZip2').onclick=doZip;
+$('bPdf').onclick=doPdf;$('bXls2').onclick=doXls;$('bZip2').onclick=doZip;
 $('bSave').onclick=()=>offer(base()+' - dati.json',json());
 $('fLoad').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{S=normalize(JSON.parse(t));all();status('Dati caricati.')}catch(x){status('Questo file non contiene dati della scheda.')}e.target.value=''})});
 $('bReset').onclick=()=>{const b=$('bReset');if(b.dataset.sure){S=normalize(null);delete b.dataset.sure;b.textContent='Ripristina l’esempio';all();status('Esempio ripristinato.')}

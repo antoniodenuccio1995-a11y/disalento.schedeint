@@ -21,6 +21,7 @@ Strumento interno di Riquality S.r.l.s. (marchio DiSalento) per preparare e cond
   - dove va il capitale;
   - prezzo al m² rispetto alla zona.
 - **Aspetto:** colori e caratteri modificabili; copertina, galleria di 3 foto (anche planimetria) e logo.
+- **Pannello in cinque schede:** Casa, Conti, Scenari, Testi, Aspetto; gli avvisi “Da sistemare” portano alla sezione da correggere.
 - **Pannello rapido:** tocchi un riquadro nell'anteprima e cambi lì le sue scritte, gli importi e cosa mostrare.
 - **Scritte:** tutte modificabili, anche quelle dei grafici e delle tabelle.
 - **Importi:** esatti, arrotondati o in k (185k €), per tutta la scheda, per riquadro o, nei conti e nel riquadro dell'investitore, riga per riga.

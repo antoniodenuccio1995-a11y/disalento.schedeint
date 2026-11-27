@@ -24,6 +24,7 @@ Aggiornata al 27 novembre 2026. Fonti: richieste di Antonio, handoff, revisione 
 - Importi esatti, arrotondati o in k (185k €), per tutta la scheda o modulo per modulo; i prezzi al m² e l'Excel restano esatti.
 - Scenari: nel grafico "Quanto riceve l'investitore" e nella tabella si sceglie cosa mostrare (pareggio, singoli scenari, rendimento, "riceve", fascia, legenda; righe e colonne della tabella, prove, frase finale).
 - Zoom delle pagine A4 (− / percentuale / +, da 35% a 250%), anche sul telefono.
+- Pannello riordinato in cinque schede (Casa, Conti, Scenari, Testi, Aspetto), menu “Altro” raggruppato, formati degli importi in un’unica sezione, avvisi cliccabili.
 - Pannello rapido: tocca un riquadro dell'anteprima per cambiarne scritte, importi (anche riga per riga) e voci; tutte le scritte della scheda modificabili; grafico degli scenari con impostazioni pronte (essenziale, tre scenari, completo).
 
 ## Dati da completare per Casa Ruggiano (non dipendono dallo strumento)

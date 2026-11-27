@@ -55,6 +55,11 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
   - `capitale`: C.
   - `mq`: prezzo al m².
 
+**Pannello di sinistra**
+- Le sezioni (`details.sec`) hanno `data-cat` e stanno in cinque schede: Casa, Conti, Scenari, Testi, Aspetto. `setCat()` le cambia e ricorda l'ultima (`sc-cat`); `apriSez(nome)` apre una sezione dal suo titolo, passando alla scheda giusta.
+- "Da sistemare prima di inviarla" resta sopra le schede; ogni avviso porta alla sezione da correggere.
+- Menu "Altro" in alto: Scheda (nuova, duplica), Scarica (Excel, ZIP, JPG, JSON), Altro (carica, ripristina).
+
 **Pannello rapido**
 - Toccando un riquadro dell'anteprima (solo in modifica) si apre `#qp`, scritto da `qpHTML(id)`: importi del riquadro, voci da mostrare, scritte e un tasto per la sezione dei dati.
 - Sul computer sta sopra la colonna di sinistra, sul telefono sale dal basso.
@@ -101,7 +106,7 @@ node test.js ../index.html out/base --photos --exports --mobile
 ```
 
 ```bash
-for t in fmt cloud righe pag web logo qp; do node $t.js ../index.html out/$t; done
+for t in fmt cloud righe pag web logo qp menu; do node $t.js ../index.html out/$t; done
 ```
 
 `harness.js` serve le librerie e i caratteri da `node_modules` e blocca la rete; `cloud.js` e `web.js` simulano Supabase. Playwright e Chromium sono già installati nelle sessioni cloud.
@@ -115,7 +120,8 @@ Le prove controllano:
 - vista web su computer e telefono;
 - formati degli importi, voci degli scenari e zoom;
 - loghi in testata, nel piè di pagina e nella vista web;
-- pannello rapido su computer e telefono.
+- pannello rapido su computer e telefono;
+- schede del pannello, menu "Altro" e avvisi che portano alla sezione giusta.
 
 ## Regole di lavoro
 

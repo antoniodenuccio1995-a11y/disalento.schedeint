@@ -47,4 +47,7 @@ async function open(page,file,opts={}){
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(400);
 }
-module.exports={open};
+// apre tutte le sezioni del pannello, di tutte le schede (Casa, Conti, Scenari, Testi, Aspetto)
+async function apriTutto(page){await page.evaluate(()=>{document.querySelectorAll('details.sec,details.tg').forEach(d=>d.open=true);
+  const st=document.createElement('style');st.textContent='#ed details.sec[data-cat]{display:block!important}';document.head.appendChild(st)})}
+module.exports={open,apriTutto};

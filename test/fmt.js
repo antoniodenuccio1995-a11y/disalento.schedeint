@@ -1,5 +1,5 @@
 // Formati degli importi, voci degli scenari e zoom
-const {chromium}=require('playwright');const {open}=require('./harness');const fs=require('fs');const path=require('path');
+const {chromium}=require('playwright');const {open,apriTutto}=require('./harness');const fs=require('fs');const path=require('path');
 const file=process.argv[2],out=process.argv[3];fs.mkdirSync(out,{recursive:true});
 (async()=>{const b=await chromium.launch();
   const ctx=await b.newContext({viewport:{width:1440,height:950}});const p=await ctx.newPage();
@@ -10,7 +10,7 @@ const file=process.argv[2],out=process.argv[3];fs.mkdirSync(out,{recursive:true}
   // formato unit tests
   // selects present
   console.log('select fmt count',await p.locator('select[data-fmt]').count());
-  await p.evaluate(()=>document.querySelectorAll('details.sec').forEach(d=>d.open=true));
+  await apriTutto(p);
   // globale in k
   await p.selectOption('#fmtAll','k');await p.waitForTimeout(300);
   console.log('OP k:',await txt('#stage [data-b="operazione"] .ln'));
