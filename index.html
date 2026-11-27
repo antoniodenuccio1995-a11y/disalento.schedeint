@@ -137,6 +137,9 @@ input[type=checkbox]{width:20px;height:20px;min-height:0;padding:0;accent-color:
 .mod .r1{display:grid;grid-template-columns:24px minmax(0,1fr) 44px 44px;gap:6px;align-items:center}
 .mod .r2{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.3fr);gap:6px}
 .mod .r2 select{width:100%;font-size:13px}
+.mod .r2 .fm{grid-column:1/-1}
+.vis{display:grid;gap:8px;margin:6px 0 4px}
+.vis .chk{min-height:32px;font-size:14px}
 .mod.off{opacity:.55}
 .mod .nm{font-size:14px;line-height:1.25}
 .mod select{width:auto;min-height:44px;padding:4px 6px;font-size:14px}
@@ -149,7 +152,11 @@ input[type=checkbox]{width:20px;height:20px;min-height:0;padding:0;accent-color:
 .vtools .bad{color:var(--bad);font-weight:600}
 .vtools button{min-height:36px;font-size:13px}
 .stagebox{position:relative}
-.stagebox.zoom{overflow-x:auto}
+.stagebox.zoom{overflow-x:auto;overscroll-behavior-x:contain}
+.zm{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.zm[hidden]{display:none!important}
+.vtools .zm button{min-height:36px;min-width:40px;border:0;border-radius:0;background:transparent;font-size:16px;padding:0 8px}
+.vtools .zm #zFit{min-width:58px;font-size:13px;font-variant-numeric:tabular-nums;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .stage{transform-origin:top left;width:794px}
 .modal{position:fixed;inset:0;z-index:20;background:rgba(20,16,12,.45);display:flex;align-items:center;justify-content:center;padding:16px}
 .modal .box{background:var(--panel);color:var(--ink);border-radius:14px;max-width:540px;width:100%;padding:18px 18px 14px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:calc(100vh - 32px);overflow:auto}
@@ -547,18 +554,23 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
         <div><label class="f" for="quota">Quota investitore (%)</label><input id="quota" data-k="quotaInv" data-n="1" class="num" inputmode="decimal"></div>
         <div><label class="f" for="mesi">Durata (mesi)</label><input id="mesi" data-k="mesi" data-n="1" class="num" inputmode="decimal"></div>
       </div>
+      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optAnnuo" data-o="annuo"> Mostra il rendimento su base annua (se la durata non è 12 mesi)</label>
+      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optInvNota" data-o="invNota"> Mostra la nota sotto il rendimento dell’investitore (capitale che torna per primo e pareggio)</label>
+    </div></details>
+
+    <details class="sec" id="secScen"><summary>Scenari: cosa mostrare</summary><div class="in">
+      <p class="hint">Qui scegli cosa compare nel grafico “Quanto riceve l’investitore” e nella tabella degli scenari. Meno voci accese, grafico più pulito.</p>
       <label class="f" for="scen">Scenari: variazione del prezzo ± (%)</label><input id="scen" data-k="scenPct" data-n="1" class="num" inputmode="decimal">
       <div class="two">
         <div><label class="f" for="stLav">Prova: lavori più cari del (%)</label><input id="stLav" data-k="stress.lavori" data-n="1" class="num" inputmode="decimal"></div>
         <div><label class="f" for="stMesi">Prova: vendita dopo (mesi)</label><input id="stMesi" data-k="stress.mesi" data-n="1" class="num" inputmode="decimal"></div>
       </div>
-      <p class="hint" style="margin-top:6px">Le due prove compaiono sotto gli scenari. Metti 0 per nasconderle.</p>
-      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optAnnuo" data-o="annuo"> Mostra il rendimento su base annua (se la durata non è 12 mesi)</label>
-      <label class="f" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" id="optInvNota" data-o="invNota"> Mostra la nota sotto il rendimento dell’investitore (capitale che torna per primo e pareggio)</label>
+      <div id="lScen"></div>
     </div></details>
 
     <details class="sec"><summary>Righe dei conti e del riquadro investitore</summary><div class="in">
       <p class="hint">Spegni le righe che non vuoi e cambia le scritte. Se lasci un campo vuoto resta la scritta originale (quella in grigio). Nelle scritte puoi usare {quota} per la quota % e {mesi} per la durata.</p>
+      <div class="two"><div><label class="f" for="fmtOp">Importi dei conti</label><select id="fmtOp" data-fmt="operazione"></select></div><div><label class="f" for="fmtInv">Importi dell’investitore</label><select id="fmtInv" data-fmt="investitore"></select></div></div>
       <div id="lRighe"></div>
     </div></details>
     <details class="sec"><summary>Perché questa operazione</summary><div class="in">
@@ -591,6 +603,8 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
     </div></details>
     <details class="sec" id="secMod"><summary>Moduli e impaginazione</summary><div class="in">
       <p class="hint">Puoi aggiungere pagine (fino a 12) con “+ Aggiungi una pagina”. Accendi o spegni i moduli e cambia l’ordine con le frecce: dal primo modulo di una pagina ↑ lo porta in fondo alla pagina precedente, dall’ultimo ↓ in cima alla successiva. “Spazio sopra” lo stacca da quello prima. Due moduli a mezza riga di seguito stanno affiancati.</p>
+      <label class="f" for="fmtAll">Importi in tutta la scheda</label><select id="fmtAll" data-fmt="_"></select>
+      <p class="hint" style="margin-top:6px">Ogni modulo con importi può avere il suo formato (“Importi” qui sotto). Con gli importi arrotondati o in k i totali possono non tornare al centesimo: nel file Excel restano sempre esatti.</p>
       <label class="f" for="gap">Spazio tra i moduli: <b id="gapV"></b></label><input type="range" id="gap" data-k="gap" data-n="1" min="10" max="40" step="2" style="padding:0;min-height:32px;accent-color:var(--accent)">
       <div id="mods"></div>
       <div class="two"><button class="add" id="bLayout3" type="button">3 pagine (consigliata)</button><button class="add" id="bLayout" type="button">2 pagine (più fitta)</button></div>
@@ -598,7 +612,7 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
   </div>
 
   <main class="view" id="view" aria-label="Anteprima della scheda">
-    <div class="vtools"><span id="pgInfo"></span><div class="vr"><div class="vmode" role="group" aria-label="Vista"><button type="button" id="vWeb" aria-pressed="false">Vista web</button><button type="button" id="vA4" aria-pressed="true">Pagine A4</button></div><button id="bZoom" type="button">Ingrandisci</button></div></div>
+    <div class="vtools"><span id="pgInfo"></span><div class="vr"><div class="vmode" role="group" aria-label="Vista"><button type="button" id="vWeb" aria-pressed="false">Vista web</button><button type="button" id="vA4" aria-pressed="true">Pagine A4</button></div><div class="zm" id="bZoom" role="group" aria-label="Zoom delle pagine"><button type="button" id="zMeno" aria-label="Rimpicciolisci" title="Rimpicciolisci">−</button><button type="button" id="zFit" title="Adatta alla larghezza">100%</button><button type="button" id="zPiu" aria-label="Ingrandisci" title="Ingrandisci">+</button></div></div></div>
     <div class="stagebox" id="stagebox"><div class="stage" id="stage"></div></div>
     <div class="web" id="web" hidden></div>
   </main>
@@ -697,7 +711,16 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const grp=n=>String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-const eur=n=>(Math.round(n)<0?'− ':'')+grp(n)+' €';
+/* importi: esatti (185.250 €), arrotondati (185.000 €) o in k (185k €); il formato si sceglie modulo per modulo */
+function fmtAbs(n,m){const a=Math.abs(n);
+  if(m==='tondo'){const st=a>=10000?1000:a>=1000?100:1,r=Math.round(a/st)*st;return{r,s:grp(r)+' €'}}
+  if(m==='k'&&a>=1000){let k=a/1000;k=k>=9.95?Math.round(k):Math.round(k*10)/10;
+    if(k>=1000){const M=Math.round(a/1e4)/100;return{r:M,s:String(M).replace('.',',')+' mln €'}}return{r:k,s:String(k).replace('.',',')+'k €'}}
+  const r=Math.round(a);return{r,s:grp(r)+' €'}}
+const FMT_OK=['eur','tondo','k'],FMT_NOMI={eur:'esatti (185.250 €)',tondo:'arrotondati (185.000 €)',k:'in k (185k €)'};
+let FMT='eur';
+const eurIn=(n,m)=>{const f=fmtAbs(n,m);return(f.r&&n<0?'− ':'')+f.s};
+const eur=n=>eurIn(n,FMT),eurX=n=>eurIn(n,'eur');
 const pct=n=>(n>=0?'+':'−')+Math.abs(n*100).toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
 const num=s=>{s=String(s??'').replace(/[€\s%]/g,'');if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');const n=parseFloat(s);return isFinite(n)?n:0};
 const mq=n=>n.toLocaleString('it-IT',{maximumFractionDigits:1})+' m²';
@@ -729,7 +752,9 @@ function normalize(o){
   for(const d of LAYOUT)if(!lay.some(b=>b.id===d.id)){const ci=lay.findIndex(b=>b.id==='composizione');if(d.id==='comparabili'&&ci>=0)lay.splice(ci+1,0,{...clone(d),p:lay[ci].p});else lay.push(clone(d))}
   const HEX=/^#[0-9a-f]{6}$/i,dc=ESEMPIO.colori,uc=s.colori||{};s.colori={};for(const k in dc)s.colori[k]=HEX.test(uc[k]||'')?uc[k]:dc[k];
   if(typeof s.cmpTitolo!=='string')s.cmpTitolo=ESEMPIO.cmpTitolo;
-  {const ok=new Set(['opTitolo','opRivendita','opCapitale','opCosti','opUtile','opRend','opDurata','opPareggio','invTitolo','invRiceve','invInveste','invGuadagno','invGuadagnoNota','invRend']),l0=s.lab||{},o0=s.off||{};s.lab={};s.off={};
+  {const f0=s.fmt&&typeof s.fmt==='object'?s.fmt:{};s.fmt={};for(const k in f0)if((k==='_'||BLOCKS[k])&&['eur','tondo','k'].includes(f0[k]))s.fmt[k]=f0[k]}
+  {const ok=new Set(['opTitolo','opRivendita','opCapitale','opCosti','opUtile','opRend','opDurata','opPareggio','invTitolo','invRiceve','invInveste','invGuadagno','invGuadagnoNota','invRend',
+    'gbPar','gbPru','gbPrev','gbFav','gbRiceve','gbPct','gbFascia','gbLeg','scPru','scPrev','scFav','scPar','scLav','scRit','scPrezzo','scUtile','scInv','scRend','scNota']),l0=s.lab||{},o0=s.off||{};s.lab={};s.off={};
    for(const k in l0)if(ok.has(k)&&typeof l0[k]==='string')s.lab[k]=l0[k].slice(0,120);for(const k in o0)if(ok.has(k)&&o0[k]===true)s.off[k]=true}
   const FN=['Noto Serif','Playfair Display','Cormorant Garamond','Lora','Libre Baskerville','DM Serif Display','Inter','Lato','Montserrat','Source Sans 3','Nunito Sans','Open Sans'],uf=s.font||{};
   s.font={titoli:FN.includes(uf.titoli)?uf.titoli:'Noto Serif',testo:FN.includes(uf.testo)?uf.testo:'Inter'};
@@ -826,11 +851,12 @@ function migliaia(n) {
   var s = String(Math.round(Math.abs(n)));
   return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
-// importo in euro: "4.392 €", "−5.562 €"; con segno=true anche "+21.304 €"
+// importo in euro: "4.392 €", "−5.562 €"; con segno=true anche "+21.304 €"; MODO arrotonda o scrive in k
+var MODO = 'eur';
 function euro(n, segno) {
-  var r = Math.round(n);
-  var pre = r < 0 ? '−' : (segno && r > 0 ? '+' : '');
-  return pre + migliaia(r) + ' €';
+  var f = fmtAbs(n, MODO);
+  var pre = f.r && n < 0 ? '−' : (segno && f.r && n > 0 ? '+' : '');
+  return pre + f.s.replace(/ /g, ' ');
 }
 // percentuale: 0.2918 -> "29,2%"; con segno=true "+29,2%"
 function pct(x, dec, segno) {
@@ -895,11 +921,14 @@ function apriSvg(w, h, etichetta) {
  *    ai loro prezzi. Default 682 x 198 px.
  * ===================================================================== */
 function graficoPrezzi(d) {
-  var W = d.larghezza || 682, H = 198, bg = d.sfondo || '#FFFFFF';
+  var vis = d.vis || {}, V = function (k) { return vis[k] !== false; };
+  var anySc = V('pru') || V('prev') || V('fav'), anyLab = anySc || V('par');
+  var tH = !anyLab ? 0 : (anySc && V('riceve')) ? 47 : 34;
+  var W = d.larghezza || 682, bg = d.sfondo || '#FFFFFF';
   var pMin = d.prezzoMin || 70000, pMax = d.prezzoMax || 150000;
   var nice0 = function (span, max) { var c = [1000, 2000, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 250000, 500000]; for (var i = 0; i < c.length; i++) if (span / c[i] <= max) return c[i]; return 1000000; };
   var sX0 = nice0(pMax - pMin, 7); pMin = Math.floor(pMin / sX0) * sX0; pMax = Math.ceil(pMax / sX0) * sX0;
-  var ml = 66, mr = 30, yT = 58, yB = 158;
+  var ml = 66, mr = 30, yT = anyLab ? tH + 11 : 12, yB = yT + 100, H = yB + (V('leg') ? 40 : 24);
   var base = conti(d, d.prezzo), pareggio = base.pareggio;
   var g = function (p) { return conti(d, p).investitore; };
 
@@ -916,9 +945,9 @@ function graficoPrezzi(d) {
   o.push('<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + bg + '"/>');
   // fascia leggera tra scenario prudente e favorevole
   var pPru = d.prezzo * (1 - d.scarto), pFav = d.prezzo * (1 + d.scarto);
-  o.push('<rect x="' + r1(sx(pPru)) + '" y="' + yT + '" width="' + r1(sx(pFav) - sx(pPru)) + '" height="' + (yB - yT) + '" fill="' + COL.sand + '"/>');
+  if (V('fascia')) o.push('<rect x="' + r1(sx(pPru)) + '" y="' + yT + '" width="' + r1(sx(pFav) - sx(pPru)) + '" height="' + (yB - yT) + '" fill="' + COL.sand + '"/>');
   // didascalia della fascia, sotto lo zero dove la curva non passa
-  if (sy(0) + 14 < yB) o.push(testo(sx(d.prezzo), yB - 6, esc('fascia ±' + pct(d.scarto, 0) + ' sul prezzo previsto'),
+  if (V('fascia') && sy(0) + 14 < yB) o.push(testo(sx(d.prezzo), yB - 6, esc('fascia ±' + pct(d.scarto, 0) + ' sul prezzo previsto'),
     { size: 9.5, fill: COL.mute, anchor: 'middle' }));
   // griglia orizzontale e asse y
   for (var v = yMin; v <= yMax + 1; v += step) {
@@ -950,19 +979,19 @@ function graficoPrezzi(d) {
 
   // etichette in alto, una per punto notevole, centrate sul proprio prezzo
   var et = [
-    { p: pareggio, tipo: 'par', righe: ['Pareggio · ' + euro(pareggio), 'sotto, l’investitore perde'] },
-    { p: pPru, tipo: 'sc', nome: 'Prudente' },
-    { p: d.prezzo, tipo: 'sc', nome: 'Previsto', forte: true },
-    { p: pFav, tipo: 'sc', nome: 'Favorevole' }
-  ].filter(function (e) { return e.p >= pMin && e.p <= pMax; })
+    { p: pareggio, tipo: 'par', v: 'par', righe: ['Pareggio · ' + euro(pareggio), 'sotto, l’investitore perde'] },
+    { p: pPru, tipo: 'sc', v: 'pru', nome: 'Prudente' },
+    { p: d.prezzo, tipo: 'sc', v: 'prev', nome: 'Previsto', forte: true },
+    { p: pFav, tipo: 'sc', v: 'fav', nome: 'Favorevole' }
+  ].filter(function (e) { return V(e.v) && e.p >= pMin && e.p <= pMax; })
    .sort(function (a, b) { return a.p - b.p; });
   et.forEach(function (e) {
     var c = conti(d, e.p);
     if (e.tipo === 'sc') {
       e.r1 = e.nome + ' · ' + euro(e.p);
-      e.r2a = euro(c.investitore, true); e.r2b = pct(c.rendimento, 1, true);
-      e.r3 = 'riceve ' + euro(c.riceve);
-      e.w = Math.max(largTesto(e.r1, 10), largTesto(e.r2a, e.forte ? 15 : 13.5, 0.6) + 6 + largTesto(e.r2b, 10), largTesto(e.r3, 10));
+      e.r2a = euro(c.investitore, true); e.r2b = V('pct') ? pct(c.rendimento, 1, true) : '';
+      e.r3 = V('riceve') ? 'riceve ' + euro(c.riceve) : '';
+      e.w = Math.max(largTesto(e.r1, 10), largTesto(e.r2a, e.forte ? 15 : 13.5, 0.6) + (e.r2b ? 6 + largTesto(e.r2b, 10) : 0), largTesto(e.r3, 10));
     } else {
       e.w = Math.max(largTesto(e.righe[0], 10), largTesto(e.righe[1], 10));
     }
@@ -988,25 +1017,27 @@ function graficoPrezzi(d) {
       o.push('<circle cx="' + r1(px) + '" cy="' + r1(py) + '" r="4" fill="' + COL.ink + '" stroke="' + bg + '" stroke-width="2"><title>' +
         esc('Pareggio: ' + euro(e.p)) + '</title></circle>');
     } else {
-      o.push(linea(px, 47, px, py - (e.forte ? 8 : 7), COL.rule, 1));
+      o.push(linea(px, tH, px, py - (e.forte ? 8 : 7), COL.rule, 1));
       o.push(testo(x, 12, esc(e.r1), { size: 10, weight: e.forte ? 600 : 400, fill: e.forte ? COL.ink : COL.mute, anchor: 'middle', style: NUM }));
       o.push(testo(x, 29,
         '<tspan font-family="' + SERIF + '" font-size="' + (e.forte ? 15 : 13.5) + '" fill="' + COL.ink + '">' + esc(e.r2a) + '</tspan>' +
-        '<tspan dx="6" font-size="10" fill="' + COL.mute + '">' + esc(e.r2b) + '</tspan>', { size: 10, anchor: 'middle', style: NUM }));
-      o.push(testo(x, 42, esc(e.r3), { size: 10, fill: COL.mute, anchor: 'middle', style: NUM }));
+        (e.r2b ? '<tspan dx="6" font-size="10" fill="' + COL.mute + '">' + esc(e.r2b) + '</tspan>' : ''), { size: 10, anchor: 'middle', style: NUM }));
+      if (e.r3) o.push(testo(x, 42, esc(e.r3), { size: 10, fill: COL.mute, anchor: 'middle', style: NUM }));
       o.push('<circle cx="' + r1(px) + '" cy="' + r1(py) + '" r="' + (e.forte ? 5.5 : 4.5) + '" fill="' + COL.terra + '" stroke="' + bg + '" stroke-width="2"><title>' +
-        esc(e.nome + ': prezzo ' + euro(e.p) + ', guadagno ' + euro(c.investitore, true) + ' (' + e.r2b + ')') + '</title></circle>');
+        esc(e.nome + ': prezzo ' + euro(e.p) + ', guadagno ' + euro(c.investitore, true) + ' (' + pct(c.rendimento, 1, true) + ')') + '</title></circle>');
     }
   });
 
   // riga in basso: chiave della linea e del velo rosso
   var yK = H - 6;
+  if (V('leg')) {
   o.push(linea(ml, yK - 3.5, ml + 16, yK - 3.5, COL.terra, 2));
   o.push(testo(ml + 22, yK, 'Guadagno dell’investitore', { size: 10, fill: COL.mute }));
   var xk2 = ml + 22 + largTesto('Guadagno dell’investitore', 10) + 18;
   o.push(linea(xk2, yK - 3.5, xk2 + 16, yK - 3.5, COL.bad, 2));
   o.push(testo(xk2 + 22, yK, 'Perdita, tutta a suo carico', { size: 10, fill: COL.mute }));
   o.push(testo(W - mr, yK, 'Prezzo di vendita della casa →', { size: 10, fill: COL.mute, anchor: 'end' }));
+  }
 
   return apriSvg(W, H, 'Guadagno o perdita dell’investitore per prezzi di vendita da ' + euro(pMin) + ' a ' + euro(pMax) +
       '. Pareggio a ' + euro(pareggio) + '; al prezzo previsto di ' + euro(d.prezzo) + ' guadagna ' + euro(base.investitore) + '.') +
@@ -1163,7 +1194,7 @@ function cascataCompatta(d) {
     ', utile ' + euro(c.utile) + ', all’investitore ' + euro(c.investitore)) + o.join('') + '</svg>';
 }
 
-return {cascata:cascataCompatta,prezzi:graficoPrezzi,capitale:graficoCapitale,mq:graficoMetroQuadro,set:function(o){for(var k in o)COL[k]=o[k]},font:function(serif,sans){SERIF=serif;SANS=sans}};
+return {cascata:cascataCompatta,prezzi:graficoPrezzi,capitale:graficoCapitale,mq:graficoMetroQuadro,fmt:function(m){MODO=m},set:function(o){for(var k in o)COL[k]=o[k]},font:function(serif,sans){SERIF=serif;SANS=sans}};
 })();
 const PAL={salvia:['#3E4D38','#596953','#72836C','#8C9A86','#A4B39F'],terracotta:['#6E3424','#8E4A34','#A0583F','#BE7D63','#D9A891'],sabbia:['#6F5C47','#8F7860','#AD957B','#C9B39A','#E0CDB8'],misto:['#5B6B55','#A0583F','#CDB49B','#6E8496','#ABA59D']};
 const capCol=(r,i)=>/^#[0-9a-f]{6}$/i.test(r.col||'')?r.col:(PAL[S.opt.capPal]||PAL.salvia)[i%5];
@@ -1173,6 +1204,8 @@ const gdati=c=>({calc,prezzo:c.base,soc:S.societa||'Riquality',scarto:num(S.scen
   comparabili:S.comparabili.filter(x=>num(x.mq)>0&&num(x.prezzo)>0).map(x=>({nome:x.l,mq:num(x.mq),prezzo:num(x.prezzo)})),
   mq:c.mqCop,media:num(S.mediaZona)||0,mediaLab:S.fonteZona?'Media della zona ('+S.fonteZona+')':'Media della zona'});
 const W_FULL=682,W_HALF=329;
+const GB_VIS=[['gbPar','par'],['gbPru','pru'],['gbPrev','prev'],['gbFav','fav'],['gbRiceve','riceve'],['gbPct','pct'],['gbFascia','fascia'],['gbLeg','leg']];
+const visB=()=>Object.fromEntries(GB_VIS.map(([k,g])=>[g,ON(k)]));
 
 /* ---------- moduli della scheda ---------- */
 const COL={costi:'#ABA59D',cap:'#5B6B55',inv:'#A0583F',riq:'#CDB49B'};
@@ -1216,7 +1249,7 @@ const R={
   capitale(c,v){const coll=S.capitale.filter(r=>r.coll).reduce((a,r)=>a+num(r.v),0);
     return`<div class="k">${esc(L.capTitolo)}</div><table class="tb cap">${S.capitale.map(r=>`<tr><td>${esc(r.l)}${r.chi||r.coll?`<small>${[r.chi?esc(r.chi):'',r.coll?fill(L.capCollTag,v):''].filter(Boolean).join(' · ')}</small>`:''}</td><td class="v">${eur(num(r.v))}</td></tr>`).join('')}<tr class="tot"><td>${esc(L.capTotale)}</td><td class="v">${eur(c.cap)}</td></tr>${coll?`<tr class="coll"><td>${fill(L.capColl,v)}</td><td class="v">${eur(coll)}</td></tr>`:''}</table>`},
   composizione(c){const m=c.mqTot>0,one=!m&&S.composizione.length<2;if(one)return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g"><tr class="tot"><td>${esc(L.compTotale)} (${esc(L.compCorpo)})</td><td class="v">${eur(c.prezzo)}</td></tr></table>`;return`<div class="k g">${esc(L.compTitolo)}</div><table class="tb g">${m?`<tr><th>${esc(L.compVoce)}</th><th class="v">${esc(L.compSup)}</th><th class="v">${esc(L.compPm)}</th><th class="v">${esc(L.compVal)}</th></tr>`:''}
-    ${S.composizione.map(r=>`<tr><td>${esc(r.l)}</td>${m?`<td class="v">${num(r.mq)>0?mq(num(r.mq)):esc(L.compCorpo)}</td><td class="v">${num(r.mq)>0?eur(num(r.pm)):''}</td>`:''}<td class="v">${eur(c.val(r))}</td></tr>`).join('')}
+    ${S.composizione.map(r=>`<tr><td>${esc(r.l)}</td>${m?`<td class="v">${num(r.mq)>0?mq(num(r.mq)):esc(L.compCorpo)}</td><td class="v">${num(r.mq)>0?eurX(num(r.pm)):''}</td>`:''}<td class="v">${eur(c.val(r))}</td></tr>`).join('')}
     <tr class="tot"><td>${esc(L.compTotale)}</td>${m?`<td class="v">${mq(c.mqTot)}</td><td></td>`:''}<td class="v">${eur(c.prezzo)}</td></tr></table>`},
   ripartizione(c,v){const neg=c.utile<0,tot=Math.max(c.prezzo,c.cap+c.cv)||1;
     const segs=neg?[[c.cv,COL.costi,esc(L.barCosti)],[Math.max(0,c.prezzo-c.cv),COL.cap,esc(L.barCapitale)]]:[[c.cv,COL.costi,esc(L.barCosti)],[c.cap,COL.cap,esc(L.barCapitale)],[c.qi,COL.inv,esc(L.barInv)],[c.qr,COL.riq,fill(L.barRiq,v)]];
@@ -1228,13 +1261,16 @@ const R={
       <div class="st"><i style="background:${COL.cap}">2</i><p>${fillB(L.rip2,v)}</p></div>
       <div class="st"><i style="background:${COL.inv}">3</i>${neg?`<p class="neg">${fill(L.perditaMsg,v)}</p>`:`<p>${fillB(L.rip3,v)}</p><div class="split"><span><em style="background:${COL.inv}"></em>${esc(L.barInv)}</span><span><em style="background:${COL.riq}"></em>${fill(L.barRiq,v)}</span></div>`}</div>
     </div>`},
-  scenari(c,v){const sc=num(S.scenPct)/100,rows=[[c.base*(1-sc),fill(L.scenPrudente,v)],[c.base,esc(L.scenPrevisto)],[c.base*(1+sc),fill(L.scenFavorevole,v)]];
-    return`<div class="k">${esc(L.scenTitolo)}</div><table class="sc"><tr><th>${esc(L.scenScenario)}</th><th>${esc(L.scenPrezzo)}</th><th>${esc(L.scenUtile)}</th><th>${esc(L.scenInv)}</th><th>${esc(L.scenRend)}</th></tr>
-    ${rows.map(([p,l],i)=>{const k=calc(p);return`<tr class="${i===1?'base':''}"><td>${l}</td><td>${eur(p)}</td><td class="${k.utile<0?'neg':''}">${eur(k.utile)}</td><td class="${k.qi<0?'neg':''}">${eur(k.qi)}</td><td class="${k.qi<0?'neg':''}">${pct(k.rendInv)}</td></tr>`}).join('')}
-    <tr class="pe"><td>${esc(L.scenPareggio)}</td><td>${eur(c.pareggio)}</td><td>0 €</td><td>0 €</td><td>0,0%</td></tr>${stressRows(c,v)}</table>
-    <p class="scs">${fill(L.scenSotto,v)}</p>`},
+  scenari(c,v){const sc=num(S.scenPct)/100,cols=SC_COLS.filter(x=>ON(x[0]));
+    const riga=(cl,nome,p,k,rendExtra)=>`<tr class="${cl}"><td>${nome}</td>${cols.map(([id])=>id==='scPrezzo'?`<td>${eur(p)}</td>`:id==='scUtile'?`<td class="${k.utile<0?'neg':''}">${eur(k.utile)}</td>`:id==='scInv'?`<td class="${k.qi<0?'neg':''}">${eur(k.qi)}</td>`:`<td class="${k.qi<0?'neg':''}">${cl==='pe'?'0,0%':pct(k.rendInv)}${rendExtra||''}</td>`).join('')}</tr>`;
+    const rows=[['scPru','',c.base*(1-sc),fill(L.scenPrudente,v)],['scPrev','base',c.base,esc(L.scenPrevisto)],['scFav','',c.base*(1+sc),fill(L.scenFavorevole,v)]].filter(x=>ON(x[0]));
+    let h=rows.map(([,cl,p,l])=>riga(cl,l,p,calc(p))).join('');
+    if(ON('scPar')&&c.pareggio)h+=riga('pe',esc(L.scenPareggio),c.pareggio,{utile:0,qi:0,rendInv:0});
+    h+=stressRows(c,v,riga);if(!h)return'';
+    return`<div class="k">${esc(L.scenTitolo)}</div><table class="sc"><tr><th>${esc(L.scenScenario)}</th>${cols.map(x=>`<th>${esc(L[x[1]])}</th>`).join('')}</tr>${h}</table>
+    ${ON('scNota')?`<p class="scs">${fill(L.scenSotto,v)}</p>`:''}`},
   grafA(c){return`<div class="k">${esc(L.grafATit)}</div><div class="gr">${GR.cascata(Object.assign(gdati(c),{larghezza:W_FULL}))}</div>`},
-  grafB(c){return`<div class="k">${esc(L.grafBTit)}</div><div class="gr">${GR.prezzi(Object.assign(gdati(c),{larghezza:W_FULL}))}</div>`},
+  grafB(c){return`<div class="k">${esc(L.grafBTit)}</div><div class="gr">${GR.prezzi(Object.assign(gdati(c),{larghezza:W_FULL,vis:visB()}))}</div>`},
   grafC(c,v,w){const d=gdati(c);return d.voci.length?`<div class="k">${esc(L.capTitolo)}</div><div class="gr">${GR.capitale(Object.assign(d,{larghezza:w==='half'?W_HALF:W_FULL}))}</div>`:''},
   comparabili(c,v,w){return cmpHTML(c,w)},
   galleria(){const g=S.galleria.filter(x=>x.src);if(!g.length)return{ph:`<div class="k">${esc(L.galTitolo)}</div><div class="gal" style="--n:3">${S.galleria.map((x,i)=>`<div><div class="gi phbox" data-pick="gal" data-i="${i}">+ ${esc(x.cap||'Foto')}</div></div>`).join('')}</div>`};const big=S.opt.galGrande;return g.length?`<div class="k">${esc(L.galTitolo)}</div><div class="gal${big?' big':''}" style="--n:${g.length===1?2:g.length}">${g.map((x,i)=>`<div class="${big&&i===0&&g.length%2?'wide':''}"><div class="gi${x.fit?' fit':''}" style="background-image:url('${imgURL(x.src)}')"></div>${x.cap?`<div class="cap">${esc(x.cap)}</div>`:''}</div>`).join('')}</div>`:''},
@@ -1244,11 +1280,12 @@ const R={
   nota2(){return S.nota2?`<p class="note">${esc(S.nota2)}</p>`:''}
 };
 
-function stressRows(c,v){let h='',first=' sep';
+const SC_COLS=[['scPrezzo','scenPrezzo'],['scUtile','scenUtile'],['scInv','scenInv'],['scRend','scenRend']];
+function stressRows(c,v,riga){let h='',first=' sep';
   const lp=num(S.stress.lavori),lv=lavori();
-  if(lp>0&&lv>0){const k=calc(c.base,lv*lp/100);h+=`<tr class="stx${first}"><td>${fill(L.scenLavori,{lav:fmtIn(lp)})} (+${grp(lv*lp/100)} €)</td><td>${eur(c.base)}</td><td class="${k.utile<0?'neg':''}">${eur(k.utile)}</td><td class="${k.qi<0?'neg':''}">${eur(k.qi)}</td><td>${pct(k.rendInv)}</td></tr>`;first=''}
+  if(ON('scLav')&&lp>0&&lv>0){h+=riga('stx'+first,`${fill(L.scenLavori,{lav:fmtIn(lp)})} (+${eur(lv*lp/100)})`,c.base,calc(c.base,lv*lp/100));first=''}
   const ms=num(S.stress.mesi);
-  if(ms>0&&ms!==c.mesi){const k=calc(c.base,0,ms);h+=`<tr class="stx${first}"><td>${fill(L.scenRitardo,{mesiR:fmtIn(ms)})}</td><td>${eur(c.base)}</td><td>${eur(k.utile)}</td><td>${eur(k.qi)}</td><td>${pct(k.rendInv)} <small>(${fill(L.scenRitardoRend,{annuoR:pct(k.annuo)})})</small></td></tr>`}
+  if(ON('scRit')&&ms>0&&ms!==c.mesi){const k=calc(c.base,0,ms);h+=riga('stx'+first,fill(L.scenRitardo,{mesiR:fmtIn(ms)}),c.base,k,` <small>(${fill(L.scenRitardoRend,{annuoR:pct(k.annuo)})})</small>`)}
   return h}
 function cmpHTML(c,w){
   const k=S.comparabili.filter(x=>num(x.mq)>0&&num(x.prezzo)>0);if(!k.length)return'';
@@ -1256,16 +1293,23 @@ function cmpHTML(c,w){
   const ours=c.mqCop>0?c.base/c.mqCop:0,mx=Math.max(ours,...k.map(x=>num(x.prezzo)/num(x.mq)));
   const bar=v=>`<span class="mb"><i style="width:${Math.round(v/mx*100)}%"></i></span>`;
   return`<div class="cmpw"><div class="k g">${esc(S.cmpTitolo||L.cmpTitolo)}</div><table class="tb cmp">
-  ${k.map(x=>{const pm=num(x.prezzo)/num(x.mq);return`<tr><td>${esc(x.l)}<small>${eur(num(x.prezzo))} · ${mq(num(x.mq))}</small></td><td class="v">${eur(pm)}/m²${bar(pm)}</td></tr>`}).join('')}
-  ${ours?`<tr class="ours"><td>${esc(L.cmpNostra)}<small>${eur(c.base)} · ${mq(c.mqCop)} ${esc(L.cmpCoperti)}</small></td><td class="v">${eur(ours)}/m²${bar(ours)}</td></tr>`:''}
+  ${k.map(x=>{const pm=num(x.prezzo)/num(x.mq);return`<tr><td>${esc(x.l)}<small>${eur(num(x.prezzo))} · ${mq(num(x.mq))}</small></td><td class="v">${eurX(pm)}/m²${bar(pm)}</td></tr>`}).join('')}
+  ${ours?`<tr class="ours"><td>${esc(L.cmpNostra)}<small>${eur(c.base)} · ${mq(c.mqCop)} ${esc(L.cmpCoperti)}</small></td><td class="v">${eurX(ours)}/m²${bar(ours)}</td></tr>`:''}
   </table><p class="note" style="margin-top:5px">${esc(L.cmpNota)}</p></div>`}
 /* loghi aziendali pubblicati accanto allo strumento: si usano solo se i file esistono */
 const LOGHI={disalento:'',riquality:''};
 for(const [k,f] of [['disalento','logo-disalento.png'],['riquality','logo-riquality.png']]){if(location.protocol==='file:'||IN_CLAUDE)break;
   const im=new Image();im.onload=()=>{LOGHI[k]=f;later()};im.src=f}
+const SCEN_VIS=[['Nel grafico “Quanto riceve l’investitore”','grafB',[['gbPar','Pareggio'],['gbPru','Scenario prudente'],['gbPrev','Scenario previsto'],['gbFav','Scenario favorevole'],['gbPct','Rendimento % accanto al guadagno'],['gbRiceve','Quanto riceve in tutto (riga sotto ogni scenario)'],['gbFascia','Fascia colorata tra prudente e favorevole'],['gbLeg','Legenda sotto il grafico']]],
+  ['Nella tabella degli scenari: righe','scenari',[['scPru','Prudente'],['scPrev','Previsto'],['scFav','Favorevole'],['scPar','Pareggio'],['scLav','Prova: lavori più cari'],['scRit','Prova: vendita in ritardo']]],
+  ['Nella tabella degli scenari: colonne e nota',null,[['scPrezzo','Prezzo'],['scUtile','Utile'],['scInv','All’investitore'],['scRend','Rendimento'],['scNota','Frase sotto la tabella (sotto il pareggio…)']]]];
+const fmtOpts=(id)=>(id==='_'?'':`<option value="">Come il resto della scheda</option>`)+FMT_OK.map(f=>`<option value="${f}">${id==='_'?'Importi ':''}${FMT_NOMI[f]}</option>`).join('');
 const RIGHE=[['Conti dell’operazione',[['opTitolo',0],['opRivendita',1],['opCapitale',1],['opCosti',1],['opUtile',1],['opRend',1],['opDurata',1],['opPareggio',1]]],
   ['Riquadro dell’investitore',[['invTitolo',0],['invRiceve',1],['invInveste',1],['invGuadagno',1],['invGuadagnoNota',1],['invRend',1]]]];
 const T=k=>(S.lab&&typeof S.lab[k]==='string'&&S.lab[k].trim())?S.lab[k]:L[k];
+const FMT_MODS=['operazione','investitore','ripartizione','capitale','composizione','comparabili','scenari','grafA','grafB','grafC'];
+const fmtDi=id=>{const f=S.fmt||{};return FMT_OK.includes(f[id])?f[id]:FMT_OK.includes(f._)?f._:'eur'};
+function conFmt(id,fn){const pr=FMT;FMT=FMT_MODS.includes(id)?fmtDi(id):'eur';GR.fmt(FMT);try{return fn()}finally{FMT=pr;GR.fmt(pr)}}
 const ON=k=>!(S.off&&S.off[k]);
 function head(p){const r=p===1?L.p1Etichetta:p===2?L.p2Etichetta:L.p3Etichetta;
   const lg=S.logo?imgURL(S.logo):(S.opt.logoSito&&LOGHI.disalento?LOGHI.disalento:'');
@@ -1277,14 +1321,14 @@ let lastC;
 function render(){
   const c=calc(),v=vars(c);lastC=c;const pv=applyColors()+`;--gap:${S.gap}px`;
   const FULL=['grafA','grafB'];
-  const pagine=[];for(let p=1;p<=S.pagine;p++){const items=S.layout.filter(b=>b.on&&b.p===p).map(b=>({b,h:R[b.id](c,v,FULL.includes(b.id)?'full':b.w)})).filter(x=>x.h);
+  const pagine=[];for(let p=1;p<=S.pagine;p++){const items=S.layout.filter(b=>b.on&&b.p===p).map(b=>({b,h:conFmt(b.id,()=>R[b.id](c,vars(c),FULL.includes(b.id)?'full':b.w))})).filter(x=>x.h);
     pagine.push({p,items,vuota:!items.some(x=>typeof x.h!=='object')})}
   if(pagine.every(x=>x.vuota))pagine[0].vuota=false;
   const reali=pagine.filter(x=>!x.vuota),pages=reali;
   const k=S.contatti,tel=String(k.tel||'').replace(/[^\d+]/g,''),mail=/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(k.email||'')?k.email:'';
   const foot=[k.nome?esc(k.nome):'',k.tel?`<span data-href="tel:${esc(tel)}">${esc(k.tel)}</span>`:'',k.email?`<span${mail?` data-href="mailto:${esc(mail)}"`:''}>${esc(k.email)}</span>`:''].filter(Boolean).join(' · ');
   $('stage').innerHTML=pagine.map(({p,items,vuota})=>{const i=Math.max(0,reali.findIndex(x=>x.p===p));
-    for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&(x.b.id==='grafC'||x.b.id==='comparabili'))x.h=R[x.b.id](c,v,x.w)}
+    for(let j=0;j<items.length;j++){const x=items[j];x.w=FULL.includes(x.b.id)?'full':x.b.w;if(x.w==='half'){const nx=items[j+1];if(nx&&nx.b.w==='half'&&!FULL.includes(nx.b.id)){nx.w='half';j++}else x.w='full'}if(x.w!==x.b.w&&(x.b.id==='grafC'||x.b.id==='comparabili'))x.h=conFmt(x.b.id,()=>R[x.b.id](c,vars(c),x.w))}
     const body=items.map(({b,h,w})=>{const ph=typeof h==='object',mt=[0,12,26,44][b.sp||0];return`<section class="blk ${w}${ph?' ph-only':''}" data-b="${b.id}"${mt?` style="margin-top:${mt}px"`:''}>${ph?h.ph:h}</section>`}).join('');
     if(vuota)return`<div class="page vuota ph-only" data-p="${p}" style="${pv}">${head(p)}<div class="pg-body">${body}<section class="blk full"><div class="phbox" style="height:260px">Pagina ${p} vuota: spostaci un modulo da “Moduli e impaginazione”. Le pagine vuote non vanno nel PDF.</div></section></div></div>`;
     return`<div class="page" data-p="${p}" style="${pv}">${head(i+1)}<div class="pg-body">${body}</div><div class="pf"><span>${S.opt.logoSoc&&LOGHI.riquality?`<img class="flogo" src="${LOGHI.riquality}" alt="${esc(S.societa)}">`:''}${esc(S.footer)}${S.data?' · '+esc(S.data):''}</span>${foot?`<span class="fc">${foot}</span>`:''}<span>Pagina ${i+1} di ${pages.length}</span></div>${S.opt.bozza?`<div class="wm"><span>${esc(L.bozza)}</span></div>`:''}</div>`}).join('');
@@ -1347,8 +1391,18 @@ function checks(c,over){const X=[];
 }
 
 /* adatta i fogli alla larghezza */
-let zoom=false;
-function fit(){const v=$('stagebox'),st=$('stage');if(!v.clientWidth)return;const k=zoom?1:Math.min(1,v.clientWidth/794);st.style.transform=`scale(${k})`;v.style.height=st.scrollHeight*k+'px'}
+/* zoom delle pagine A4: 0 = adatta alla larghezza; il livello scelto resta in questo browser */
+const ZL=[.35,.5,.65,.8,1,1.25,1.5,1.75,2,2.5];
+let zoomK=0;try{const z=+localStorage.getItem('sc-zoom');if(ZL.includes(z))zoomK=z}catch(e){}
+let kAtt=1;
+function fit(){const v=$('stagebox'),st=$('stage');if(!v.clientWidth)return;const kf=Math.min(1,v.clientWidth/794),k=zoomK||kf;kAtt=k;
+  st.style.transform=`scale(${k})`;v.style.height=st.scrollHeight*k+'px';
+  const w=794*k,cw=v.clientWidth;st.style.marginLeft=w<cw-1?Math.floor((cw-w)/2)+'px':'0';st.style.marginRight=Math.round(w-794)+'px';
+  v.classList.toggle('zoom',w>cw+1);$('zFit').textContent=Math.round(k*100)+'%';$('zFit').setAttribute('aria-label',`Zoom ${Math.round(k*100)}%: tocca per adattare alla larghezza`);
+  $('zMeno').disabled=k<=ZL[0]+.001;$('zPiu').disabled=k>=ZL[ZL.length-1]-.001}
+function setZoom(z){const v=$('stagebox'),cx=(v.scrollLeft+v.clientWidth/2)/(794*kAtt),vw=$('view'),cy=vw.scrollTop/Math.max(1,v.offsetHeight);
+  zoomK=z;try{localStorage.setItem('sc-zoom',String(z))}catch(e){}fit();
+  v.scrollLeft=Math.max(0,cx*794*kAtt-v.clientWidth/2);if(vw.scrollHeight>vw.clientHeight)vw.scrollTop=cy*v.offsetHeight}
 new ResizeObserver(fit).observe($('stagebox'));
 const hdr=()=>document.documentElement.style.setProperty('--hdr',$('bar').offsetHeight+'px');
 new ResizeObserver(hdr).observe($('bar'));hdr();
@@ -1374,8 +1428,10 @@ function mods(){
       <button type="button" data-mod-dn="${b.i}" aria-label="Sposta giù${k===items.length-1?' (pagina successiva)':''}" title="${k===items.length-1?'Va in cima alla pagina successiva':'Sposta giù'}" ${last?'disabled':''}>↓</button></div>
       <div class="r2"><select aria-label="Pagina di ${esc(BLOCKS[b.id])}" data-mod-p="${b.i}">${pages.map(q=>`<option value="${q}" ${q===b.p?'selected':''}>Pagina ${q}</option>`).join('')}</select>
       <select aria-label="Larghezza di ${esc(BLOCKS[b.id])}" data-mod-wsel="${b.i}" ${['grafA','grafB'].includes(b.id)?'disabled':''}><option value="full" ${b.w!=='half'?'selected':''}>Riga intera</option><option value="half" ${b.w==='half'?'selected':''}>Mezza riga</option></select>
-      <select aria-label="Spazio sopra ${esc(BLOCKS[b.id])}" data-mod-sp="${b.i}">${SP.map((t,q)=>`<option value="${q}" ${(b.sp||0)===q?'selected':''}>Spazio sopra: ${t}</option>`).join('')}</select></div></li>`}).join(''):'<li class="hint">Pagina vuota: sposta qui un modulo con le frecce o con “Pagina”.</li>'}</ul>`}).join('');
+      <select aria-label="Spazio sopra ${esc(BLOCKS[b.id])}" data-mod-sp="${b.i}">${SP.map((t,q)=>`<option value="${q}" ${(b.sp||0)===q?'selected':''}>Spazio sopra: ${t}</option>`).join('')}</select>
+      ${FMT_MODS.includes(b.id)?`<select class="fm" aria-label="Importi di ${esc(BLOCKS[b.id])}" data-fmt="${b.id}"></select>`:''}</div></li>`}).join(''):'<li class="hint">Pagina vuota: sposta qui un modulo con le frecce o con “Pagina”.</li>'}</ul>`}).join('');
   $('mods').insertAdjacentHTML('beforeend',`<div class="two" style="margin-top:10px">${S.pagine<12?'<button class="add" type="button" id="bAddPg">+ Aggiungi una pagina</button>':''}${S.pagine>1&&!S.layout.some(b=>b.p===S.pagine)?`<button class="add" type="button" id="bDelPg">Togli la pagina ${S.pagine}</button>`:''}</div>`);
+  fmtSel();
 }
 /* sposta un modulo in un'altra pagina: in cima se va avanti, in fondo se torna indietro */
 function moveToPage(i,np){const b=S.layout.splice(i,1)[0],fw=np>b.p;b.p=np;
@@ -1399,10 +1455,15 @@ function lists(){
   $('fTit').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.titoli===n?'selected':''}>${n}</option>`).join('');
   $('fTxt').innerHTML=Object.keys(FONTS).map(n=>`<option ${S.font.testo===n?'selected':''}>${n}</option>`).join('');
   $('lRighe').innerHTML=RIGHE.map(([t,rs])=>`<h4 class="rgh">${esc(t)}</h4>`+rs.map(([k,tog])=>`<div class="rg">${tog?`<input type="checkbox" aria-label="Mostra" data-off="${k}" ${ON(k)?'checked':''}>`:'<span></span>'}<input aria-label="Scritta" data-lab="${k}" value="${esc((S.lab&&S.lab[k])||'')}" placeholder="${esc(L[k])}"></div>`).join('')).join('');
+  $('lScen').innerHTML=SCEN_VIS.map(([t,id,rs])=>`<h4 class="rgh">${esc(t)}</h4>${id?`<label class="f" for="fmt-${id}" style="margin-top:4px">Importi ${id==='grafB'?'del grafico':'della tabella'}</label><select id="fmt-${id}" data-fmt="${id}"></select>`:''}<div class="vis">${rs.map(([k,n])=>`<label class="chk"><input type="checkbox" data-off="${k}" ${ON(k)?'checked':''}> ${esc(n)}</label>`).join('')}</div>`).join('');
   $('gapV').textContent=S.gap+' px';
   $('lCol').innerHTML=Object.keys(COLORI_NOMI).map(k=>`<label class="colr"><input type="color" data-k="colori.${k}" value="${esc(S.colori[k])}"><span>${esc(COLORI_NOMI[k])}</span></label>`).join('');
   slots();mods();
 }
+/* riempie tutte le tendine del formato degli importi (anche quelle doppie, nei moduli e nelle sezioni) */
+function fmtSel(){for(const el of document.querySelectorAll('select[data-fmt]')){const id=el.dataset.fmt;
+  el.innerHTML=id==='_'?fmtOpts('_'):`<option value="">Importi: come il resto (${esc(FMT_NOMI[fmtDi('_')].split(' (')[0])})</option>`+FMT_OK.map(f=>`<option value="${f}">Importi ${FMT_NOMI[f]}</option>`).join('');
+  el.value=id==='_'?fmtDi('_'):(FMT_OK.includes(S.fmt[id])?S.fmt[id]:'')}}
 const getK=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
 const setK=(p,val)=>{const a=p.split('.');let o=S;for(let i=0;i<a.length-1;i++)o=o[a[i]];o[a[a.length-1]]=val};
 const setPath=(p,val)=>{const a=p.split('.');S[a[0]][+a[1]][a[2]]=val};
@@ -1415,6 +1476,8 @@ $('ed').addEventListener('input',e=>{const t=e.target;
   else return;save();later();});
 $('ed').addEventListener('change',e=>{const t=e.target;
   if(t.dataset.off){if(t.checked)delete S.off[t.dataset.off];else S.off[t.dataset.off]=true;save();render();return}
+  if(t.dataset.fmt){const id=t.dataset.fmt;if(t.value)S.fmt[id]=t.value;else delete S.fmt[id];save();fmtSel();render();
+    status(id==='_'?`Importi in tutta la scheda: ${FMT_NOMI[fmtDi('_')]}.`:`“${BLOCKS[id]}”: importi ${FMT_NOMI[fmtDi(id)]}.`);return}
   if(t.dataset.c)setPath(t.dataset.c,t.checked);
   else if(t.dataset.o)S.opt[t.dataset.o]=t.checked;
   else if(t.tagName==='SELECT'&&t.dataset.k){setK(t.dataset.k,t.value);if(t.id==='capPal'){all();return}}
@@ -1490,26 +1553,26 @@ function renderWeb(c,v,pv){const w=$('web');w.setAttribute('style',pv);
   const W=Math.max(300,Math.min(980,(w.clientWidth||$('view').clientWidth||900)-2*Math.max(20,innerWidth*.04)));
   const lg=S.logo?imgURL(S.logo):(S.opt.logoSito&&LOGHI.disalento?LOGHI.disalento:'');
   const foto=S.foto?imgURL(S.foto):'';const neg=c.utile<0;
-  const stats=[ON('invRiceve')&&['main',eur(c.rientro),c.rientro,T('invRiceve')],ON('invInveste')&&['',eur(c.cap),c.cap,T('invInveste')],
-    ON('invGuadagno')&&['acc',(neg?'':'+ ')+eur(c.qi),c.qi,T('invGuadagno')],ON('invRend')&&['acc',pct(c.rendInv),null,fill(T('invRend'),v)]].filter(Boolean);
+  const fI=fmtDi('investitore'),stats=conFmt('investitore',()=>[ON('invRiceve')&&['main',eur(c.rientro),c.rientro,T('invRiceve')],ON('invInveste')&&['',eur(c.cap),c.cap,T('invInveste')],
+    ON('invGuadagno')&&['acc',(neg?'':'+ ')+eur(c.qi),c.qi,T('invGuadagno')],ON('invRend')&&['acc',pct(c.rendInv),null,fill(T('invRend'),vars(c))]].filter(Boolean));
   const gal=[...(S.foto?[{src:S.foto,cap:S.fotoCap}]:[]),...S.galleria.filter(g=>g.src)];
   const dati=datiEvidenza(c);
   const sez=[];
   sez.push(`<section class="w-sec rv"><div class="k">${esc(S.claim||'La casa')}</div><h2>${esc(S.titolo)}</h2>${S.descr?`<p class="w-lead">${esc(S.descr)}</p>`:''}
     ${dati.length?`<div class="w-chips">${dati.map(d=>`<div class="w-chip"><small>${esc(d.l)}</small>${esc(d.v)}</div>`).join('')}</div>`:''}
     ${gal.length?`<div class="w-gal">${gal.map(g=>`<figure><div class="im${g.fit?' fit':''}" style="background-image:url('${imgURL(g.src)}')"></div>${g.cap?`<figcaption>${esc(g.cap)}</figcaption>`:''}</figure>`).join('')}</div>`:''}</section>`);
-  sez.push(`<section class="w-sec rv"><h2>${esc(T('opTitolo'))}</h2><div class="w-card" style="max-width:560px">${R.operazione(c).replace(/^<div class="opbox"><div class="k plain">[^<]*<\/div>/,'<div>')}</div>
-    <div class="w-chart" style="margin-top:28px"><div class="k">${esc(L.grafBTit)}</div>${GR.prezzi(Object.assign(gdati(c),{larghezza:Math.max(640,Math.round(W))}))}</div></section>`);
+  sez.push(`<section class="w-sec rv"><h2>${esc(T('opTitolo'))}</h2><div class="w-card" style="max-width:560px">${conFmt('operazione',()=>R.operazione(c)).replace(/^<div class="opbox"><div class="k plain">[^<]*<\/div>/,'<div>')}</div>
+    <div class="w-chart" style="margin-top:28px"><div class="k">${esc(L.grafBTit)}</div>${conFmt('grafB',()=>GR.prezzi(Object.assign(gdati(c),{larghezza:Math.max(640,Math.round(W)),vis:visB()})))}</div></section>`);
   if(S.perche.some(x=>x.l||x.v))sez.push(`<section class="w-sec rv"><h2>${esc(L.percheTitolo)}</h2><div class="w-why">${S.perche.filter(x=>x.l||x.v).map(x=>`<div><b>${esc(x.l)}</b><span>${esc(x.v)}</span></div>`).join('')}</div></section>`);
-  sez.push(`<section class="w-sec rv">${R.ripartizione(c,v)}</section>`);
-  const det=[[L.capTitolo,R.capitale(c,v)],[L.compTitolo,R.composizione(c)],[S.cmpTitolo||L.cmpTitolo,cmpHTML(c,'full')],[L.scenTitolo,R.scenari(c,v)]].filter(x=>x[1]);
+  sez.push(`<section class="w-sec rv">${conFmt('ripartizione',()=>R.ripartizione(c,vars(c)))}</section>`);
+  const det=[[L.capTitolo,conFmt('capitale',()=>R.capitale(c,vars(c)))],[L.compTitolo,conFmt('composizione',()=>R.composizione(c))],[S.cmpTitolo||L.cmpTitolo,conFmt('comparabili',()=>cmpHTML(c,'full'))],[L.scenTitolo,conFmt('scenari',()=>R.scenari(c,vars(c)))]].filter(x=>x[1]);
   sez.push(`<section class="w-sec w-det rv"><h2>${esc(L.p2Titolo)}</h2>${S.intro2?`<p class="w-lead">${esc(S.intro2)}</p>`:''}${det.map(([t,h])=>`<details><summary>${esc(t)}</summary><div class="in">${h}</div></details>`).join('')}</section>`);
   const k=S.contatti;
   sez.push(`<section class="w-sec w-cta rv"><div><h2>Ti interessa?</h2><div class="ct">${[k.nome,k.tel,k.email].filter(Boolean).map(esc).join(' · ')||esc(S.footer)}</div></div><button type="button" class="btn" id="wPdf">Scarica la scheda in PDF</button></section>`);
   w.innerHTML=`<header class="w-hero${foto?'':' noimg'}">${foto?`<div class="bg" style="background-image:url('${foto}');background-position:${esc(S.fotoPos)}"></div>`:''}
     <div class="w-top">${lg?`<img src="${lg}" alt="${esc(S.brand)}">`:`<div class="bn">${esc(S.brand)}</div>`}<span class="tag">${esc(L.p1Etichetta)}</span></div>
     <div class="w-hc"><div class="eb">${esc(S.claim)}</div><h1>${esc(S.nome||S.titolo)}</h1>${S.sottotitolo?`<div class="w-st">${esc(S.sottotitolo)}</div>`:''}${S.destinatario?`<div class="to">${esc(L.destLabel)} ${esc(S.destinatario)}</div>`:''}</div></header>
-    ${stats.length?`<div class="w-stats rv">${stats.map(([cl,txt,n,l])=>`<div class="w-stat ${cl}"><b ${n!=null&&n>0?`data-n="${Math.round(n)}"`:''}>${txt}</b><span>${esc(l)}</span></div>`).join('')}</div>`:''}
+    ${stats.length?`<div class="w-stats rv">${stats.map(([cl,txt,n,l])=>`<div class="w-stat ${cl}"><b ${n!=null&&n>0?`data-n="${Math.round(n)}" data-f="${fI}"`:''}>${txt}</b><span>${esc(l)}</span></div>`).join('')}</div>`:''}
     ${sez.join('')}
     <div class="w-foot">${S.opt.logoSoc&&LOGHI.riquality?`<img src="${LOGHI.riquality}" alt="">`:''}${esc(S.nota)} ${esc(S.nota2)}</div>`;
   $('wPdf').onclick=doPdf;
@@ -1519,9 +1582,11 @@ function renderWeb(c,v,pv){const w=$('web');w.setAttribute('style',pv);
       for(const b of e.target.querySelectorAll('[data-n]'))conta(b)}},{threshold:.12});
     w.querySelectorAll('.rv').forEach(el=>webOss.observe(el))}}
 function conta(b){const fin=+b.dataset.n,txt=b.textContent,pre=txt.trim().startsWith('+')?'+ ':'',t0=performance.now(),d=900;delete b.dataset.n;
-  const step=t=>{const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);b.textContent=pre+eur(fin*e);if(k<1)requestAnimationFrame(step);else b.textContent=txt};requestAnimationFrame(step)}
+  const step=t=>{const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);b.textContent=pre+eurIn(fin*e,b.dataset.f||'eur');if(k<1)requestAnimationFrame(step);else b.textContent=txt};requestAnimationFrame(step)}
 let webRz;addEventListener('resize',()=>{if(VISTA!=='web')return;clearTimeout(webRz);webRz=setTimeout(render,200)});
-$('bZoom').onclick=()=>{zoom=!zoom;$('stagebox').classList.toggle('zoom',zoom);$('bZoom').textContent=zoom?'Adatta alla larghezza':'Ingrandisci';fit()};
+$('zPiu').onclick=()=>{const z=ZL.find(x=>x>kAtt+.01);if(z)setZoom(z)};
+$('zMeno').onclick=()=>{const z=[...ZL].reverse().find(x=>x<kAtt-.01);if(z)setZoom(z)};
+$('zFit').onclick=()=>setZoom(0);
 document.addEventListener('click',e=>{const m=$('mDati');if(m.open&&!m.contains(e.target))m.open=false;else if(m.open&&e.target.closest('.pop button,.pop .btn'))m.open=false});
 
 /* ---------- salvataggi e download ---------- */

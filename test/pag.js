@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const {open}=require('./harness');const fs=require('fs');
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:1440,height:950},acceptDownloads:true});const p=await ctx.newPage();p.on('pageerror',e=>console.log('PAGEERR',e.message));
+await open(p,process.argv[2]);await p.evaluate(()=>document.getElementById('secMod').open=true);
+const st=()=>p.evaluate(()=>({anteprima:[...document.querySelectorAll('.page')].map(x=>x.dataset.p+(x.classList.contains('vuota')?'(vuota)':'')).join(' '),piede:[...document.querySelectorAll('.page:not(.vuota) .pf span:last-child')].map(x=>x.textContent).join(' / '),info:document.getElementById('pgInfo').textContent}));
+await p.click('#bAddPg');await p.waitForTimeout(300);console.log('dopo aggiungi:',JSON.stringify(await st()));
+const sc=await p.evaluate(()=>document.querySelector('#mod-scenari').dataset.modOn);await p.selectOption(`select[data-mod-p="${sc}"]`,'4');await p.waitForTimeout(300);
+console.log('scenari a pag. 4:',JSON.stringify(await st()));
+const [d]=await Promise.all([p.waitForEvent('download',{timeout:60000}),p.click('#bPdf')]);await d.saveAs('pag.pdf');
+await p.click('#bAddPg');await p.waitForTimeout(300);console.log('pagina 5 vuota:',JSON.stringify(await st()));
+await p.click('#bDelPg');await p.waitForTimeout(300);console.log('tolta:',JSON.stringify(await st()));
+await b.close()})();

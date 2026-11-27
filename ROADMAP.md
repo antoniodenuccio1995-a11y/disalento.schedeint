@@ -1,6 +1,6 @@
 # Roadmap – Scheda investimento DiSalento
 
-Aggiornata al 25 novembre 2026. Fonti: richieste di Antonio, handoff, revisione grafica e tecnica, lettura della scheda da parte di un "investitore scettico" simulato.
+Aggiornata al 27 novembre 2026. Fonti: richieste di Antonio, handoff, revisione grafica e tecnica, lettura della scheda da parte di un "investitore scettico" simulato.
 
 ## Fatto (versione attuale)
 
@@ -18,6 +18,12 @@ Aggiornata al 25 novembre 2026. Fonti: richieste di Antonio, handoff, revisione 
 
 - Condivisione: tasto Condividi, schede online su Supabase, link per l'investitore (sola lettura, si aggiorna da solo) e link per modificare.
 - Archivio "Le mie schede" con un codice personale valido su tutti i dispositivi; Nuova scheda e Duplica.
+- Pagine libere come in Canva: "+ Aggiungi una pagina" fino a 12; le pagine vuote non vanno nel PDF.
+- Vista web per chi apre il link (foto grande, cifre animate, sezioni che compaiono scorrendo); il PDF resta semplice.
+- Righe dei conti e del riquadro dell'investitore da spegnere o riscrivere; controllo automatico dei dati (doppioni, campi vuoti, m² che non tornano).
+- Importi esatti, arrotondati o in k (185k €), per tutta la scheda o modulo per modulo; i prezzi al m² e l'Excel restano esatti.
+- Scenari: nel grafico "Quanto riceve l'investitore" e nella tabella si sceglie cosa mostrare (pareggio, singoli scenari, rendimento, "riceve", fascia, legenda; righe e colonne della tabella, prove, frase finale).
+- Zoom delle pagine A4 (− / percentuale / +, da 35% a 250%), anche sul telefono.
 
 ## Dati da completare per Casa Ruggiano (non dipendono dallo strumento)
 
@@ -39,6 +45,14 @@ Aggiornata al 25 novembre 2026. Fonti: richieste di Antonio, handoff, revisione 
 7. **PDF con testo vero**, selezionabile e più leggero.
 8. **Presentazione per l'investitore** generata dagli stessi dati.
 9. **Nota fiscale neutra** (i valori restano al lordo): plusvalenza, fatturazione della quota della società, da verificare con il commercialista.
+
+## Proposte del 27 novembre (da decidere)
+
+1. **Annulla e ripristina** le ultime modifiche (tasto e Ctrl+Z).
+2. **Codice QR nel PDF** che apre la versione online sempre aggiornata.
+3. **Modalità presentazione**: le pagine a tutto schermo, una alla volta, per mostrarle dal telefono o dal tablet durante un incontro.
+4. **Modelli di partenza** per tipo di immobile (villa, rustico, appartamento, terreno), con voci di costo e controlli già pronti.
+5. **Avviso sugli arrotondamenti**: con importi in k, segnalare quando una somma mostrata non torna rispetto al totale.
 
 ## Da verificare con professionisti
 

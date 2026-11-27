@@ -5,6 +5,7 @@ Strumento interno di Riquality S.r.l.s. (marchio DiSalento) per preparare e cond
 - **Strumento:** https://antoniodenuccio1995-a11y.github.io/disalento.schedeint/
 - **Sorgente:** [`index.html`](index.html), una sola pagina con HTML, CSS e JavaScript. Le librerie per PDF, Excel e ZIP arrivano da cdnjs.
 - **Roadmap:** [`ROADMAP.md`](ROADMAP.md)
+- **Note tecniche e prove:** [`HANDOFF.md`](HANDOFF.md), cartella [`test/`](test/)
 
 ## Cosa fa
 
@@ -20,6 +21,9 @@ Strumento interno di Riquality S.r.l.s. (marchio DiSalento) per preparare e cond
   - dove va il capitale;
   - prezzo al m² rispetto alla zona.
 - **Aspetto:** colori e caratteri modificabili; copertina, galleria di 3 foto (anche planimetria) e logo.
+- **Importi:** esatti, arrotondati o in k (185k €), per tutta la scheda o modulo per modulo.
+- **Scenari:** nel grafico e nella tabella si sceglie cosa mostrare.
+- **Pagine:** da 1 a 12, con zoom dell'anteprima; chi apre il link vede una vista web e può scaricare il PDF.
 - **Download:** PDF, Excel con formule, dati (.json), ZIP completo e pagina 1 in JPG per WhatsApp.
 - **Condividi:**
   - la scheda viene salvata online e si aggiorna da sola per chi ha il link;

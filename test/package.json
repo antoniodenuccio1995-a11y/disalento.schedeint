@@ -1,0 +1,13 @@
+{
+  "name": "schede-test",
+  "private": true,
+  "description": "Prove dello strumento con Playwright: librerie e caratteri serviti in locale, Supabase simulato.",
+  "dependencies": {
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/noto-serif": "5.3.0",
+    "html2canvas": "1.4.1",
+    "jspdf": "2.5.1",
+    "jszip": "3.10.1",
+    "xlsx": "0.18.5"
+  }
+}
