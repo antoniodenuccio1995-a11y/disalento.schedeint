@@ -13,7 +13,7 @@ const file=process.argv[2],out=process.argv[3];fs.mkdirSync(out,{recursive:true}
   await pa.click('#vWeb');await pa.waitForTimeout(600);
   await pa.screenshot({path:path.join(out,'editor-web.png')});
   // investitore: scheda condivisa simulata
-  const sched={nome:'Casa Ruggiano',titolo:'Casa Ruggiano',claim:'Ruggiano, frazione di Salve (Lecce)',sottotitolo:'Acquisto, lavori e rivendita in circa 12 mesi',foto:imgs[0],galleria:[{src:imgs[1],cap:'La casa oggi'},{src:imgs[2],cap:'Il progetto'},{src:'',cap:'La planimetria',fit:true}],layoutVer:3,
+  const sched={nome:'Casa Ruggiano',titolo:'Casa Ruggiano',claim:'Ruggiano, frazione di Salve (Lecce)',sottotitolo:'Acquisto, lavori e rivendita in circa 12 mesi',foto:imgs[0],galleria:[{src:imgs[1],cap:'La casa oggi'},{src:imgs[2],cap:'Il progetto'},{src:'',cap:'La planimetria',fit:true}],layoutVer:3,opt:{vistaLink:'web'},
     contatti:{nome:'Ufficio DiSalento',tel:'0833 000000',email:'',ruolo:''},
     composizione:[{l:'Abitazione',mq:140,pm:850,cop:true,corpo:0},{l:'Giardino',mq:100,pm:100,cop:false,corpo:0}],
     comparabili:[{l:'Casa indipendente con giardino',mq:210,prezzo:125000}]};

@@ -49,6 +49,10 @@ Aggiornata al 27 novembre 2026. Fonti: richieste di Antonio, handoff, revisione 
 8. **Presentazione per l'investitore** generata dagli stessi dati.
 9. **Nota fiscale neutra** (i valori restano al lordo): plusvalenza, fatturazione della quota della società, da verificare con il commercialista.
 
+## Da completare
+
+- **Vista web per chi apre il link:** è in prova. Oggi il link apre le pagine A4; la vista web si attiva in Condividi. Da rivedere insieme: contenuti, ordine, foto, testi.
+
 ## Proposte del 27 novembre (da decidere)
 
 1. **Annulla e ripristina** le ultime modifiche (tasto e Ctrl+Z).

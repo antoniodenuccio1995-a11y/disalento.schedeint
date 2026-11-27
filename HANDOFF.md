@@ -106,6 +106,7 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
   - **bozza locale:** senza `?s=`;
   - **modifica:** `?s=id` più `#k=chiave`. La chiave viene ricordata in `sc-chiavi`, il codice dell'archivio in `sc-codice`;
   - **lettura:** senza chiave, oppure con `&v=1` (sempre in sola lettura). Le schede si aggiornano ogni 8 secondi.
+  - **cosa vede chi apre il link:** le pagine A4 (predefinito) o la vista web, scelta in Condividi e salvata con la scheda (`S.opt.vistaLink`). La vista web è ancora in prova.
 - **Dentro claude.ai:** la CSP blocca Supabase, quindi l'artifact mostra un tasto per aprire il sito.
 
 ## Prove automatiche
@@ -135,6 +136,7 @@ Le prove controllano:
 - loghi in testata, nel piè di pagina e nella vista web;
 - pannello rapido su computer e telefono;
 - schede del pannello, menu "Altro" e avvisi che portano alla sezione giusta;
+- vista iniziale di chi apre il link (`vlink.js`);
 - Le mie schede con cartelle e cestino, "Tutta pagina" e avviso di versione nuova.
 
 ## Regole di lavoro
