@@ -26,7 +26,7 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
 | `anteprima.jpg` | Immagine dell'anteprima dei link (Open Graph). |
 | `robots.txt` | Blocca l'indicizzazione; c'è anche `noindex` nella pagina. |
 | `test/` | Prove automatiche con Playwright (vedi sotto). |
-| `logo-disalento.png`, `logo-riquality.png` | Da caricare: se esistono, lo strumento li usa da solo in testata e nel piè di pagina. |
+| `logo-disalento.png`, `logo-riquality.png` | Loghi usati in automatico: DiSalento in testata e nella vista web (in bianco sulla foto), Riquality nel piè di pagina. |
 
 ## Come è fatto `index.html`
 
@@ -95,7 +95,7 @@ node test.js ../index.html out/base --photos --exports --mobile
 ```
 
 ```bash
-for t in fmt cloud righe pag web; do node $t.js ../index.html out/$t; done
+for t in fmt cloud righe pag web logo; do node $t.js ../index.html out/$t; done
 ```
 
 `harness.js` serve le librerie e i caratteri da `node_modules` e blocca la rete; `cloud.js` e `web.js` simulano Supabase. Playwright e Chromium sono già installati nelle sessioni cloud.
@@ -107,7 +107,8 @@ Le prove controllano:
 - righe dei riquadri;
 - pagine aggiunte e tolte;
 - vista web su computer e telefono;
-- formati degli importi, voci degli scenari e zoom.
+- formati degli importi, voci degli scenari e zoom;
+- loghi in testata, nel piè di pagina e nella vista web.
 
 ## Regole di lavoro
 
@@ -118,5 +119,5 @@ Le prove controllano:
 
 ## Aperto
 
-- Caricare i loghi `logo-disalento.png` e `logo-riquality.png` nella cartella principale del repository.
+- Logo Riquality: quello caricato è piccolo (109 × 119 px); se ne esiste uno più grande, sostituire `logo-riquality.png`.
 - Le richieste per venerdì e le proposte sono in `ROADMAP.md`.

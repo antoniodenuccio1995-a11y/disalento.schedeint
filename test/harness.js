@@ -28,6 +28,8 @@ async function open(page,file,opts={}){
   await page.route('**/*',route=>{
     const u=route.request().url();
     if(u.startsWith('http://harness.local/')){
+      const rel=decodeURIComponent(new URL(u).pathname.slice(1));
+      if(/\.(png|jpe?g|webp|svg)$/i.test(rel)){const f=path.join(path.dirname(file),rel);if(fs.existsSync(f))return route.fulfill({status:200,contentType:'image/'+(rel.split('.').pop().toLowerCase().replace('jpg','jpeg').replace('svg','svg+xml')),body:fs.readFileSync(f)});return route.fulfill({status:404,body:''})}
       const src=fs.readFileSync(file,'utf8');
       const body=/^<!DOCTYPE/i.test(src)?src:`<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${RESET}</style></head><body>${src}</body></html>`;
       return route.fulfill({status:200,contentType:'text/html',body});
