@@ -22,7 +22,7 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
 | `index.html` | Tutto lo strumento: HTML, CSS e JavaScript in un solo file (circa 1.800 righe). |
 | `ROADMAP.md` | Cosa è fatto, cosa manca, proposte. |
 | `README.md` | Descrizione per chi apre il repository. |
-| `supabase/migrations/` | Copia delle funzioni del database. Le originali applicate stanno in `Trading-sport/supabase/migrations/`. |
+| `supabase/migrations/` | Funzioni del database. Le prime due sono copie di quelle in `Trading-sport/supabase/migrations/`; dalla terza (cartelle e cestino, 27 novembre) stanno solo qui. |
 | `anteprima.jpg` | Immagine dell'anteprima dei link (Open Graph). |
 | `robots.txt` | Blocca l'indicizzazione; c'è anche `noindex` nella pagina. |
 | `test/` | Prove automatiche con Playwright (vedi sotto). |
@@ -60,6 +60,17 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
 - "Da sistemare prima di inviarla" resta sopra le schede; ogni avviso porta alla sezione da correggere.
 - Menu "Altro" in alto: Scheda (nuova, duplica), Scarica (Excel, ZIP, JPG, JSON), Altro (carica, ripristina).
 
+**Le mie schede (pannello laterale `#mArch`)**
+- Sul computer si apre da sinistra, sul telefono a tutto schermo.
+- Contiene: nuova scheda, nuova cartella, ricerca, cartelle in alto (Tutte, una per cartella, Senza cartella, Cestino).
+- Ogni scheda ha: link per l'investitore, cestino, tendina per cambiare cartella.
+- Lo stato sta in `ARC`; `disegnaArch()` disegna; `azioneArch(fn, body, messaggio)` chiama la funzione del database e ricarica.
+- Le azioni che cancellano chiedono un secondo tocco (`secondo()`).
+
+**Versione e "Tutta pagina"**
+- `VERSIONE` va cambiata a ogni pubblicazione: lo strumento confronta la sua con quella sul sito e mostra "Aggiorna" (GitHub tiene la pagina in memoria fino a 10 minuti).
+- "Tutta pagina" (`setFull`) nasconde il pannello e lascia crescere i fogli fino al 160%; sul computer chiede anche lo schermo intero.
+
 **Pannello rapido**
 - Toccando un riquadro dell'anteprima (solo in modifica) si apre `#qp`, scritto da `qpHTML(id)`: importi del riquadro, voci da mostrare, scritte e un tasto per la sezione dei dati.
 - Sul computer sta sopra la colonna di sinistra, sul telefono sale dal basso.
@@ -84,7 +95,9 @@ Per ripartire: apri una nuova sessione con il repository `antoniodenuccio1995-a1
 - **Progetto:** `cqfxjvrpspvycocvxghv`, lo stesso dell'app Trading-sport. La chiave pubblicabile è già in `index.html`.
 - **Tabella:** `sc_schede`, con RLS attiva e nessuna policy: si accede solo dalle funzioni `security definer`:
   - `sc_crea`, `sc_leggi`, `sc_versione`, `sc_salva`;
-  - `sc_verifica`, `sc_elenco`, `sc_collega`, `sc_impronta`.
+  - `sc_verifica`, `sc_elenco`, `sc_collega`, `sc_impronta`;
+  - cartelle: `sc_cartelle_elenco`, `sc_cartella_crea`, `sc_cartella_rinomina`, `sc_cartella_elimina`, `sc_sposta` (tabella `sc_cartelle`, colonna `sc_schede.cartella`);
+  - cestino: `sc_elimina`, `sc_ripristina`, `sc_elimina_def` (colonna `sc_schede.eliminata`). Una scheda nel cestino non si legge dal link; dopo 30 giorni si cancella alla prima eliminazione successiva nello stesso archivio.
 - **Chiavi e codici:**
   - la chiave di modifica è salvata come impronta bcrypt;
   - il codice dell'archivio come sha256 di `'sc-archivio:' || codice`, almeno 8 caratteri.
@@ -106,7 +119,7 @@ node test.js ../index.html out/base --photos --exports --mobile
 ```
 
 ```bash
-for t in fmt cloud righe pag web logo qp menu; do node $t.js ../index.html out/$t; done
+for t in fmt cloud righe pag web logo qp menu arch; do node $t.js ../index.html out/$t; done
 ```
 
 `harness.js` serve le librerie e i caratteri da `node_modules` e blocca la rete; `cloud.js` e `web.js` simulano Supabase. Playwright e Chromium sono già installati nelle sessioni cloud.
@@ -121,12 +134,13 @@ Le prove controllano:
 - formati degli importi, voci degli scenari e zoom;
 - loghi in testata, nel piè di pagina e nella vista web;
 - pannello rapido su computer e telefono;
-- schede del pannello, menu "Altro" e avvisi che portano alla sezione giusta.
+- schede del pannello, menu "Altro" e avvisi che portano alla sezione giusta;
+- Le mie schede con cartelle e cestino, "Tutta pagina" e avviso di versione nuova.
 
 ## Regole di lavoro
 
 - Su questo repository si lavora direttamente su `main`, con il permesso di Antonio. Su `Trading-sport` si passa da un branch e da una PR.
-- Prima di pubblicare: lanciare le prove e guardare gli screenshot (grafici, pagine A4, telefono).
+- Prima di pubblicare: cambiare `VERSIONE` in `index.html`, lanciare le prove e guardare gli screenshot (grafici, pagine A4, telefono).
 - Mai nei commit, nel repository o nei messaggi agli investitori: il link con `#k=` e il codice dell'archivio.
 - I rapporti interni sui numeri delle operazioni restano fuori dal repository.
 

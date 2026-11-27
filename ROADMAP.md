@@ -24,6 +24,7 @@ Aggiornata al 27 novembre 2026. Fonti: richieste di Antonio, handoff, revisione 
 - Importi esatti, arrotondati o in k (185k €), per tutta la scheda o modulo per modulo; i prezzi al m² e l'Excel restano esatti.
 - Scenari: nel grafico "Quanto riceve l'investitore" e nella tabella si sceglie cosa mostrare (pareggio, singoli scenari, rendimento, "riceve", fascia, legenda; righe e colonne della tabella, prove, frase finale).
 - Zoom delle pagine A4 (− / percentuale / +, da 35% a 250%), anche sul telefono.
+- Le mie schede come pannello laterale, con cartelle, ricerca e cestino (ripristino entro 30 giorni); anteprima “Tutta pagina”; avviso quando sul sito c’è una versione nuova.
 - Pannello riordinato in cinque schede (Casa, Conti, Scenari, Testi, Aspetto), menu “Altro” raggruppato, formati degli importi in un’unica sezione, avvisi cliccabili.
 - Pannello rapido: tocca un riquadro dell'anteprima per cambiarne scritte, importi (anche riga per riga) e voci; tutte le scritte della scheda modificabili; grafico degli scenari con impostazioni pronte (essenziale, tre scenari, completo).
 
@@ -38,7 +39,7 @@ Aggiornata al 27 novembre 2026. Fonti: richieste di Antonio, handoff, revisione 
 
 ## Prossimi sviluppi dello strumento (in ordine)
 
-1. **Permessi e cronologia (venerdì).** Accesso con password o account al posto del codice, più persone che modificano, cronologia delle versioni, eliminare o archiviare una scheda, sapere quando l'investitore apre il link. Confronto tra operazioni. È anche la base del software 3D.
+1. **Permessi e cronologia (venerdì).** Accesso con password o account al posto del codice, più persone che modificano, cronologia delle versioni, sapere quando l'investitore apre il link. Confronto tra operazioni. È anche la base del software 3D.
 2. **"Chi siamo".** Profilo della società riutilizzabile: ragione sociale, sede, partita IVA, legame con DiSalento, studio di architettura collegato, operazioni concluse.
 3. **Linea del tempo e versamenti.** Fasi in mesi (compromesso, rogito, permessi, lavori, vendita), quando l'investitore paga cosa e a chi, cosa succede a 12, 18 e 24 mesi senza vendita.
 4. **Riserva imprevisti e "capitale massimo"** nel riquadro dell'investitore.

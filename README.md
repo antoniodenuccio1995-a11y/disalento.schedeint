@@ -32,7 +32,8 @@ Strumento interno di Riquality S.r.l.s. (marchio DiSalento) per preparare e cond
   - la scheda viene salvata online e si aggiorna da sola per chi ha il link;
   - il link dell'investitore (`&v=1`) è sempre in sola lettura;
   - il link con `#k=` serve per modificare ed è solo per noi.
-- **Le mie schede:** l'archivio di tutte le schede, aperto con un codice personale valido su tutti i dispositivi. Dal menu Dati si creano anche una **Nuova scheda** e un **Duplicato**.
+- **Le mie schede:** pannello laterale con tutte le schede, aperto con un codice personale valido su tutti i dispositivi. Cartelle, ricerca, cestino (le schede eliminate si ripristinano per 30 giorni). Dal menu Altro si creano anche una **Nuova scheda** e un **Duplicato**.
+- **Tutta pagina:** l'anteprima occupa tutto lo schermo.
 
 Tutti i valori sono al lordo delle imposte.
 

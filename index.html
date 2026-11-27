@@ -194,6 +194,16 @@ body:not(.viewer) #stage .blk:hover{outline:1px dashed rgba(160,88,63,.45);outli
 .stagebox.zoom{overflow-x:auto;overscroll-behavior-x:contain}
 .zm{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
 .zm[hidden]{display:none!important}
+.vtools .bfull{min-height:36px;font-size:13px;gap:6px;padding:0 11px}
+.bfull svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.bfull[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+body.full .ed,body.full .tabs{display:none!important}
+body.full .wrap{grid-template-columns:minmax(0,1fr)}
+body.full .wrap .view{display:block!important;position:static;max-height:none;overflow:visible}
+.newver{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;display:flex;gap:10px;align-items:center;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:8px 8px 8px 16px;box-shadow:0 14px 40px rgba(0,0,0,.25);font-size:14px;width:max-content;max-width:calc(100vw - 24px)}
+.newver button{min-height:38px}
+#bNuovaNo{min-width:38px;padding:0;font-size:18px}
+@media (max-width:760px){.vtools .bfull span{display:none}.vtools .bfull{padding:0 10px}}
 .vtools .zm button{min-height:36px;min-width:40px;border:0;border-radius:0;background:transparent;font-size:16px;padding:0 8px}
 .vtools .zm #zFit{min-width:58px;font-size:13px;font-variant-numeric:tabular-nums;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .stage{transform-origin:top left;width:794px}
@@ -203,6 +213,47 @@ body:not(.viewer) #stage .blk:hover{outline:1px dashed rgba(160,88,63,.45);outli
 .cp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
 .cp input{font-size:14px}
 .modal .acts{margin-top:8px}
+.drawer{position:fixed;inset:0;z-index:20;background:rgba(20,16,12,.38);display:flex;justify-content:flex-start}
+.drawer .dbox{width:min(460px,100vw);height:100%;background:var(--panel);color:var(--ink);display:flex;flex-direction:column;box-shadow:12px 0 40px rgba(0,0,0,.22);animation:dIn .2s ease-out}
+@keyframes dIn{from{transform:translateX(-24px);opacity:.4}to{transform:none;opacity:1}}
+.drawer .dh{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;border-bottom:1px solid var(--line)}
+.drawer .dh h2{font:500 21px/1.2 var(--serif);margin:0}
+.drawer .dh button{min-width:42px;padding:0;font-size:22px}
+.drawer .db{flex:1;overflow:auto;padding:12px 16px;overscroll-behavior:contain}
+.drawer .df{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+.drawer .df button{min-height:36px;font-size:13px}
+.dt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dform{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;margin-top:8px}
+.dform button{min-height:42px;font-size:13.5px}
+#archQ{margin-top:10px}
+.fold{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.fold button{min-height:34px;font-size:13px;font-weight:500;padding:0 11px;border-radius:17px;background:var(--chip);border-color:transparent;gap:6px}
+.fold button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.fold button small{font-size:11.5px;color:var(--mute);font-weight:600}
+.fold button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fold button[aria-pressed="true"] small{color:inherit;opacity:.85}
+.fhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 2px;font-size:12.5px;color:var(--mute)}
+.fhead:empty{display:none}
+.dmsg{margin:8px 0 0;font-size:13px}
+.dmsg:not(:empty){padding:8px 11px;border-radius:9px;background:var(--ok-bg);color:var(--ok)}
+.fhead .fa{display:flex;gap:6px}
+.fhead button{min-height:32px;font-size:12.5px;padding:0 10px}
+.alist{display:flex;flex-direction:column}
+.acard{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.acard .an{color:inherit;text-decoration:none;min-width:0}
+.acard .an b{display:block;font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acard .an small{display:block;color:var(--mute);font-size:12.5px;line-height:1.35}
+.acard .an:hover b{color:var(--accent-text)}
+.acard.cur .an b::after{content:" · aperta ora";font-weight:500;color:var(--accent-text);font-size:12.5px}
+.acard .aa{display:flex;gap:6px;align-items:center}
+.acard .aa button,.acard .aa select{min-height:36px;font-size:12.5px;padding:0 9px}
+.acard .aa select{width:auto;max-width:150px;padding:0 6px}
+.acard .aa .ic{width:36px;padding:0}
+.acard .aa .ic svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acard .aa .sure{background:var(--bad);border-color:var(--bad);color:#fff;width:auto;padding:0 10px}
+.acard .mv{grid-column:1/-1;display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--mute)}
+.acard .mv select{min-height:34px;font-size:12.5px;padding:2px 6px;width:auto;max-width:220px}
+@media (max-width:760px){.drawer .dbox{width:100vw}}
 .arow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .arow b{display:block;font-size:15px}.arow small{color:var(--mute);font-size:12.5px}
 .arow.cur b::after{content:" · aperta ora";font-weight:500;color:var(--accent-text);font-size:12.5px}
@@ -497,16 +548,26 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
   </div>
 </header>
 <input type="file" id="fLoad" accept=".json,application/json" hidden>
-<div class="modal" id="mArch" hidden role="dialog" aria-modal="true" aria-labelledby="mArchT">
-  <div class="box">
-    <h2 id="mArchT">Le mie schede</h2>
-    <div id="archCode">
-      <p class="hint">Scegli un codice dell’archivio (almeno 8 caratteri) e usa lo stesso su tutti i tuoi dispositivi: con il codice vedi l’elenco delle tue schede e le modifichi da qualsiasi telefono o computer. Non darlo agli investitori.</p>
-      <div class="cp"><input id="codice" type="password" autocomplete="current-password" placeholder="Codice dell’archivio"><button type="button" id="bCodice">Apri l’archivio</button></div>
+<div class="drawer" id="mArch" hidden role="dialog" aria-modal="true" aria-labelledby="mArchT">
+  <aside class="dbox">
+    <div class="dh"><h2 id="mArchT">Le mie schede</h2><button type="button" id="bArchClose" aria-label="Chiudi">×</button></div>
+    <div class="db">
+      <div id="archCode">
+        <p class="hint">Scegli un codice dell’archivio (almeno 8 caratteri) e usa lo stesso su tutti i tuoi dispositivi: con il codice vedi l’elenco delle tue schede e le modifichi da qualsiasi telefono o computer. Non darlo agli investitori.</p>
+        <div class="cp"><input id="codice" type="password" autocomplete="current-password" placeholder="Codice dell’archivio"><button type="button" id="bCodice">Apri l’archivio</button></div>
+      </div>
+      <div id="archTools" hidden>
+        <div class="dt"><button type="button" class="main" id="bNuova2">+ Nuova scheda</button><button type="button" id="bCartNew">+ Nuova cartella</button></div>
+        <div class="dform" id="archForm" hidden><input id="archFormIn" maxlength="60"><button type="button" class="main" id="archFormOk">Crea</button><button type="button" id="archFormNo">Annulla</button></div>
+        <input type="search" id="archQ" placeholder="Cerca per nome o investitore" aria-label="Cerca nelle schede">
+        <nav class="fold" id="archFold" aria-label="Cartelle"></nav>
+        <div class="fhead" id="archFHead"></div>
+      </div>
+      <p class="dmsg" id="archMsg" role="status"></p>
+      <div id="archList" class="alist"></div>
     </div>
-    <div id="archList"></div>
-    <div class="acts" style="margin-top:12px"><button type="button" id="bNuova2">+ Nuova scheda</button><button type="button" id="bCodEsci">Cambia codice</button><button type="button" id="bArchClose">Chiudi</button></div>
-  </div>
+    <div class="df"><span id="archInfo"></span><button type="button" id="bCodEsci">Cambia codice</button></div>
+  </aside>
 </div>
 <div class="modal" id="mShare" hidden role="dialog" aria-modal="true" aria-labelledby="mShareT">
   <div class="box">
@@ -648,12 +709,13 @@ table.sc tr.sep td{border-top:1px solid var(--p-rule)}
   </div>
 
   <main class="view" id="view" aria-label="Anteprima della scheda">
-    <div class="vtools"><span id="pgInfo"></span><div class="vr"><div class="vmode" role="group" aria-label="Vista"><button type="button" id="vWeb" aria-pressed="false">Vista web</button><button type="button" id="vA4" aria-pressed="true">Pagine A4</button></div><div class="zm" id="bZoom" role="group" aria-label="Zoom delle pagine"><button type="button" id="zMeno" aria-label="Rimpicciolisci" title="Rimpicciolisci">−</button><button type="button" id="zFit" title="Adatta alla larghezza">100%</button><button type="button" id="zPiu" aria-label="Ingrandisci" title="Ingrandisci">+</button></div></div></div>
+    <div class="vtools"><span id="pgInfo"></span><div class="vr"><div class="vmode" role="group" aria-label="Vista"><button type="button" id="vWeb" aria-pressed="false">Vista web</button><button type="button" id="vA4" aria-pressed="true">Pagine A4</button></div><div class="zm" id="bZoom" role="group" aria-label="Zoom delle pagine"><button type="button" id="zMeno" aria-label="Rimpicciolisci" title="Rimpicciolisci">−</button><button type="button" id="zFit" title="Adatta alla larghezza">100%</button><button type="button" id="zPiu" aria-label="Ingrandisci" title="Ingrandisci">+</button></div><button type="button" id="bFull" class="bfull" aria-pressed="false" title="Anteprima a tutta pagina"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Tutta pagina</span></button></div></div>
     <p class="vhint" id="vHint">Tocca un riquadro della scheda per cambiarne scritte, importi e cosa mostrare.</p>
     <div class="stagebox" id="stagebox"><div class="stage" id="stage"></div></div>
     <div class="web" id="web" hidden></div>
   </main>
   <div class="qp" id="qp" hidden role="dialog" aria-label="Modifica il riquadro"></div>
+  <div class="newver" id="nuovaVer" hidden role="status"><span>È disponibile una versione nuova dello strumento.</span><button type="button" class="main" id="bNuovaVer">Aggiorna</button><button type="button" id="bNuovaNo" aria-label="Più tardi">×</button></div>
 </div>
 
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -837,7 +899,7 @@ async function salvaCloud(){if(MODE!=='edit'||saving||!dirty)return;saving=true;
     else{dirty=true;setCloud('Non salvata: riprovo','err');clearTimeout(cloudT);cloudT=setTimeout(salvaCloud,8000)}}
   finally{saving=false;if(dirty){clearTimeout(cloudT);cloudT=setTimeout(salvaCloud,1200)}}}
 async function caricaCloud(force){const r=await rpc('sc_leggi',{p_id:SID});const row=Array.isArray(r)?r[0]:r;
-  if(!row)throw new Error('Scheda non trovata: controlla il link.');
+  if(!row)throw new Error('Questa scheda non c’è più: è stata eliminata oppure il link è sbagliato.');
   if(!force&&row.versione===VER)return false;S=normalize(row.dati);VER=row.versione;dirty=false;lists();render();
   setCloud((MODE==='edit'?'Salvata':'Aggiornata')+' alle '+new Date(row.aggiornata).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}),'ok');return true}
 async function controllaCloud(){if(!SID||document.hidden||saving||dirty)return;try{const v=await rpc('sc_versione',{p_id:SID});if(typeof v==='number'&&v!==VER){await caricaCloud(true);if(MODE==='view')status('Scheda aggiornata.')}}catch(e){}}
@@ -1464,7 +1526,7 @@ function checks(c,over){const X=[];
 const ZL=[.35,.5,.65,.8,1,1.25,1.5,1.75,2,2.5];
 let zoomK=0;try{const z=+localStorage.getItem('sc-zoom');if(ZL.includes(z))zoomK=z}catch(e){}
 let kAtt=1;
-function fit(){const v=$('stagebox'),st=$('stage');if(!v.clientWidth)return;const kf=Math.min(1,v.clientWidth/794),k=zoomK||kf;kAtt=k;
+function fit(){const v=$('stagebox'),st=$('stage');if(!v.clientWidth)return;const kf=Math.min(document.body.classList.contains('full')?1.6:1,v.clientWidth/794),k=zoomK||kf;kAtt=k;
   st.style.transform=`scale(${k})`;v.style.height=st.scrollHeight*k+'px';
   const w=794*k,cw=v.clientWidth;st.style.marginLeft=w<cw-1?Math.floor((cw-w)/2)+'px':'0';st.style.marginRight=Math.round(w-794)+'px';
   v.classList.toggle('zoom',w>cw+1);$('zFit').textContent=Math.round(k*100)+'%';$('zFit').setAttribute('aria-label',`Zoom ${Math.round(k*100)}%: tocca per adattare alla larghezza`);
@@ -1702,6 +1764,14 @@ let webRz;addEventListener('resize',()=>{if(VISTA!=='web')return;clearTimeout(we
 $('zPiu').onclick=()=>{const z=ZL.find(x=>x>kAtt+.01);if(z)setZoom(z)};
 $('zMeno').onclick=()=>{const z=[...ZL].reverse().find(x=>x<kAtt-.01);if(z)setZoom(z)};
 $('zFit').onclick=()=>setZoom(0);
+/* anteprima a tutta pagina: via il pannello di sinistra; sul computer anche lo schermo intero del browser */
+function setFull(on){document.body.classList.toggle('full',on);$('bFull').setAttribute('aria-pressed',on);$('bFull').querySelector('span').textContent=on?'Esci':'Tutta pagina';
+  $('bFull').title=on?'Torna al pannello':'Anteprima a tutta pagina';chiudiQp();
+  try{if(on&&innerWidth>760&&document.documentElement.requestFullscreen&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+    if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}
+  if(on&&$('wrap').dataset.tab==='ed')$('wrap').dataset.tab='pv';requestAnimationFrame(()=>{fit();if(VISTA==='web')render()});window.scrollTo({top:0})}
+$('bFull').onclick=()=>setFull(!document.body.classList.contains('full'));
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('full'))setFull(false)});
 document.addEventListener('click',e=>{const m=$('mDati');if(m.open&&!m.contains(e.target))m.open=false;else if(m.open&&e.target.closest('.pop button,.pop .btn'))m.open=false});
 
 /* ---------- salvataggi e download ---------- */
@@ -1834,16 +1904,53 @@ function conferma(btn,testo,fn){if(btn.dataset.sure||(online()&&CODICE)){delete 
 $('bNuova').addEventListener('click',e=>{e.stopPropagation();conferma($('bNuova'),'Sostituisce la scheda di questo browser: tocca di nuovo',()=>nuova(false))});
 $('bDup').addEventListener('click',e=>{e.stopPropagation();conferma($('bDup'),'Sostituisce la scheda di questo browser: tocca di nuovo',()=>nuova(true))});
 $('bNuova2').onclick=()=>{$('mArch').hidden=true;nuova(false)};
-async function archivio(){$('mArch').hidden=false;const L2=$('archList');$('archCode').hidden=!!CODICE;$('bCodEsci').hidden=!CODICE;$('bNuova2').hidden=false;
+const IC={cart:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg>',
+  cest:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5h5v2"/><path d="M6.5 7l.9 12.2a1.5 1.5 0 0 0 1.5 1.3h6.2a1.5 1.5 0 0 0 1.5-1.3L17.5 7"/><path d="M10.5 11v6M13.5 11v6"/></svg>',
+  link:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'};
+const ARC={righe:[],cartelle:[],vista:'*',q:'',form:null};
+const dataIt=d=>new Date(d).toLocaleString('it-IT',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+async function archivio(){$('mArch').hidden=false;const L2=$('archList');$('archCode').hidden=!!CODICE;$('bCodEsci').hidden=!CODICE;$('archTools').hidden=!CODICE;$('archInfo').textContent='';
   if(!online()){offline('Le mie schede');return}
   if(!CODICE){L2.innerHTML='';$('codice').focus();return}
   L2.innerHTML='<p class="hint">Carico le tue schede…</p>';
-  try{const r=await rpc('sc_elenco',{p_codice:CODICE})||[];const fmt=d=>new Date(d).toLocaleString('it-IT',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    let h=r.length?r.map(x=>`<div class="arow ${x.id===SID?'cur':''}"><div><b>${esc(x.nome||x.titolo||'Scheda senza nome')}</b><small>${x.destinatario?'Per '+esc(x.destinatario)+' · ':''}aggiornata ${fmt(x.aggiornata)}</small></div><a class="btn" href="?s=${x.id}">Apri</a><button type="button" data-link="${x.id}">Copia link investitore</button></div>`).join(''):'<p class="hint">Nessuna scheda in questo archivio. Premi “+ Nuova scheda” oppure, su una scheda già condivisa, “Aggiungi all’archivio”.</p>';
-    if(SID&&EKEY&&!r.some(x=>x.id===SID))h=`<div class="arow"><div><b>${esc(S.nome)}</b><small>La scheda aperta ora non è nell’archivio</small></div><button type="button" id="bCollega">Aggiungi all’archivio</button><span></span></div>`+h;
-    if(!SID)h=`<p class="hint">La scheda aperta ora è solo in questo browser: premi Condividi per salvarla online e metterla nell’archivio.</p>`+h;
-    L2.innerHTML=h}
+  try{const [r,c]=await Promise.all([rpc('sc_elenco',{p_codice:CODICE}),rpc('sc_cartelle_elenco',{p_codice:CODICE}).catch(()=>[])]);
+    ARC.righe=Array.isArray(r)?r:[];ARC.cartelle=(Array.isArray(c)?c:[]).map(x=>x.nome);
+    if(ARC.vista!=='*'&&ARC.vista!=='-'&&ARC.vista!=='x'&&!ARC.cartelle.includes(ARC.vista))ARC.vista='*';
+    disegnaArch()}
   catch(err){L2.innerHTML=`<p class="hint">Non riesco a leggere l’archivio (${esc(err.message||err)}).</p>`}}
+function disegnaArch(){const vive=ARC.righe.filter(x=>!x.eliminata),cest=ARC.righe.filter(x=>x.eliminata),q=ARC.q.trim().toLowerCase();
+  if((ARC.vista==='x'&&!cest.length)||(ARC.vista==='-'&&!ARC.cartelle.length))ARC.vista='*';
+  const conta=n=>vive.filter(x=>(x.cartella||'')===n).length;
+  const chip=(v,nome,n,ic)=>`<button type="button" data-vista="${esc(v)}" aria-pressed="${ARC.vista===v}">${ic||''}${esc(nome)} <small>${n}</small></button>`;
+  $('archFold').innerHTML=chip('*','Tutte',vive.length)+ARC.cartelle.map(n=>chip(n,n,conta(n),IC.cart)).join('')+(vive.some(x=>!x.cartella)&&ARC.cartelle.length?chip('-','Senza cartella',conta('')):'')+(cest.length?chip('x','Cestino',cest.length,IC.cest):'');
+  const inCart=ARC.vista!=='*'&&ARC.vista!=='-'&&ARC.vista!=='x';
+  $('archFHead').innerHTML=inCart?`<span>Cartella “${esc(ARC.vista)}”</span><span class="fa"><button type="button" id="bCartRen">Rinomina</button><button type="button" id="bCartDel">Elimina cartella</button></span>`:ARC.vista==='x'?'<span>Le schede nel cestino non si aprono più dal link. Dopo 30 giorni si cancellano da sole.</span>':'';
+  let lista=ARC.vista==='x'?cest:ARC.vista==='*'?vive:ARC.vista==='-'?vive.filter(x=>!x.cartella):vive.filter(x=>x.cartella===ARC.vista);
+  if(q)lista=lista.filter(x=>[x.nome,x.titolo,x.destinatario,x.cartella].some(t=>String(t||'').toLowerCase().includes(q)));
+  const opz=sel=>`<option value="">Senza cartella</option>${ARC.cartelle.map(n=>`<option ${n===sel?'selected':''}>${esc(n)}</option>`).join('')}<option value="__nuova">+ Nuova cartella…</option>`;
+  let h=lista.map(x=>{const nome=esc(x.nome||x.titolo||'Scheda senza nome'),info=[x.destinatario?'Per '+esc(x.destinatario):'',x.eliminata?'eliminata '+dataIt(x.eliminata):'aggiornata '+dataIt(x.aggiornata)].filter(Boolean).join(' · ');
+    if(x.eliminata)return`<div class="acard"><div class="an"><b>${nome}</b><small>${info}</small></div><div class="aa"><button type="button" data-rip="${x.id}">Ripristina</button><button type="button" class="ic" data-def="${x.id}" title="Elimina per sempre" aria-label="Elimina per sempre ${nome}">${IC.cest}</button></div></div>`;
+    return`<div class="acard ${x.id===SID?'cur':''}"><a class="an" href="?s=${x.id}"><b>${nome}</b><small>${info}${x.cartella&&ARC.vista==='*'?' · '+esc(x.cartella):''}</small></a>
+      <div class="aa"><button type="button" class="ic" data-link="${x.id}" title="Copia il link per l’investitore" aria-label="Copia il link per l’investitore di ${nome}">${IC.link}</button><button type="button" class="ic" data-del="${x.id}" title="Sposta nel cestino" aria-label="Elimina ${nome}">${IC.cest}</button></div>
+      <label class="mv">${IC.cart.replace('<svg','<svg width="15" height="15" style="fill:none;stroke:currentColor;stroke-width:1.8"')}<select data-sposta="${x.id}" aria-label="Cartella di ${nome}">${opz(x.cartella||'')}</select></label></div>`}).join('');
+  if(!lista.length)h=`<p class="hint" style="margin-top:12px">${q?'Nessuna scheda trovata.':ARC.vista==='x'?'Il cestino è vuoto.':ARC.righe.length?'Nessuna scheda in questa cartella. Spostacene una con la tendina sotto ogni scheda.':'Nessuna scheda in questo archivio. Premi “+ Nuova scheda” oppure, su una scheda già condivisa, “Aggiungi all’archivio”.'}</p>`;
+  if(SID&&EKEY&&!ARC.righe.some(x=>x.id===SID)&&ARC.vista!=='x')h=`<div class="acard"><div class="an"><b>${esc(S.nome)}</b><small>La scheda aperta ora non è nell’archivio</small></div><div class="aa"><button type="button" id="bCollega">Aggiungi all’archivio</button></div></div>`+h;
+  if(!SID&&ARC.vista!=='x')h=`<p class="hint">La scheda aperta ora è solo in questo browser: premi Condividi per salvarla online e metterla nell’archivio.</p>`+h;
+  $('archList').innerHTML=h;$('archInfo').textContent=`${vive.length} ${vive.length===1?'scheda':'schede'}${ARC.cartelle.length?` · ${ARC.cartelle.length} ${ARC.cartelle.length===1?'cartella':'cartelle'}`:''}`}
+function archForm(modo,val){ARC.form=modo;$('archForm').hidden=false;const i=$('archFormIn');i.value=val||'';i.placeholder='Nome della cartella';$('archFormOk').textContent=modo==='ren'?'Rinomina':'Crea';i.focus()}
+function chiudiForm(){ARC.form=null;$('archForm').hidden=true}
+const msgArch=t=>{const m=$('archMsg');m.textContent=t;clearTimeout(m._t);m._t=setTimeout(()=>{m.textContent=''},6000)};
+async function azioneArch(fn,body,ok){try{await rpc(fn,Object.assign({p_codice:CODICE},body));await archivio();if(ok)msgArch(ok)}catch(err){msgArch('Non riesco: '+(err.message||err))}}
+$('bCartNew').onclick=()=>archForm('nuova');$('archFormNo').onclick=chiudiForm;
+$('archFormIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('archFormOk').click();if(e.key==='Escape'){e.stopPropagation();chiudiForm()}});
+$('archFormOk').onclick=async()=>{const n=$('archFormIn').value.trim();if(!n){$('archFormIn').focus();return}const modo=ARC.form,id=ARC.spostaId;chiudiForm();
+  if(modo==='ren'){const v=ARC.vista;ARC.vista=n;await azioneArch('sc_cartella_rinomina',{p_vecchio:v,p_nuovo:n},`Cartella rinominata in “${n}”.`)}
+  else if(modo==='sposta'){ARC.spostaId=null;await azioneArch('sc_sposta',{p_id:id,p_cartella:n},`Scheda spostata in “${n}”.`)}
+  else{ARC.vista=n;await azioneArch('sc_cartella_crea',{p_nome:n},`Cartella “${n}” creata: sposta qui le schede con la tendina sotto ognuna.`)}};
+$('archQ').addEventListener('input',e=>{ARC.q=e.target.value;disegnaArch()});
+$('mArch').addEventListener('change',async e=>{const t=e.target;if(!t.dataset.sposta)return;
+  if(t.value==='__nuova'){ARC.spostaId=t.dataset.sposta;t.value=(ARC.righe.find(x=>x.id===t.dataset.sposta)||{}).cartella||'';archForm('sposta');return}
+  await azioneArch('sc_sposta',{p_id:t.dataset.sposta,p_cartella:t.value||null},t.value?`Scheda spostata in “${t.value}”.`:'Scheda tolta dalla cartella.')});
 $('bArch').onclick=archivio;$('bArch2').onclick=archivio;
 $('bArchClose').onclick=()=>{$('mArch').hidden=true};
 $('bCodice').onclick=async()=>{const c=$('codice').value.trim();if(c.length<8){status('Il codice dell’archivio deve avere almeno 8 caratteri.');$('codice').focus();return}
@@ -1851,16 +1958,32 @@ $('bCodice').onclick=async()=>{const c=$('codice').value.trim();if(c.length<8){s
   if(SID&&MODE==='view'&&!SOLO){try{if(await rpc('sc_verifica',{p_id:SID,p_chiave:null,p_codice:CODICE}))abilitaModifica()}catch(e){}}
   archivio()};
 $('codice').addEventListener('keydown',e=>{if(e.key==='Enter')$('bCodice').click()});
-$('bCodEsci').onclick=()=>{CODICE='';try{localStorage.removeItem('sc-codice')}catch(e){}archivio()};
+$('bCodEsci').onclick=()=>{CODICE='';try{localStorage.removeItem('sc-codice')}catch(e){}ARC.vista='*';archivio()};
+/* conferma con un secondo tocco: il tasto diventa rosso per 4 secondi */
+const secondo=(b,testo)=>{if(b.dataset.sure)return true;b.dataset.sure=1;const h=b.innerHTML;b.classList.add('sure');b.textContent=testo;setTimeout(()=>{if(!b.isConnected)return;delete b.dataset.sure;b.classList.remove('sure');b.innerHTML=h},4000);return false};
 $('mArch').addEventListener('click',async e=>{if(e.target===$('mArch')){$('mArch').hidden=true;return}
-  const l=e.target.closest('[data-link]');if(l){const u=location.origin+location.pathname+'?s='+l.dataset.link+'&v=1';(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{l.textContent='Copiato';setTimeout(()=>{l.textContent='Copia link investitore'},1500)}).catch(()=>status('Link: '+u));return}
-  if(e.target.id==='bCollega'){try{await rpc('sc_collega',{p_id:SID,p_chiave:EKEY,p_codice:CODICE});status('Scheda aggiunta all’archivio.');archivio()}catch(err){status('Non riesco ad aggiungerla ('+(err.message||err)+').')}}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')$('mArch').hidden=true});
+  const v=e.target.closest('[data-vista]');if(v){ARC.vista=v.dataset.vista;disegnaArch();return}
+  const l=e.target.closest('[data-link]');if(l){const u=location.origin+location.pathname+'?s='+l.dataset.link+'&v=1';(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>msgArch('Link per l’investitore copiato.')).catch(()=>msgArch('Link: '+u));return}
+  const d=e.target.closest('[data-del]');if(d){if(!secondo(d,'Elimina'))return;const id=d.dataset.del;
+    await azioneArch('sc_elimina',{p_id:id,p_chiave:null},'Scheda spostata nel cestino: la ritrovi in “Cestino” per 30 giorni.');if(id===SID){location.href=location.pathname}return}
+  const r=e.target.closest('[data-rip]');if(r){await azioneArch('sc_ripristina',{p_id:r.dataset.rip},'Scheda ripristinata.');return}
+  const f=e.target.closest('[data-def]');if(f){if(!secondo(f,'Per sempre?'))return;await azioneArch('sc_elimina_def',{p_id:f.dataset.def},'Scheda eliminata per sempre.');return}
+  if(e.target.id==='bCartRen'){archForm('ren',ARC.vista);return}
+  if(e.target.id==='bCartDel'){if(!secondo(e.target,'Tocca di nuovo: le schede restano'))return;const n=ARC.vista;ARC.vista='*';await azioneArch('sc_cartella_elimina',{p_nome:n},`Cartella “${n}” eliminata: le sue schede ora sono senza cartella.`);return}
+  if(e.target.id==='bCollega'){try{await rpc('sc_collega',{p_id:SID,p_chiave:EKEY,p_codice:CODICE});await archivio();msgArch('Scheda aggiunta all’archivio.')}catch(err){msgArch('Non riesco ad aggiungerla ('+(err.message||err)+').')}}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mArch').hidden){if(ARC.form)chiudiForm();else $('mArch').hidden=true}});
 function abilitaModifica(){MODE='edit';document.body.classList.remove('viewer');$('wrap').dataset.tab='ed';$('tEd').setAttribute('aria-selected','true');$('tPv').setAttribute('aria-selected','false');lists();render();status('Questa scheda è nel tuo archivio: puoi modificarla.')}
 
 if(MODE==='view'){document.body.classList.add('viewer');$('wrap').dataset.tab='pv';VISTA='web';$('vWeb').setAttribute('aria-pressed','true');$('vA4').setAttribute('aria-pressed','false');$('stagebox').hidden=true;$('web').hidden=false;$('bZoom').hidden=true}
 const SITO='https://antoniodenuccio1995-a11y.github.io/disalento.schedeint/';
-function offline(cosa){$('mArch').hidden=false;$('archCode').hidden=true;$('bCodEsci').hidden=true;$('bNuova2').hidden=true;
+/* versione dello strumento: se sul sito ce n'è una più nuova (GitHub tiene in memoria la pagina fino a 10 minuti) compare l'avviso con "Aggiorna" */
+const VERSIONE='2026-11-27.5';let verNo=false;
+async function controllaVersione(){if(!online()||verNo||MODE==='view'||document.hidden)return;
+  try{const r=await fetch(location.pathname+'?nv='+Date.now(),{cache:'no-store'});if(!r.ok)return;const m=/const VERSIONE='([^']+)'/.exec(await r.text());if(m&&m[1]!==VERSIONE)$('nuovaVer').hidden=false}catch(e){}}
+$('bNuovaVer').onclick=async()=>{$('bNuovaVer').disabled=true;try{if(dirty)await salvaCloud()}catch(e){}location.reload()};
+$('bNuovaNo').onclick=()=>{verNo=true;$('nuovaVer').hidden=true};
+setTimeout(controllaVersione,5000);setInterval(controllaVersione,10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)controllaVersione()});
+function offline(cosa){$('mArch').hidden=false;$('archCode').hidden=true;$('bCodEsci').hidden=true;$('archTools').hidden=true;
   $('archList').innerHTML=`<p class="hint">Stai usando una copia che non si collega al database (la versione su claude.ai o un file aperto dal computer): “${esc(cosa)}” funziona solo dal sito dello strumento, dove trovi anche tutte le tue schede.</p><a class="btn main" style="color:#fff;background:var(--accent);border-color:var(--accent)" href="${SITO}" target="_blank" rel="noopener">Apri il sito dello strumento</a>`}
 if(!SID&&online()){$('localHint').hidden=false;$('bArch3').onclick=archivio}
 else if(!online()){$('localHint').hidden=false;$('localHint').querySelector('span').innerHTML='<b>Copia non collegata al database.</b> Condividi e “Le mie schede” funzionano dal sito dello strumento.';$('bArch3').textContent='Apri il sito';$('bArch3').onclick=()=>{window.open(SITO,'_blank','noopener')||(location.href=SITO)}}
